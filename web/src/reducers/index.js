@@ -1,7 +1,9 @@
 import { combineReducers } from 'redux'
+import login_and_regist from './login_and_regist'
 
-function reducer(state = 0, action) {
-    return state
-}
+//使用redux的combineReducers方法将所有reducer打包起来
+const rootReducer = combineReducers({
+    login_and_regist
+})
 
-export default combineReducers({reducer})
+export default rootReducer

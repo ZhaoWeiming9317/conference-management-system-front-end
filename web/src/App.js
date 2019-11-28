@@ -1,16 +1,11 @@
 import React from 'react'
-import { BrowserRouter, Route } from "react-router-dom";
-
-import Login from './containers/login/index'
-import Register from './containers/register/index'
+import Welcome from './components/welcome/welcome'
+// mport {connect} from 'react-redux'
 
 class App extends React.Component {
     render () {
         return (
-            <BrowserRouter>
-                <Route path="/Register" component={Register}></Route>
-                <Route path="/login" component={Login}></Route>
-            </BrowserRouter>
+            <Welcome></Welcome>
         )
     }
 }
