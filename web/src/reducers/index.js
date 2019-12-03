@@ -1,9 +1,25 @@
-import { combineReducers } from 'redux'
-import login_and_regist from './login_and_regist'
+import { handleActions } from 'redux-actions';
+import * as actions from '../actions/index';
 
-//使用redux的combineReducers方法将所有reducer打包起来
-const rootReducer = combineReducers({
-    login_and_regist
-})
+const initialState = {
+    loginView: true,
+};
+  
+const loginRegistReducer = handleActions({
+    [`${actions.gotoLogin}`](state, action){
+        return {
+            ...state,
+            loginView : true,
+        };
+    }, 
+    [`${actions.gotoRegist}`](state, action){
+        return {
+            ...state,
+            loginView : false,
+        }
+    }
+},
+initialState);
 
-export default rootReducer
+export default loginRegistReducer;
+    

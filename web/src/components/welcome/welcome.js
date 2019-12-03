@@ -3,11 +3,13 @@ import './welcome.sass'
 import Login from './../login/login';
 import Regist from './../regist/regist';
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+import { connect } from 'react-redux';
+import {gotoRegist} from './../../actions/index'
 
 
 function Change(props) {
-    const isLogin = props.isLogin;
-    if (isLogin) {
+    let loginView = props.loginView;
+    if (loginView) {
       return (
           <Redirect to={{ pathname: '/login'}}/>
       );
@@ -20,62 +22,33 @@ function Change(props) {
 class Welcome extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            isLogin: true
-        };
-        this.gotoRegist = this.gotoRegist.bind(this);
     };
     componentDidMount() {
     };
-    gotoRegist = event => {
-        console.log('suc')
-        this.setState({
-            isLogin: false,
-        });
-    }; 
-    gotoLogin = event => {
-        console.log('suc')
-        this.setState({
-            isLogin: true,
-        });
-    };           
     render() {    
-    return (
-        <div class="begin-container">
-            <div class="begin-box">
-            <div class="swiper-cover">
-            </div>
-            <div class="swiper-left">
-            </div>
-            <div class="swiper-right">
-            </div>
-            <div class="mention left-mention">
-                <div class="mention-title">
+        let { loginView } = this.props
+        return (
+            <div class="begin-container">
+                <div class="begin-box">
+                    <div id="change">
+                        <BrowserRouter>
+                            <Switch>
+                                <Route path="/login" component={Login}></Route>
+                                <Route path="/regist" component={Regist}></Route>
+                            </Switch>
+                            <Change loginView={loginView}></Change>
+                        </BrowserRouter>
+                    </div> 
                 </div>
             </div>
-            <div class="mention right-mention">
-                <div class="mention-title">
-                欢迎回来
-                </div>
-                <div class="mention-subtitle">
-                会议室管理系统，如需注册请点击下方按钮
-                </div>
-                <div class="button button-hollow" onClick={this.gotoRegist}>
-                注册
-                </div>
-            </div>
-            <div id="change">
-                <BrowserRouter>
-                    <Switch>
-                        <Route path="/login" component={Login} gotoRegist={this.gotoRegist}></Route>
-                        <Route path="/regist" component={Regist} gotoLogin={this.gotoLogin}></Route>
-                    </Switch>
-                    <Change isLogin={this.state.isLogin}></Change>
-                </BrowserRouter>
-            </div> 
-            </div>
-        </div>
-    );
+        );
     }
 }
-export default Welcome
+const mapStateToProps = (state) => {
+    return {
+      loginView: state.loginView
+    };
+};
+
+export default connect(mapStateToProps, { gotoRegist })(Welcome);
+  

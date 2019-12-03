@@ -3,8 +3,10 @@ import './regist.sass'
 import TextField from '@material-ui/core/TextField';
 import {userRegist} from './../../api/api';
 import ChooseRole from './../chooseRole/chooseRole';
+import { connect } from 'react-redux';
+import { gotoLogin } from './../../actions/index'
 
-class Login extends React.Component {
+class Regist extends React.Component {
     constructor(props) {
       super(props);
       this.handleChangeUser = this.handleChangeUser.bind(this);
@@ -24,21 +26,18 @@ class Login extends React.Component {
         this.setState({
             username: event.target.value,
         });
-        console.log(this.state)
     };
 
     handleChangePass = event => {
         this.setState({
             password: event.target.value,
         });
-        console.log(this.state)
     };
 
     handleChangeRole = value => {
       this.setState({
         role: value,
       });
-      console.log(this.state)
     };
 
     submitRegist = event => {
@@ -66,7 +65,7 @@ class Login extends React.Component {
                 <div class="mention-subtitle">
                 会议室管理系统，登录请点击下方按钮
                 </div>
-                <div class="button button-hollow" onClick={this.gotoRegist}>
+                <div class="button button-hollow" onClick={this.props.gotoLogin}>
                 登录
                 </div>
             </div>
@@ -94,4 +93,10 @@ class Login extends React.Component {
       );
     }
 }
-export default Login
+const mapStateToProps = (state) => {
+    return{
+        
+    }
+};
+
+export default connect(mapStateToProps, { gotoLogin })(Regist);

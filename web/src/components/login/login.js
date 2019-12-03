@@ -3,11 +3,12 @@ import './login.sass'
 import TextField from '@material-ui/core/TextField';
 import {userLogin} from './../../api/api';
 import ChooseRole from './../chooseRole/chooseRole';
+import { connect } from 'react-redux';
+import {gotoRegist} from './../../actions/index'
 
 class Login extends React.Component {
     constructor(props) {
       super(props);
-      console.log(props)
       this.handleChangeUser = this.handleChangeUser.bind(this);
       this.handleChangePass = this.handleChangePass.bind(this);
       this.handleChangeRole = this.handleChangeRole.bind(this);
@@ -25,21 +26,18 @@ class Login extends React.Component {
         this.setState({
             username: event.target.value,
         });
-        console.log(this.state)
     };
 
     handleChangePass = event => {
         this.setState({
             password: event.target.value,
         });
-        console.log(this.state)
     };
 
     handleChangeRole = value => {
       this.setState({
         role: value,
       });
-      console.log(this.state)
     };
 
     submitLogin = event => {
@@ -67,7 +65,7 @@ class Login extends React.Component {
             <div class="mention-subtitle">
             会议室管理系统，如需注册请点击下方按钮
             </div>
-            <div class="button button-hollow" onClick={this.gotoRegist}>
+            <div class="button button-hollow" onClick={this.props.gotoRegist}>
             注册
             </div>
         </div>
@@ -75,10 +73,10 @@ class Login extends React.Component {
           <div class="login-label">登 &nbsp;录</div>
           <form class="login-form" noValidate autoComplete="off">
             <div class = "login-item">
-              <TextField id="standard-basic" label="用户名" onChange={this.handleChangeUser} value={this.state.username}/>
+              <input class="standard-basic" type="text" label="用户名" onChange={this.handleChangeUser} value={this.state.username}/>
             </div>
             <div class = "login-item">
-              <TextField id="standard-basic" label="密  码" onChange={this.handleChangePass} value={this.state.password}/>
+              <input class="standard-basic" type="text" label="密  码" onChange={this.handleChangePass} value={this.state.password}/>
             </div>
             <div class = "login-item">
               <ChooseRole handleChangeRole={this.handleChangeRole}>
@@ -96,4 +94,9 @@ class Login extends React.Component {
       );
     }
 }
-export default Login
+
+const mapStateToProps = (state) => {
+  return {}
+};
+
+export default connect(mapStateToProps, { gotoRegist })(Login);

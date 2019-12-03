@@ -2,10 +2,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    bottom: 0;
+    position: relative;
+    margin: 0 auto;
+    width: 1000px;
+    height: 600px;
+    top: 50%; 
+    margin-top: -300px;
     background-color: #f4f4f4;
     .begin-box
         position: relative;
@@ -14,59 +16,6 @@
         background-color: #ffffff;
         border-radius: 35px;
         overflow: hidden;     
-    .swiper-cover
-        position: absolute;
-        width: 1000px;
-        height: 600px;
-        background-image: linear-gradient(225deg, #08eadd 0%, #2AF598 100%);
-    .swiper-left
-        position: absolute;
-        width: 600px;
-        height: 600px;
-        background: #ffffff
-    .swiper-right
-        position: absolute;
-        width: 0px;
-        height: 600px;
-        right: 0px;
-        background: #ffffff
-    .mention
-        position: absolute;
-        width: 400px;
-        height: 600px;
-        color: #ffffff;
-        .mention-title
-            height: 100px;
-            line-height: 100px;
-            margin: 0 auto;
-            margin-top: 150px;
-            text-align: center;
-            font-size: 50px;
-        .mention-subtitle
-            height: 100px;
-            width: 220px;
-            line-height: 150%;
-            margin: 0 auto;
-            margin-top: 20px;
-            text-align: center;
-            font-size: 17px;
-    .right-mention
-        right: 0px;  
-    .regist-box
-        position: absolute;
-        width: 500px;
-        height: 600px;
-        .regist-label
-            height: 100px;
-            line-height: 100px;
-            margin: 0 auto;
-            margin-top: 100px;
-            text-align: center;
-            font-size: 50px;
-        .regist-form
-            .regist-item
-                text-align: center;
-                margin: 20px auto; 
 .button
     width: 170px;
     height: 40px;
