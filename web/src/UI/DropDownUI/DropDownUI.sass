@@ -1,0 +1,48 @@
+$green: #2AF598;
+$grey: #DEDEDE;
+$width: 200px;
+$height: 25px;
+$font: 18px;
+.drop_box
+    position: relative;
+    display: block;
+    width: $width;
+    height: $height * 2;
+    margin: 0 auto;  
+    .drop_label
+        text-align: left;
+        padding-bottom: 7px;
+        font-size: $font;
+        transition: font-size 0.5s;
+    .drop
+        position: relative;
+        text-align: left;
+        width: $width;
+        height: $height;
+        border: 2px solid $grey; 
+        border-radius: 7px;
+        outline: none;
+        padding: 0 5px;
+        line-height: $height;
+        font-size: 15px;
+        cursor: pointer;
+    &:hover .drop_content
+        display: block;
+    &:hover .drop
+        border: 2px solid $green; 
+    &:hover .drop_label
+        font-size: $font + 2px;
+    .drop_content 
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        width: $width + 10px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        .drop_content_item
+            font-size: $font - 3px;
+            padding-bottom: 5px;
+            cursor: pointer;
+            &:hover
+                background-color: $green
+                color: white
+

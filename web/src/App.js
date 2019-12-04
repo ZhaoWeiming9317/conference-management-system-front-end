@@ -1,5 +1,5 @@
 import React from 'react'
-import Welcome from './components/welcome/welcome'
+import Welcome from './components/Welcome/Welcome'
 // mport {connect} from 'react-redux'
 
 class App extends React.Component {
