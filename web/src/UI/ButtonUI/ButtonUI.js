@@ -6,9 +6,6 @@ import './ButtonUI.sass'
  *  label:string   
  */
 class ButtonUI extends React.Component {
-    constructor(props) {
-        super(props)
-    }
     componentDidMount() {
     }
     render() {

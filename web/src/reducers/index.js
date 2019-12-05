@@ -3,6 +3,7 @@ import * as actions from '../actions/index';
 
 const initialState = {
     loginView: true,
+    isLogin: false
 };
   
 const loginRegistReducer = handleActions({
@@ -16,6 +17,18 @@ const loginRegistReducer = handleActions({
         return {
             ...state,
             loginView : false,
+        }
+    },
+    [`${actions.login}`](state, action){
+        return {
+            ...state,
+            isLogin : true
+        }
+    },
+    [`${actions.logout}`](state, action){
+        return {
+            ...state,
+            isLogin : false
         }
     }
 },

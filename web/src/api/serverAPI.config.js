@@ -4,7 +4,7 @@
  * 
  **/
  
-const HISTORY= 'http://dexuannb.ml/';
+const HISTORY= 'http://39.99.172.71:8080/';
 const URL ={
     userLogin:HISTORY+'user/login',//接口1
     userRegist:HISTORY+'user/regist' //接口2

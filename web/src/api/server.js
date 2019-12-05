@@ -32,10 +32,10 @@ axios.interceptors.response.use(
         const res = response.data;
  
         //这里根据后台返回来设置
-        if (res.msg === "success") {
-            return response.data;
+        if (res.state === 1) {
+            return res;
         } else {
-            
+            return res;
         }
     },
     error => {

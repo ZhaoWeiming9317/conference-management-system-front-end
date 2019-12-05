@@ -1,14 +1,48 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import Welcome from './components/Welcome/Welcome'
+import Home from './components/Home/Home'
+import { BrowserRouter, Switch, Route, Redirect,withRouter } from "react-router-dom";
 // mport {connect} from 'react-redux'
+import './App.sass'
 
+function Change(props) {
+    let isLogin = props.isLogin;
+    if (isLogin) {
+      return (
+          <Redirect to={{ pathname: '/home'}}/>
+      );
+    }
+    return (
+        <Redirect to={{ pathname: '/welcome'}}/>
+    );
+}
+  
 class App extends React.Component {
+    constructor(props) {
+        super(props);
+    }  
     render () {
+        const { isLogin } = this.props
         return (
-            <Welcome></Welcome>
-        )
+            <BrowserRouter>
+                <Switch>
+                    <Route path="/home" component={Home}></Route>
+                    <Route path="/welcome" component={Welcome}></Route>
+                </Switch>
+            <Change isLogin={isLogin}></Change>
+            </BrowserRouter>
+        )  
     }
 }
 
-export default App
+
+const mapStateToProps = (state) => {
+    return {
+        isLogin: state.isLogin
+    };
+  };
+  
+  
+export default connect(mapStateToProps)(App);
 

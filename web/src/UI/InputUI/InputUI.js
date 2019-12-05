@@ -1,15 +1,23 @@
 import React from 'react'
 import './InputUI.sass'
+
+
 /** 
+ * 
  *  输入框UI，下面为props的值
  *  getValue:function   父组件用来获得InputUI的value的值的回调函数
  *  type:string    输入的类型      text => 文本   password => 密码  
  *  label:string   Input的label
+ *  status:string  success => 成功  fail => 失败  warning => 警告 normal => 普通  默认普通
+ *  message:string  提示符
+ *  下面为使用ref调用的方法
+ *  clear: 将子组件的value清空
  */
 class InputUI extends React.Component {
     constructor(props) {
         super(props)
         this.handleChange = this.handleChange.bind(this);
+        // this.clearValue = this.clearValue.bind(this);
         this.state = {
             value: '',
             isFocus: false
@@ -27,14 +35,21 @@ class InputUI extends React.Component {
     handleBlur = event => {
         this.setState({isFocus: false})
     }
-    render() {    
+    clear = event => {
+        this.setState({value: ''})
+    }
+    render() {
+        const { status, label, type, message } = this.props
+        const { isFocus, value } = this.state
         return (
-            <div className={this.state.isFocus?"input_box_focus":"input_box"}>
-                <div className={this.state.isFocus?"input_label_focus":"input_label"}>{this.props.label}</div>
-                <input className={this.state.isFocus?"input_focus":"input"} type={this.props.type} label="用户名" value={this.state.value} onChange={this.handleChange} onFocus={this.handleFocus} onBlur={this.handleBlur}/>
+            <div className="input__box">
+                <div className={isFocus?"input__label--focus":"input__label"}>{label}</div>
+                <input className={`input input__${status}`} type={type} value={value} onChange={this.handleChange} onFocus={this.handleFocus} onBlur={this.handleBlur}/>
+                <div className={`input__message input__message--${status}`}>{message || ''}</div>
             </div>
         )
     }  
 }
+
 
 export default InputUI

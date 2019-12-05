@@ -1,17 +1,20 @@
-$green: #2AF598;
+$green: #379266;
 $grey: #DEDEDE;
-$width: 200px;
-$height: 25px;
-.input_box
+$red: #c73b3b;
+$yellow: #f1dd24;
+$width: 160px;
+$height: 20px;
+$labelSize: 16px;
+.input__box
     position: relative;
     display: block;
     width: $width;
     height: $height * 2;
     margin: 0 auto;     
-    .input_label
+    .input__label
         text-align: left;
         padding-bottom: 7px;
-        font-size: 18px;
+        font-size: $labelSize;
         transition: font-size 0.5s;
     .input
         position: relative;
@@ -21,23 +24,31 @@ $height: 25px;
         border-radius: 7px;
         outline: none;
         padding: 0 5px;
-        font-size: 15px;
-.input_box_focus
-    position: relative;
-    display: block;
-    width: $width;
-    height: $height * 2;
-    margin: 0 auto;
-    .input_label_focus
+        font-size: $labelSize - 3px;
+    .input__label--focus
         text-align: left;
         padding-bottom: 7px;
-        font-size: 20px;
+        font-size: $labelSize + 2px;
         transition: font-size 0.5s;
-    .input_focus
-        position: relative;
-        width: $width;
-        height: $height;
+    .input__normal
+        border: 2px solid $grey; 
+    .input__success
         border: 2px solid $green; 
-        border-radius: 7px;
-        outline: none;
-        padding: 0 5px;
+    .input__fail
+        border: 2px solid $red; 
+    .input__warning
+        border: 2px solid $yellow; 
+    .input__message
+        font: $labelSize - 5px;
+        text-align: right;
+        padding-top: 3px;
+    .input__message--normal
+        color: $grey;
+    .input__message--success
+        color: $green;
+    .input__message--fail
+        color: $red;
+    .input__message--warning
+        color: $yellow;
+
+        

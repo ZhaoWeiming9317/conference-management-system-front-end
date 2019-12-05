@@ -1,55 +1,27 @@
-.login__swiper--cover
-    position: absolute;
-    width: 1000px;
-    height: 600px;
-    background-image: linear-gradient(225deg, #08eadd 0%, #2AF598 100%);
-.login__swiper--left
-    position: absolute;
-    width: 600px;
-    height: 600px;
-    background: #ffffff;
-    transition: width 1s;
-.login__swiper--right
-    position: absolute;
-    width: 0px;
-    height: 600px;
-    right: 0px;
-    background: #ffffff;
-    transition: width 1s;
-.login__mention
-    position: absolute;
-    width: 400px;
-    height: 600px;
-    color: #ffffff;
-    right: 0px; 
-    .login__mention--title
-        height: 100px;
-        line-height: 100px;
-        margin: 0 auto;
-        margin-top: 150px;
-        text-align: center;
-        font-size: 50px;
-    .login__mention--subtitle
-        height: 100px;
-        width: 220px;
-        line-height: 150%;
-        margin: 0 auto;
-        margin-top: 20px;
-        text-align: center;
-        font-size: 17px;
+$green: #379266;
+$width: 400px;
+$height: 480px;
 .login__box
     position: absolute;
-    width: 500px;
-    height: 600px;
-    right: 500px;
+    width: $width;
+    height: $height;
     .login__label
-        height: 100px;
-        line-height: 100px;
+        height: $height/6;
+        line-height: $height/6;
         margin: 0 auto;
-        margin-top: 100px;
+        margin-top: $height/7;
         text-align: center;
-        font-size: 50px;
+        font-size: $height/12;
     .login__form
         .login__item
             text-align: center;
-            margin: 20px auto;
+            .login__forget
+                color: $green;
+                cursor: pointer;
+        .login__item--input
+            margin: $height/30 auto;
+        .login__item--button
+            margin: $height/12 auto;
+            margin-bottom: 4px;
+        .login__item--forget
+            margin: 4px auto
