@@ -3,7 +3,8 @@ import * as actions from '../actions/index';
 
 const initialState = {
     loginView: true,
-    isLogin: false
+    isLogin: false,
+    nav: 1
 };
   
 const loginRegistReducer = handleActions({
@@ -29,6 +30,30 @@ const loginRegistReducer = handleActions({
         return {
             ...state,
             isLogin : false
+        }
+    },
+    [`${actions.gotoMeeting}`](state, action){
+        return {
+            ...state,
+            nav : 1
+        }
+    },
+    [`${actions.gotoUser}`](state, action){
+        return {
+            ...state,
+            nav : 2
+        }
+    },
+    [`${actions.gotoRoom}`](state, action){
+        return {
+            ...state,
+            nav : 3
+        }
+    },
+    [`${actions.gotoDevice}`](state, action){
+        return {
+            ...state,
+            nav : 4
         }
     }
 },

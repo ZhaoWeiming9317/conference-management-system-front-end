@@ -1,12 +1,11 @@
 import React from 'react'
-import './Home.sass'
+import './Status.sass'
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import { connect } from 'react-redux';
 import { CSSTransition } from 'react-transition-group'
-import Nav from '../Nav/Nav'
-import Status from '../Status/Status'
+import StatusUI from '../../UI/StatusUI/StatusUI'
   
-class Home extends React.Component {
+class Status extends React.Component {
     constructor(props) {
         super(props);
         console.log(props)
@@ -16,9 +15,8 @@ class Home extends React.Component {
     render() {    
         let { isLogin } = this.props
         return (
-            <div className="home__container">
-                <Nav></Nav>
-                <Status></Status>
+            <div className="status__container">
+                <StatusUI></StatusUI>
             </div>
         );
     }
@@ -29,5 +27,5 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(Home);
+export default connect(mapStateToProps)(Status);
   

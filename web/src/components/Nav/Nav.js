@@ -8,17 +8,27 @@ import User from '../User/User'
 import Meeting from '../Meeting/Meeting'
 import Room from '../Room/Room'
 import Device from '../Device/Device'
+import { gotoDevice, gotoMeeting, gotoRoom, gotoUser } from '../../actions/index'
 
 function Change(props) {
-    let isLogin = props.isLogin;
-    if (isLogin) {
-      return (
-          <Redirect to={{ pathname: '/home'}}/>
-      );
+    let nav = props.nav;
+    if (nav === 1) {
+        return (
+            <Redirect to={{ pathname: '/meeting'}}/>
+        );
+    }else if (nav === 2) {
+        return (
+            <Redirect to={{ pathname: '/user'}}/>
+        );
+    } else if (nav === 3) {
+        return (
+            <Redirect to={{ pathname: '/room'}}/>
+        );
+    } else if (nav === 4){
+        return (
+            <Redirect to={{ pathname: '/device'}}/>
+        );
     }
-    return (
-        <Redirect to={{ pathname: '/welcome'}}/>
-    );
 }
 
 class Nav extends React.Component {
@@ -30,14 +40,14 @@ class Nav extends React.Component {
     render() {    
         let { isLogin } = this.props
         return (
-            <div className="Nav__Container">
+            <div className="nav__Container">
                 <NavUI></NavUI>
                 <BrowserRouter>
                 <Switch>
                     <Route path="/user" component={User}></Route>
                     <Route path="/meeting" component={Meeting}></Route>
-                    <Route path="/Room" component={Room}></Route>
-                    <Route path="/Device" component={Device}></Route>
+                    <Route path="/room" component={Room}></Route>
+                    <Route path="/device" component={Device}></Route>
                 </Switch>
                 <Change isLogin={isLogin}></Change>
                 </BrowserRouter>
@@ -47,9 +57,9 @@ class Nav extends React.Component {
 }
 const mapStateToProps = (state) => {
     return {
-      isLogin: state.isLogin
+      nav: state.nav
     };
 };
 
-export default connect(mapStateToProps)(Nav);
+export default connect(mapStateToProps, { gotoDevice, gotoMeeting, gotoRoom, gotoUser })(Nav);
   

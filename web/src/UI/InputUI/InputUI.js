@@ -16,7 +16,6 @@ import './InputUI.sass'
 class InputUI extends React.Component {
     constructor(props) {
         super(props)
-        this.handleChange = this.handleChange.bind(this);
         // this.clearValue = this.clearValue.bind(this);
         this.state = {
             value: '',
@@ -44,7 +43,7 @@ class InputUI extends React.Component {
         return (
             <div className="input__box">
                 <div className={isFocus?"input__label--focus":"input__label"}>{label}</div>
-                <input className={`input input__${status}`} type={type} value={value} onChange={this.handleChange} onFocus={this.handleFocus} onBlur={this.handleBlur}/>
+                    <input className={`input input__${status}`} type={type} value={value} onChange={this.handleChange.bind(this)} onFocus={this.handleFocus} onBlur={this.handleBlur}/>
                 <div className={`input__message input__message--${status}`}>{message || ''}</div>
             </div>
         )

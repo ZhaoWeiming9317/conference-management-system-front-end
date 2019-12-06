@@ -21,7 +21,7 @@ class DropDownUI extends React.Component {
         let list = this.props.list
         for (let item of list){
             if(item.label === event.target.innerHTML){
-                this.props.getValue({value: event.target.value})
+                this.props.getValue({value: item.value})
                 this.setState(
                     {label: event.target.innerHTML}
                 )        
