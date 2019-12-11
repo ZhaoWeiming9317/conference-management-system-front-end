@@ -11,7 +11,7 @@ $lightGreen: #3bc481;
     background-color: $green;
     .nav--ui__icon
         width: $width;
-        height: $itemHeight * 3;
+        height: 90px;
     .nav--ui__items
         position: absolute;
         width: $width;
@@ -19,14 +19,17 @@ $lightGreen: #3bc481;
         margin-left: $marginLeft;
         .nav--ui__item
             text-align: center;
-            height: $itemHeight;
             width: $width - $marginLeft;
             line-height: $itemHeight;
-            color: white;
             cursor: pointer;
             font-size: $fontMain;
             padding: $paddingTop 0;
-            border-radius: ($itemHeight + $paddingTop * 2) /2 0 0 ($itemHeight + $paddingTop * 2) /2;
             &:hover
                 background-color: white;
                 color: $green;
+        .nav--ui__item--choose
+            background-color: white;
+            color: $green;
+        .nav--ui__item--not
+            background-color: $green;
+            color: white;

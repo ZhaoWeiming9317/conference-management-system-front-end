@@ -2,14 +2,27 @@ $green: #379266;
 $grey: #DEDEDE;
 $red: #c73b3b;
 $yellow: #f1dd24;
+$smallWidth: 130px;
 $width: 160px;
+$largeWidth: 320px;
 $height: 20px;
 $labelSize: 16px;
+.input__box--small
+    width: $smallWidth;
+    .input--small
+        width: $smallWidth;
+.input__box--middle
+    width: $width;
+    .input--middle
+        width: $width;
+.input__box--large
+    width: $largeWidth;
+    .input--large
+        width: $largeWidth;
 .input__box
     position: relative;
     display: block;
-    width: $width;
-    height: $height * 2;
+    height: auto;
     margin: 0 auto;     
     .input__label
         text-align: left;
@@ -18,8 +31,7 @@ $labelSize: 16px;
         transition: font-size 0.5s;
     .input
         position: relative;
-        width: $width;
-        height: $height;
+        height: $height + 5;
         border: 2px solid $grey; 
         border-radius: 7px;
         outline: none;

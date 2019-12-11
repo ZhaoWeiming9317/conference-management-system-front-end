@@ -2,26 +2,20 @@ import React from 'react'
 import './ButtonUI.sass'
 /** 
  *  下拉菜单UI，下面为props的值
- *  buttonStyle:string   按钮样式    hollow => 中空   fill => 填充
+ *  buttonStyle:string   按钮样式    hollow => 中空且透明   fill => 填充   hollow-fill => 中空不透明
  *  label:string   
+ *  size:string small middle large
  */
 class ButtonUI extends React.Component {
     componentDidMount() {
     }
     render() {
-        if (this.props.buttonStyle === 'hollow') {
-            return (
-                <div className="button button-hollow" onClick={this.props.onClick}>
-                    {this.props.label}
-                </div>
-            )
-        }else if(this.props.buttonStyle === 'fill'){
-            return (
-                <div className="button button-fill" onClick={this.props.onClick}>
-                    {this.props.label}
-                </div>
-            )
-        }    
+        const {label , buttonStyle, onClick, size = 'middle'} = this.props
+        return (
+            <div className={`button button-${buttonStyle} button-${size}`} onClick={onClick}>
+                {label}
+            </div>
+        )
     }  
 }
 

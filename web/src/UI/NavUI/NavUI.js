@@ -1,31 +1,40 @@
 import React from 'react'
 import './NavUI.sass'
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import { connect } from 'react-redux';
-import { CSSTransition } from 'react-transition-group'
 
 /**
+ * 
  * 导航栏ui
- *  list [{'label': '会议室管理', 'avater':'1'},{'label': '用户管理', 'avater':'2'},....]
+ *  list:array 必填 [{'label': '会议室管理', 'index':'1'},{'label': '用户管理', 'index':'2'},....]
+ *  init:int 非必填 默认为1
+ *  getIndex:function 必填 父组件通过这个回调函数获得index
+ * 
  */
 class NavUI extends React.Component {
     constructor(props) {
         super(props);
-        console.log(props)
+        this.handleChange = this.handleChange.bind(this)
+        this.state = {
+            index: props.init || 1
+        };
     }  
     componentDidMount() {
     };
+    handleChange = event => {
+        this.setState({
+            index: event.target.value
+        })
+        this.props.getIndex({value: event.target.value})
+    }
     render() {    
-        let { isLogin } = this.props
-        const list = [{'label': '会议室管理', 'avater':'1'},{'label': '用户管理', 'avater':'2'},
-        {'label': '会议管理', 'avater':'3'},{'label': '设备管理', 'avater':'4'}]
+        const { list } = this.props
         const NavList = list.map((listItem) =>
-            <li className="nav--ui__item">{listItem.label}</li>
+            <li className={`nav--ui__item ${ listItem.index === this.state.index ? 'nav--ui__item--choose' : 'nav--ui__item--not'}`} onClick={this.handleChange} value={listItem.index}>{listItem.label}</li>
         );
         return (
             <div className="nav--ui__container">
                 <div className="nav--ui__icon"></div>
-                <ul className='nav--ui__items'>{NavList}</ul>
+                <ul className="nav--ui__items">{NavList}</ul>
             </div>
         );
     }

@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import Welcome from './components/Welcome/Welcome'
 import Home from './components/Home/Home'
 import { BrowserRouter, Switch, Route, Redirect,withRouter } from "react-router-dom";
-// mport {connect} from 'react-redux'
 import './App.sass'
 
 function Change(props) {
@@ -38,10 +37,11 @@ class App extends React.Component {
 
 
 const mapStateToProps = (state) => {
+    console.log(state)
     return {
-        isLogin: state.isLogin
+        isLogin: state.userState.isLogin
     };
-  };
+};
   
   
 export default connect(mapStateToProps)(App);

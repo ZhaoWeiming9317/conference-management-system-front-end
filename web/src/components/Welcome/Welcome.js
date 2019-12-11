@@ -75,7 +75,7 @@ class Welcome extends React.Component {
 }
 const mapStateToProps = (state) => {
     return {
-      loginView: state.loginView
+      loginView: state.nav.loginView
     };
 };
 

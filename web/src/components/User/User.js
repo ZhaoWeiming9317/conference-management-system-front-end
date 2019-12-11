@@ -1,14 +1,11 @@
 import React from 'react'
 import './User.sass'
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import { connect } from 'react-redux';
-import { CSSTransition } from 'react-transition-group'
+import UserTable from '../UserTable/UserTable'
 
-  
 class User extends React.Component {
     constructor(props) {
         super(props);
-        console.log(props)
     }  
     componentDidMount() {
     };
@@ -16,13 +13,16 @@ class User extends React.Component {
         let { isLogin } = this.props
         return (
             <div className="user__container">
+                <div className="user__table">
+                    <UserTable> </UserTable>
+                </div>
             </div>
         );
     }
 }
 const mapStateToProps = (state) => {
     return {
-      isLogin: state.isLogin
+      isLogin: state.userState.isLogin
     };
 };
 

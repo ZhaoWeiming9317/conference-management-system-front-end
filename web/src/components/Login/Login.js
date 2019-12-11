@@ -1,6 +1,6 @@
 import React from 'react'
 import './Login.sass'
-import { userLogin } from '../../api/api'
+import { userLogin } from '../../api/apiUser'
 import InputUI from '../../UI/InputUI/InputUI'
 import DropDownUI from '../../UI/DropDownUI/DropDownUI'
 import ButtonUI from '../../UI/ButtonUI/ButtonUI'
@@ -11,9 +11,6 @@ import { loginDropDownList } from '../../constants/dropDownListConstants'
 class Login extends React.Component {
     constructor(props) {
       super(props);
-      this.handleChangeUser = this.handleChangeUser.bind(this);
-      this.handleChangePass = this.handleChangePass.bind(this);
-      this.handleChangeRole = this.handleChangeRole.bind(this);
       this.gotoRegist = this.gotoRegist.bind(this);
       this.submitLogin = this.submitLogin.bind(this);
       this.state = {
@@ -46,11 +43,11 @@ class Login extends React.Component {
     submitLogin = event => {
       const data = {username: this.state.username,password: this.state.password, role: this.state.role}
       userLogin(JSON.stringify(data)).then((res)=>{  
-        console.log(res)
           // 成功
           if (res.state == 1) {
             this.props.login();
           } else {
+            alert(res.message)
           }
         }
       )      
@@ -90,8 +87,8 @@ class Login extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    loginView: state.loginView,
-    isLogin: state.isLogin
+    loginView: state.nav.loginView,
+    isLogin: state.userState.isLogin
   };
 };
 

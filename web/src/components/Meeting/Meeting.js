@@ -21,7 +21,7 @@ class Meeting extends React.Component {
 }
 const mapStateToProps = (state) => {
     return {
-      isLogin: state.isLogin
+      isLogin: state.userState.isLogin
     };
 };
 

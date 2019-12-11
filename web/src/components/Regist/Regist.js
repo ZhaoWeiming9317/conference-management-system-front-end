@@ -1,57 +1,72 @@
 import React from 'react'
 import './Regist.sass'
-import {userRegist} from '../../api/api';
+import {userRegist, userShowInfo} from '../../api/apiUser';
 import InputUI from '../../UI/InputUI/InputUI'
 import DropDownUI from '../../UI/DropDownUI/DropDownUI'
 import ButtonUI from '../../UI/ButtonUI/ButtonUI'
 import { connect } from 'react-redux';
 import { gotoLogin } from '../../actions/index'
 import { loginDropDownList } from '../../constants/dropDownListConstants'
-
+/**
+ * 
+ *  注册界面， 由于和管理员添加或修改用户的功能很相似，因此增加Props来区分
+ *  type: regist  ===> 注册  add ===> 添加 modify ===> 修改  默认 regist
+ *  username:string
+ *  
+ *  下面是ref
+ *   reset:function 将state的值改为初始值
+ *   set(data:{用户信息}):function  将state的值改为data值
+ */
 class Regist extends React.Component {
     constructor(props) {
       super(props);
-      this.handleChangeUser = this.handleChangeUser.bind(this);
-      this.handleChangePass = this.handleChangePass.bind(this);
-      this.handleChangePassAgain = this.handleChangePassAgain.bind(this);
-      this.handleChangeName = this.handleChangeName.bind(this);
-      this.handleChangeSex = this.handleChangeSex.bind(this);
-      this.handleChangeEmail = this.handleChangeEmail.bind(this);
-      this.handleChangeOrganization = this.handleChangeOrganization.bind(this);
-      this.handleChangedepart = this.handleChangedepart.bind(this);
-      this.handleChangePhone = this.handleChangePhone.bind(this);
-      this.handleChangeRole = this.handleChangeRole.bind(this);
-      this.emailMention = this.emailMention.bind(this);
-      this.phoneMention = this.phoneMention.bind(this);
-      this.passwordAgainMention = this.passwordAgainMention.bind(this);
       this.submitRegist = this.submitRegist.bind(this);
       this.getLvl = this.getLvl.bind(this);
       this.pageChange = this.pageChange.bind(this);
-      this.state = {
-            username: '', 
-            password: '',
-            passwordAgain: '',
-            role: 2,
-            name: '',
-            sex: '',
-            email: '',
-            organization: '',
-            department: '',
-            phone: '',
-            usernameState: 'normal',
-            passwordState: 'normal',
-            passwordAgainState: 'normal',
-            emailState: 'normal',
-            phoneState: 'normal',
-            usernameMessage: '',
-            passwordMessage: '',
-            passwordAgainMessage: '',
-            emailMessage: '',
-            phoneMessage: '',
-            page: true // 1 第一页， 2 第二页
-        };
+      this.canRegist = this.canRegist.bind(this);
+      this.submitLabel = '注册'
+      this.init = {
+        username: '', 
+        password: '',
+        passwordAgain: '',
+        role: 2,
+        name: '',
+        gender: '',
+        email: '',
+        position: '',
+        organization: '',
+        department: '',
+        position: '',
+        phone: '',
+      }
+      if (props.type === 'add') {
+        this.submitLabel = '添加'
+      } else if(props.type === 'regist'){
+        this.submitLabel = '注册'
+      } else {
+        this.submitLabel = '更改'
+      }
+    this.state = {
+        ...this.init,
+        usernameState: 'normal',
+        passwordState: 'normal',
+        passwordAgainState: 'normal',
+        emailState: 'normal',
+        phoneState: 'normal',
+        usernameMessage: '',
+        passwordMessage: '',
+        passwordAgainMessage: '',
+        emailMessage: '',
+        phoneMessage: '',
+        page: 1, // 1 第一页， 2 第二页 ...
+        display: ''
+    };    
     };
-    componentDidMount() {
+    componentDidMount(){
+        console.log(this.props.username)
+        if (this.props.type === 'modify') {
+            userShowInfo({username:this.props.username}).then((res)=> this.setState(res))    
+        }
     }
     //给密码，判断相应级别
     getLvl(pwd) {
@@ -86,29 +101,29 @@ class Regist extends React.Component {
         if (password.length < 6) {
             this.setState({
                 passwordMessage: '密码太短了',
-                passwordState: 'fail'
+                passwordState: 'fail',
             })
         } else if (password.length > 30) {
             this.setState({
                 passwordMessage: '密码太长了',
-                passwordState: 'fail'
+                passwordState: 'fail',
             })
         } else {
             let lvl = this.getLvl(this.state.password)
             if ( lvl <= 1 && password.length < 10) {
                 this.setState({
                     passwordMessage: '密码强度弱',
-                    passwordState: 'fail'
+                    passwordState: 'fail',
                 })
             } else if (lvl <= 1 && (password.length >= 10 && password.length < 18)) {
                 this.setState({
                     passwordMessage: '密码强度中',
-                    passwordState: 'warning'
+                    passwordState: 'warning',
                 })
             } else if (lvl === 2 && password.length < 12) {
                 this.setState({
                     passwordMessage: '密码强度中',
-                    passwordState: 'warning'
+                    passwordState: 'warning',
                 })
             } else {
                 this.setState({
@@ -133,7 +148,6 @@ class Regist extends React.Component {
     };
     phoneMention(phone) {
         var pattern = /^1[3456789]\d{9}$/  //手机号码
-        var pattern2 = /^(\(\d{3,4}\)|\d{3,4}-|\s)?\d{7,14}$/  //固定电话
         if (!pattern.test(phone)) {
             this.setState({
                 phoneMessage: '电话不符合格式',
@@ -186,121 +200,217 @@ class Regist extends React.Component {
 
     handleChangeName = res => {
         this.setState({
-             name: res.name || '',
+             name: res.value || '',
         })
     }
 
-    handleChangeSex = res => {
-        console.log(res)
+    handleChangeGender = res => {
         this.setState({
-             sex: res.sex || '',
+             gender: res.value || '',
         })
     }
 
     handleChangeEmail = res => {
-        console.log(res)
         this.setState({
-             email: res.email || '',
+            email: res.value || '',
         })
-        this.emailMention(res.email);
+        this.emailMention(res.value);
     }
 
     handleChangeOrganization = res => {
         this.setState({
-             organization: res.organization || '',
+            organization: res.value || '',
         })
     }
 
-    handleChangedepart = res => {
+    handleChangeDepartment = res => {
         this.setState({
-             depart: res.department || '',
+            department: res.value || '',
         })
     }
+
+    handleChangePosition = res => {
+        this.setState({
+            position: res.value || ''
+        })
+    }
+
 
     handleChangePhone = res => {
-        console.log(res)
         this.setState({
-             phone: res.phone || '',
+             phone: res.value || '',
         })
-        this.phoneMention(res.phone);
+        this.phoneMention(res.value);
     }
 
     handleChangeRole = res => {
-        console.log(res)
         this.setState({
             role: res.value,
         });
     };
 
-    pageChange = event => {
-        this.setState({
-            page: !this.state.page,
-        });
+    pageChange = flag => {
+        return (e)=>{
+            const {username, password, passwordAgain, name, email, phone, organization, department, position, page} = this.state
+            let nowPage = flag === 'forward' ? page + 1 :  page - 1
+            // 由于react的内在机制，input的值会被清空，因此需要强制刷新
+            this.setState({
+                page: nowPage,
+            },()=>{
+                if (this.state.page === 1){
+                    this.refs.updateName.updateValue(name)
+                    this.refs.updateEmail.updateValue(email)
+                    this.refs.updatePhone.updateValue(phone)        
+                } else if (this.state.page === 2){
+                    this.refs.updateOrganization.updateValue(organization)
+                    this.refs.updateDepartment.updateValue(department)
+                    this.refs.updatePosition.updateValue(position)        
+                } else if (this.state.page === 3) {
+                    this.refs.updateUserName.updateValue(username)
+                    this.refs.updatePassword.updateValue(password)
+                    this.refs.updatePasswordAgain.updateValue(passwordAgain)        
+                }
+            });
+    
+        }
+    }
+
+    canRegist = event => {
+        const {username, password, passwordAgain, name} = this.state
+        if (username.length === 0) {
+            this.setState({
+                usernameMessage: '用户名不能为空',
+                usernameState: 'fail'
+            })
+            alert('用户名不能为空')
+            return false
+        }else if(password.length === 0) {
+            this.setState({
+                passwordMessage: '密码不能为空',
+                passwordState: 'fail'
+            })
+            alert('密码能为空')
+            return false
+        }else if(password !== passwordAgain){
+            alert('两次密码不一样')
+            return false
+        }else if(name.length === 0){
+            alert('姓名不能为空')
+            return false
+        } else {
+            alert('注册成功')
+            return true
+        }
     }
 
     submitRegist = event => {
-        const data = {username: this.state.username,password: this.state.password, role: this.state.role}
-        if (this.state.password === this.state.passwordAgain) {
+        const {username, password, passwordAgain, role, name, gender, email, organization, department, phone} = this.state
+        const data = {
+            username: username, 
+            password: password,
+            passwordAgain: passwordAgain,
+            role: role,
+            name: name,
+            gender: gender,
+            email: email,
+            organization: organization,
+            department: department,
+            phone: phone,
+        }
+        if (this.canRegist()) {
             userRegist(JSON.stringify(data)).then((res)=>{
-                console.log(res)
+                this.props.gotoLogin()
             })    
         };
     };
 
-    render() {      
-      return (
+    render() {
+        let fundamentalInfor = (
+            <div>
+                <div key='name' className = "regist__item regist__item--input">
+                    <InputUI getValue={this.handleChangeName} type='text' label='姓名' ref='updateName' ></InputUI>
+                </div>
+                <div key='gender' className = "regist__item regist__item--input">
+                    <DropDownUI getValue={this.handleChangeGender} list={[{value: '女',label: '女'},{value: '男',label: '男'}]} label='性别' ref='updateGender'></DropDownUI>
+                </div>
+                <div key='mail' className = "regist__item regist__item--input">
+                    <InputUI getValue={this.handleChangeEmail} type='text' label='邮箱' ref='updateEmail' status={this.state.emailState} message={this.state.emailMessage}></InputUI>
+                </div>
+                
+                <div key='phone' className = "regist__item regist__item--input">
+                    <InputUI getValue={this.handleChangePhone} type='text' label='电话' ref='updatePhone' status={this.state.phoneState} message={this.state.phoneMessage}></InputUI>
+                </div>
+                <div key='backward' className = "regist__item regist__item--button">
+                    <ButtonUI label="下一步" buttonStyle="fill" onClick={this.pageChange('forward')}></ButtonUI>
+                </div>
+            </div>
+        )
+      let postionInfor = (
+            <div>
+                <div key='organization' className = "regist__item regist__item--input">
+                    <InputUI getValue={this.handleChangeOrganization} type='text' label='组织' ref='updateOrganization' status={this.state.organizationState} ></InputUI>
+                </div>
+                <div key='department' className = "regist__item regist__item--input">
+                    <InputUI getValue={this.handleChangeDepartment} type='text' label='部门' ref='updateDepartment' status={this.state.departState} ></InputUI>
+                </div> 
+                <div key='position' className = "regist__item regist__item--input">
+                    <InputUI getValue={this.handleChangePosition} type='text' label='职位' ref='updatePosition' status={this.state.position} ></InputUI>
+                </div>
+                <div key='forward' className = "regist__item regist__item--button">
+                    <ButtonUI label="上一步" buttonStyle="fill" onClick={this.pageChange('backward')}></ButtonUI>
+                </div>
+                <div key='backward' className = "regist__item regist__item--button">
+                    <ButtonUI label="下一步" buttonStyle="fill" onClick={this.pageChange('forward')}></ButtonUI>
+                </div>
+            </div> 
+      )
+      let statusInfor = (
         <div>
-            <div className="regist__box">
-                <div className="regist__label">注 &nbsp;册</div>
-                <form className="regist__form" noValidate autoComplete="off">
-                {this.state.page ? 
-                    (<div>
-                        <div key='name' className = "regist__item regist__item--input">
-                            <InputUI getValue={this.handleChangeName} type='text' label='姓名' status={this.state.nameState} ></InputUI>
-                        </div>
-                        <div key='gender' className = "regist__item regist__item--input">
-                            <DropDownUI getValue={this.handleChangeSex} list={[{value: '女',label: '女'},{value: '男',label: '男'}]} label='性别'></DropDownUI>
-                        </div>
-                        <div key='mail' className = "regist__item regist__item--input">
-                            <InputUI getValue={this.handleChangeEmail} type='text' label='邮箱' status={this.state.emailState} status={this.state.emailState} message={this.state.emailMessage}></InputUI>
-                        </div>
-                        <div key='organization' className = "regist__item regist__item--input">
-                            <InputUI getValue={this.handleChangeOrganization} type='text' label='组织' status={this.state.organizationState} ></InputUI>
-                        </div>
-                        <div key='depart' className = "regist__item regist__item--input">
-                            <InputUI getValue={this.handleChangedepart} type='text' label='部门' status={this.state.departState} ></InputUI>
-                        </div>
-                        <div key='phone' className = "regist__item regist__item--input">
-                            <InputUI getValue={this.handleChangePhone} type='text' label='电话' status={this.state.phoneState} message={this.state.phoneMessage}></InputUI>
-                        </div>
-                        <div key='next' className = "regist__item regist__item--button">
-                            <ButtonUI label="下一步" buttonStyle="fill" onClick={this.pageChange}></ButtonUI>
-                        </div>
-                    </div>) 
-                        :
-                    (<div>
-                        <div key='username' className = "regist__item regist__item--input">
-                            <InputUI getValue={this.handleChangeUser} type='text' label='用户名' status={this.state.usernameState}></InputUI>
-                        </div>
-                        <div key='password' className = "regist__item regist__item--input">
-                            <InputUI getValue={this.handleChangePass} type='password' label='密码' status={this.state.passwordState} message={this.state.passwordMessage}></InputUI>
-                        </div>
-                        <div key='passwordAgain' className = "regist__item regist__item--input">
-                            <InputUI getValue={this.handleChangePassAgain} type='password' label='再次密码' status={this.state.passwordAgainState} message={this.state.passwordAgainMessage}></InputUI>
-                        </div>
-                        <div key='role' className = "regist__item regist__item--input">
-                            <DropDownUI getValue={this.handleChangeRole} list={loginDropDownList} label='权限'></DropDownUI>
-                        </div>
-                        <div key='forward' className = "regist__item regist__item--button">
-                            <ButtonUI label="上一步" buttonStyle="fill" onClick={this.pageChange}></ButtonUI>
-                        </div>
-                        <div key='regist' className = "regist__item regist__item--button">
-                            <ButtonUI label="注册" buttonStyle="fill" onClick={this.submitRegist}></ButtonUI>
-                        </div>
-                    </div>)}
-                </form>
-            </div>  
+            <div key='username' className = "regist__item regist__item--input">
+                <InputUI getValue={this.handleChangeUser} type='text' label='用户名' ref='updateUserName' status={this.state.usernameState}></InputUI>
+            </div>
+            <div key='password' className = "regist__item regist__item--input">
+                <InputUI getValue={this.handleChangePass} type='password' label='密码' ref='updatePassword' status={this.state.passwordState} message={this.state.passwordMessage}></InputUI>
+            </div>
+            <div key='passwordAgain' className = "regist__item regist__item--input">
+                <InputUI getValue={this.handleChangePassAgain} type='password' label='再次密码' ref='updatePasswordAgain' status={this.state.passwordAgainState} message={this.state.passwordAgainMessage}></InputUI>
+            </div>
+            <div key='role' className = "regist__item regist__item--input">
+                <DropDownUI getValue={this.handleChangeRole} list={loginDropDownList} label='权限'></DropDownUI>
+            </div>
+            <div key='forward' className = "regist__item regist__item--button">
+                <ButtonUI label="上一步" buttonStyle="fill" onClick={this.pageChange('backward')}></ButtonUI>
+            </div>
+            <div key='regist' className = "regist__item regist__item--button">
+                <ButtonUI label={this.submitLabel} buttonStyle="hollow-fill" onClick={this.submitRegist}></ButtonUI>
+            </div>
         </div>
+      )
+
+      let addDisplay, labelDisplay;      
+      const {type = 'regist'} = this.props
+      if (this.state.page === 1) {
+        addDisplay = fundamentalInfor
+      } else if (this.state.page === 2) {
+        addDisplay = postionInfor
+      } else {
+        addDisplay = statusInfor
+      }
+      // type: regist  ===> 注册  add ===> 添加 modify ===> 修改
+      if (type === 'regist') {
+        labelDisplay = ( <div className="regist__label">注 &nbsp;册</div>)
+      } else if (type === 'add') {
+        labelDisplay = ( <div className="regist__label">添加用户</div>)
+      } else if (type === 'modify') {
+        labelDisplay = ( <div className="regist__label">更改用户</div>)
+      }
+      return (
+        <div className={`regist__box regist__box--${type}`}>
+            {labelDisplay}
+            <form className="regist__form" noValidate autoComplete="off">
+                {addDisplay}
+            </form>
+        </div>  
       );
     }
 }

@@ -1,7 +1,6 @@
 import React from 'react'
 import './InputUI.sass'
 
-
 /** 
  * 
  *  输入框UI，下面为props的值
@@ -10,8 +9,10 @@ import './InputUI.sass'
  *  label:string   Input的label
  *  status:string  success => 成功  fail => 失败  warning => 警告 normal => 普通  默认普通
  *  message:string  提示符
+ *  size: small middle large
  *  下面为使用ref调用的方法
  *  clear: 将子组件的value清空
+ *  updateValue: 父组件强制刷新子组件的value
  */
 class InputUI extends React.Component {
     constructor(props) {
@@ -37,13 +38,16 @@ class InputUI extends React.Component {
     clear = event => {
         this.setState({value: ''})
     }
+    updateValue = (value) => {
+        this.setState({value: value})
+    }
     render() {
-        const { status, label, type, message } = this.props
+        const { status = 'normal', label, type, message, size = 'middle'} = this.props
         const { isFocus, value } = this.state
         return (
-            <div className="input__box">
+            <div className={`input__box input__box--${size}`}>
                 <div className={isFocus?"input__label--focus":"input__label"}>{label}</div>
-                    <input className={`input input__${status}`} type={type} value={value} onChange={this.handleChange.bind(this)} onFocus={this.handleFocus} onBlur={this.handleBlur}/>
+                    <input className={`input input__${status} input--${size}`} type={type} value={value} onChange={this.handleChange.bind(this)} onFocus={this.handleFocus} onBlur={this.handleBlur}/>
                 <div className={`input__message input__message--${status}`}>{message || ''}</div>
             </div>
         )

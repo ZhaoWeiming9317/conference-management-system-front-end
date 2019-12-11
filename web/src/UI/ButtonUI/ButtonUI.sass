@@ -1,16 +1,35 @@
+$green: #379266;
+$width: 140px;
+$smallWidth: 100px;
+$largeWidth: 180px;
 .button
-    width: 140px;
-    height: 30px;
-    line-height: 30px;
+    vertical-align: middle;
     border-radius: 15px;
     border: 2px solid white;
     margin: 0 auto;
     text-align: center;
-    font-size: 17px;
     cursor: pointer;
 .button-hollow
     border-radius: 15px;
     border: 2px solid white;
 .button-fill
-    background-color: #379266;
+    background-color: $green;
     color: #ffffff;
+.button-hollow-fill
+    background-color: #ffffff;
+    border: 2px solid $green;
+    color: $green;
+    height: 29px;
+    line-height: 26px !important;
+.button-small
+    width: $smallWidth;
+    line-height: 30px;
+    font-size: 15px;
+.button-middle
+    width: $width;
+    line-height: 30px;
+    font-size: 17px;
+.button-large
+    width: $largeWidth;
+    line-height: 30px;
+    font-size: 19px;
