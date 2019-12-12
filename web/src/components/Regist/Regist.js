@@ -12,10 +12,7 @@ import { loginDropDownList } from '../../constants/dropDownListConstants'
  *  注册界面， 由于和管理员添加或修改用户的功能很相似，因此增加Props来区分
  *  type: regist  ===> 注册  add ===> 添加 modify ===> 修改  默认 regist
  *  username:string
- *  
- *  下面是ref
- *   reset:function 将state的值改为初始值
- *   set(data:{用户信息}):function  将state的值改为data值
+ *
  */
 class Regist extends React.Component {
     constructor(props) {

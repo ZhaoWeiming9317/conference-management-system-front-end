@@ -1,9 +1,7 @@
 import React from 'react'
 import './Room.sass'
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import { connect } from 'react-redux';
-import { CSSTransition } from 'react-transition-group'
-
+import RoomTable from '../RoomTable/RoomTable'
   
 class Room extends React.Component {
     constructor(props) {
@@ -14,7 +12,10 @@ class Room extends React.Component {
     render() {    
         let { isLogin } = this.props
         return (
-            <div className="room__Container">
+            <div className="room__container">
+                <div className="room__table">
+                    <RoomTable></RoomTable>
+                </div>
             </div>
         );
     }

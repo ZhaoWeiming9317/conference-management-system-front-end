@@ -10,6 +10,7 @@ import './InputUI.sass'
  *  status:string  success => 成功  fail => 失败  warning => 警告 normal => 普通  默认普通
  *  message:string  提示符
  *  size: small middle large
+ *  name:string   输入的值的state名称，减少代码量
  *  下面为使用ref调用的方法
  *  clear: 将子组件的value清空
  *  updateValue: 父组件强制刷新子组件的value
@@ -27,7 +28,7 @@ class InputUI extends React.Component {
     }
     handleChange = event => {
         this.setState({value: event.target.value})
-        this.props.getValue({value: event.target.value})
+        this.props.getValue({value: event.target.value,name: this.props.name || ''})
     }
     handleFocus = event => {
         this.setState({isFocus: true})

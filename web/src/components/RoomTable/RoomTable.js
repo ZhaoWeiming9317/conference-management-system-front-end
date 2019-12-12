@@ -1,13 +1,13 @@
 import React from 'react'
-import './UserTable.sass'
+import './RoomTable.sass'
 import { connect } from 'react-redux';
 import { Table, Input, Button, Popconfirm, Form, Modal, Divider} from 'antd';
-import { userAdminSearchPage, userAdminSearch,userAdminDelete} from '../../api/apiUser'
+import { roomSearchPage, roomDelete,roomSearch} from '../../api/apiRoom'
 import InputUI from '../../UI/InputUI/InputUI'
 import ButtonUI from '../../UI/ButtonUI/ButtonUI'
 import Regist from '../../components/Regist/Regist'
 import {execListWithNull, execListWithKey} from '../../util/util'
-class UserTable extends React.Component {
+class RoomTable extends React.Component {
     constructor(props) {
       super(props);
       this.handleSearch = this.handleSearch.bind(this)
@@ -16,39 +16,39 @@ class UserTable extends React.Component {
       this.input = ''
       this.columns = [
         {
-          title: '用户名',
-          dataIndex: 'username',
+          title: '会议室名称',
+          dataIndex: 'room_name',
           width: '130px',
           ellipsis: true
         },
         {
-          title: '姓名',
-          dataIndex: 'name',
+          title: '会议室编号',
+          dataIndex: 'room_number',
           width: '130px',
           ellipsis: true
         },
         {
-          title: '性别',
-          dataIndex: 'gender',
+          title: '会议室容量',
+          dataIndex: 'room_volume',
           width: '80px',
           ellipsis: true
         },
         {
-          title: '权限',
-          dataIndex: 'role',
+            title: '城市',
+            dataIndex: 'city',
+            width: '120px',
+            ellipsis: true
+        },
+        {
+          title: '大厦',
+          dataIndex: 'building',
           width: '130px',
           ellipsis: true
         },
         {
-          title: '电话',
-          dataIndex: 'phone',
-          width: '150px',
-          ellipsis: true
-        },
-        {
-          title: '邮箱',
-          dataIndex: 'email',
-          width: '200px',
+          title: '楼层',
+          dataIndex: 'floor',
+          width: '120px',
           ellipsis: true
         },
         {
@@ -105,7 +105,7 @@ class UserTable extends React.Component {
         username: this.input,
         ...params
       }
-      userAdminSearch(data).then((res)=>{
+      roomSearchPage(data).then((res)=>{
         const pagination = { ...this.state.pagination };
         let list = res
         // pagination.total = res.total;
@@ -129,18 +129,18 @@ class UserTable extends React.Component {
         username: this.input,
         ...params
       }
-      userAdminSearchPage(data).then((res)=>{
+      roomSearchPage(data).then((res)=>{
         console.log(res)
         const pagination = { ...this.state.pagination };
-        let list = res.list
+        let list = res
         // pagination.total = res.total;
         pagination.total = 200
         pagination.current = 1
-        this.setState({
-          dataSource : execListWithKey(execListWithNull(list,'-'),'userId'),
-          tableLoading: false,
-          pagination
-        })
+        // this.setState({
+        //   dataSource : execListWithKey(execListWithNull(list,'-'),'userId'),
+        //   tableLoading: false,
+        //   pagination
+        // })
       })
     }
     
@@ -156,8 +156,8 @@ class UserTable extends React.Component {
     //------------添加 更改 用户----------------------
     handleDelete = key => {
       const dataSource = [...this.state.dataSource];
-      const username = dataSource.find(item => item.key === key).username
-      userAdminDelete({username}).then((res)=>{
+      const room_id = dataSource.find(item => item.key === key).room_id
+      roomDelete({room_id}).then((res)=>{
         console.log(res)
         if(res.state === 1){
           this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
@@ -257,7 +257,7 @@ class UserTable extends React.Component {
           />
           <Modal
             visible={modalAddVisible}
-            title="添加用户"
+            title="添加会议室"
             onOk={this.handleOk}
             onCancel={this.handleCancelAdd}
             footer={null}
@@ -267,7 +267,7 @@ class UserTable extends React.Component {
           </Modal>
           <Modal
             visible={modalModifyVisible}
-            title="修改用户"
+            title="修改会议室"
             onOk={this.handleOk}
             onCancel={this.handleCancelModify}
             footer={null}
@@ -285,4 +285,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(UserTable);
+export default connect(mapStateToProps)(RoomTable);
