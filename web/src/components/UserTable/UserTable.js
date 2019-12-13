@@ -1,7 +1,7 @@
 import React from 'react'
 import './UserTable.sass'
 import { connect } from 'react-redux';
-import { Table, Input, Button, Popconfirm, Form, Modal, Divider} from 'antd';
+import { Table, Popconfirm, Modal, Divider} from 'antd';
 import { userAdminSearchPage, userAdminSearch,userAdminDelete} from '../../api/apiUser'
 import InputUI from '../../UI/InputUI/InputUI'
 import ButtonUI from '../../UI/ButtonUI/ButtonUI'

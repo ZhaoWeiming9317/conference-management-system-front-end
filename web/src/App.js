@@ -1,9 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import Welcome from './components/Welcome/Welcome'
-import Home from './components/Home/Home'
 import { BrowserRouter, Switch, Route, Redirect,withRouter } from "react-router-dom";
 import './App.sass'
+import loadable from './util/loadable'
+const Home = loadable(()=>import('./components/Home/Home'))
+const Welcome = loadable(()=>import('./components/Welcome/Welcome'))
 
 function Change(props) {
     let isLogin = props.isLogin;

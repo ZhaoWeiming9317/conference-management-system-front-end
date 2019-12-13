@@ -8,7 +8,7 @@ $textpadding: 5px;
     position: relative;
     display: block;
     width: $width;
-    height: $height * 2;
+    height: auto;
     margin: 0 auto;  
     .drop_label
         text-align: left;
@@ -32,8 +32,8 @@ $textpadding: 5px;
     .drop_content 
         display: none;
         position: absolute;
+        width: $width;
         background-color: #f9f9f9;
-        width: $width + ($textpadding * 2);
         box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
         z-index: 1
         .drop_content_item

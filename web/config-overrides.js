@@ -22,7 +22,11 @@ const {
         strictMath: true,
         noIeCompat: true,
         javascriptEnabled: true,
-        modifyVars: { "@brand-primary": "#3BBE64", "@hd": "1px"}
+        modifyVars: {             
+        '@primary-color': '#379266',
+        '@link-color': '#ee5e7b',
+        '@btn-primary-bg': 'ee5e7b',
+      }
     }),
 
     // enable legacy decorators babel plugin
