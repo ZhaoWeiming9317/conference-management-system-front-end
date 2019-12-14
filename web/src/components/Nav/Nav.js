@@ -14,7 +14,6 @@ class Nav extends React.Component {
     componentDidMount() {
     };
     handleIndex = res => {
-        console.log(res)
         switch(res.value) {
             case 1:
                 this.props.gotoMeeting()
