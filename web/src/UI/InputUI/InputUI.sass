@@ -2,26 +2,13 @@ $green: #379266;
 $grey: #DEDEDE;
 $red: #c73b3b;
 $yellow: #f1dd24;
-$smallWidth: 130px;
 $width: 160px;
-$largeWidth: 320px;
 $height: 20px;
 $labelSize: 16px;
-.input__box--small
-    width: $smallWidth;
-    .input--small
-        width: $smallWidth;
-.input__box--middle
-    width: $width;
-    .input--middle
-        width: $width;
-.input__box--large
-    width: $largeWidth;
-    .input--large
-        width: $largeWidth;
 .input__box
     position: relative;
     display: block;
+    width: auto;
     height: auto;
     margin: 0 auto;     
     .input__label
@@ -31,10 +18,10 @@ $labelSize: 16px;
         transition: font-size 0.5s;
     .input
         position: relative;
+        width: auto;
         height: $height + 5;
         border: 2px solid $grey; 
         outline: none;
-        padding: 0 5px;
         font-size: $labelSize - 3px;
     .input__label--focus
         text-align: left;

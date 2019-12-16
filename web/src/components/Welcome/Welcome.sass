@@ -1,80 +1,30 @@
-$width: 800px;
+$width: 360px;
 $height: 480px;
 $widthMention: 320px;
 $title: 38px;
-.welcome__swiper--cover
-    position: absolute;
-    width: $width;
-    height: $height;
-    background-color: #379266;
-.welcome__swiper
-    position: absolute;
-    height: $height;
-    background: #ffffff;
-    transition: width 1s;
-.welcome__swiper--left
-    width: $height;
-    left: 0px;
-.welcome__swiper--right
-    width: 0px;
-    right: 0px;
-.welcome__mention
-    position: absolute;
-    width: $widthMention;
-    height: $height;
-    color: #ffffff;
-    right: 0px;  
-    .welcome__mention--title
-        height: $title * 2;
-        line-height: $title * 2;
-        margin: 0 auto;
-        margin-top: $title* 3;
-        text-align: center;
-        font-size: $title;
-    .welcome__mention--subtitle
-        height: $title * 2;
-        width: $title * 4;
-        line-height: 150%;
-        margin: 0 auto;
-        margin-top: 20px;
-        text-align: center;
-        font-size: $title / 3.5;
-.welcome__mention--regist-enter 
-  opacity: 0;
-.welcome__mention--regist-enter-active 
-  opacity: 1;
-  transition: opacity 1000ms;
-.welcome__mention--regist-exit 
-  opacity: 1;
-.welcome__mention--regist-exit-active 
-  opacity: 0;
-  transition: opacity 1000ms;
-.welcome__mention--login-enter 
-  opacity: 0;
-.welcome__mention--login-enter-active 
-  opacity: 1;
-  transition: opacity 1000ms;
-.welcome__mention--login-exit 
-  opacity: 1;
-.welcome__mention--login-exit-active 
-  opacity: 0;
-  transition: opacity 1000ms;
+.welcome__background
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+.welcome_title
+  position: relative;
+  width: 500px;
+  height: 300px;
+  left: 150px;
 .welcome__begin--container 
-    display: flex;
-    justify-content: center;
-    align-items: center;
     position: relative;
-    margin: 0 auto;
     width: $width;
-    height: $height;
-    top: 50%; 
-    margin-top: -$height / 2;
+    height: auto;
+    right: 50px;
     background-color: #f4f4f4;
     .welcome__begin--box
         position: relative;
         width: $width;
         height: $height;
         background-color: #ffffff;
-        border-radius:  $height/20;
         overflow: hidden;     
         box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);

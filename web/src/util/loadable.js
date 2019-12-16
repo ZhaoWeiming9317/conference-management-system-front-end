@@ -1,10 +1,15 @@
 import React from 'react';
 import Loadable from 'react-loadable';
+import './loadable.css'
 
 //通用的过场组件
 const loadingComponent =()=>{
     return (
-        <div>loading hahaha</div>
+        <div className="loading-wrapper">
+            <div class="loadingio-spinner-wedges-sddaz9d51yq"><div class="ldio-i0euq82ryyp">
+            <div><div><div></div></div><div><div></div></div><div><div></div></div><div><div></div></div></div>
+            </div></div>
+        </div>
     ) 
 }
 

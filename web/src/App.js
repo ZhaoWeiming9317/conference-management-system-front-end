@@ -26,10 +26,10 @@ class App extends React.Component {
         const { isLogin } = this.props
         return (
             <BrowserRouter>
-                <Switch>
-                    <Route path="/home" component={Home}></Route>
-                    <Route path="/welcome" component={Welcome}></Route>
-                </Switch>
+            <Switch>
+                <Route path="/home" component={Home}></Route>
+                <Route path="/welcome" component={Welcome}></Route>
+            </Switch>
             <Change isLogin={isLogin}></Change>
             </BrowserRouter>
         )  
