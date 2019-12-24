@@ -40,7 +40,7 @@ class Welcome extends React.Component {
     render() {    
         let { loginView ,gotoLogin,gotoRegist} = this.props
         return (
-            <div className="welcome__background" style={{background: "url("+require("../../asset/wave.svg")+")"}}>
+            <div className="welcome__background">
                 <div className="welcome_title">
                     {/* <ReactSVG src="title_animated.svg"/> */}
                     <object type="image/svg+xml" data="title_animated.svg"></object>

@@ -30,7 +30,7 @@ class RoomTable extends React.Component {
         {
           title: '会议室容量',
           dataIndex: 'room_volume',
-          width: '80px',
+          width: '130px',
           ellipsis: true
         },
         {
