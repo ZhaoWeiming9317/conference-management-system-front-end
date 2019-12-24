@@ -47,7 +47,7 @@ class InputUI extends React.Component {
         const { isFocus, value } = this.state
         return (
             <div className={`input__box input__box--${size}`}>
-                <div className={isFocus?"input__label--focus":"input__label"}>{label}</div>
+                <div className={isFocus?"input__label":"input__label"}>{label}</div>
                     <input className={`input input__${status} input--${size}`} type={type} value={value} onChange={this.handleChange.bind(this)} onFocus={this.handleFocus} onBlur={this.handleBlur}/>
                 <div className={`input__message input__message--${status}`}>{message || ''}</div>
             </div>

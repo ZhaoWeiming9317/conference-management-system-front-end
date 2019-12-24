@@ -2,6 +2,7 @@ $width: 360px;
 $height: 480px;
 $widthMention: 320px;
 $title: 38px;
+$green: #a2d895;
 .welcome__background
   display: flex;
   justify-content: space-between;
@@ -22,9 +23,17 @@ $title: 38px;
     right: 50px;
     background-color: #f4f4f4;
     .welcome__begin--box
-        position: relative;
-        width: $width;
-        height: $height;
-        background-color: #ffffff;
-        overflow: hidden;     
-        box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+      position: relative;
+      width: $width;
+      height: $height;
+      background-color: #ffffff;
+      overflow: hidden;     
+      box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+    .welcome__item
+      position: relative;
+      margin: 0 auto;
+      width: 160px;
+      text-align: center;
+    .welcome__item--switch
+      color: $green;
+      cursor: pointer;

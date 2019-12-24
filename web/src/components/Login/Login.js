@@ -72,11 +72,14 @@ class Login extends React.Component {
             <div className = "login__item login__item--input">
               <DropDownUI getValue={this.handleChangeRole} list={loginDropDownList} label='权限'></DropDownUI>
             </div>
+            <div className = "login__item login__item--forget">
+              <div className = "login__forget" onClick={this.gotoForget}> 忘记密码？请点击这里</div>
+            </div>
             <div className = "login__item login__item--button">
               <ButtonUI label="登录" buttonStyle="fill" onClick={this.submitLogin}></ButtonUI>
             </div>
             <div className = "login__item login__item--forget">
-              <div className = "login__forget" onClick={this.gotoForget}> 忘记密码？请点击这里</div>
+              <div className = "login__forget" onClick={this.gotoRegist}> 点击这里注册</div>
             </div>
           </form>
         </div> 

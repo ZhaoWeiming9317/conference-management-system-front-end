@@ -34,6 +34,9 @@ class Welcome extends React.Component {
             easing: 'easeInCubic'
         });
     };
+    gotoRegist = event => {
+        this.props.gotoRegist()
+    }
     render() {    
         let { loginView ,gotoLogin,gotoRegist} = this.props
         return (

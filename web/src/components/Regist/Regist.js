@@ -36,13 +36,6 @@ class Regist extends React.Component {
         position: '',
         phone: '',
       }
-      if (props.type === 'add') {
-        this.submitLabel = '添加'
-      } else if(props.type === 'regist'){
-        this.submitLabel = '注册'
-      } else {
-        this.submitLabel = '更改'
-      }
     this.state = {
         ...this.init,
         usernameState: 'normal',
@@ -300,6 +293,10 @@ class Regist extends React.Component {
         }
     }
 
+    gotoLogin = () => {
+        this.props.gotoLogin()
+    }
+
     submitRegist = event => {
         const {username, password, passwordAgain, role, name, gender, email, organization, department, phone} = this.state
         const data = {
@@ -333,7 +330,6 @@ class Regist extends React.Component {
                 <div key='mail' className = "regist__item regist__item--input">
                     <InputUI getValue={this.handleChangeEmail} type='text' label='邮箱' ref='updateEmail' status={this.state.emailState} message={this.state.emailMessage}></InputUI>
                 </div>
-                
                 <div key='phone' className = "regist__item regist__item--input">
                     <InputUI getValue={this.handleChangePhone} type='text' label='电话' ref='updatePhone' status={this.state.phoneState} message={this.state.phoneMessage}></InputUI>
                 </div>
@@ -382,33 +378,49 @@ class Regist extends React.Component {
                 <ButtonUI label={this.submitLabel} buttonStyle="hollow-fill" onClick={this.submitRegist}></ButtonUI>
             </div>
         </div>
-      )
+        )
+        const {type = 'regist'} = this.props
+        let loginLabel, addDisplay, labelDisplay;
+        
+        if (type === 'regist') {
+            loginLabel = (
+                <div className = "regist__item regist__item--forget">
+                    <div className = "regist__forget" onClick={this.gotoLogin}> 点击这里登录</div>
+                </div>
+            )
+        }
 
-      let addDisplay, labelDisplay;      
-      const {type = 'regist'} = this.props
-      if (this.state.page === 1) {
-        addDisplay = fundamentalInfor
-      } else if (this.state.page === 2) {
-        addDisplay = postionInfor
-      } else {
-        addDisplay = statusInfor
-      }
-      // type: regist  ===> 注册  add ===> 添加 modify ===> 修改
-      if (type === 'regist') {
-        labelDisplay = ( <div className="regist__label">注 &nbsp;册</div>)
-      } else if (type === 'add') {
-        labelDisplay = ( <div className="regist__label">添加用户</div>)
-      } else if (type === 'modify') {
-        labelDisplay = ( <div className="regist__label">更改用户</div>)
-      }
-      return (
-        <div className={`regist__box regist__box--${type}`}>
-            {labelDisplay}
-            <form className="regist__form" noValidate autoComplete="off">
-                {addDisplay}
-            </form>
-        </div>  
-      );
+        if (this.state.page === 1) {
+            addDisplay = fundamentalInfor
+        } else if (this.state.page === 2) {
+            addDisplay = postionInfor
+        } else {
+            addDisplay = statusInfor
+        }
+        // type: regist  ===> 注册  add ===> 添加 modify ===> 修改
+        if (type === 'regist') {
+            labelDisplay = ( <div className="regist__label">注 &nbsp;册</div>)
+        } else if (type === 'add') {
+            labelDisplay = ( <div className="regist__label">添加用户</div>)
+        } else if (type === 'modify') {
+            labelDisplay = ( <div className="regist__label">更改用户</div>)
+        }
+        if (type === 'add') {
+            this.submitLabel = '添加'
+        } else if(type === 'regist'){
+            this.submitLabel = '注册'
+        } else {
+            this.submitLabel = '更改'
+        }
+        return (
+            <div className={`regist__box regist__box--${type}`}>
+                {labelDisplay}
+                <form className="regist__form" noValidate autoComplete="off">
+                    {addDisplay}
+                    {loginLabel}
+                </form>
+            </div>  
+        );
     }
 }
 const mapStateToProps = (state) => {
