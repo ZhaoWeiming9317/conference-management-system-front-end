@@ -92,7 +92,7 @@ class UserTable extends React.Component {
   
     componentDidMount() {
       this.setState({tableLoading: true})
-      this.tableFirstFind({page: 1})
+      this.tableFind({page: 1})
     }
     // 刷新table
     tableFind(params = {}) {
@@ -107,35 +107,9 @@ class UserTable extends React.Component {
       }
       userAdminSearch(data).then((res)=>{
         const pagination = { ...this.state.pagination };
-        let list = res
-        // pagination.total = res.total;
-        pagination.current = params.page
-        this.setState({
-          dataSource : execListWithKey(execListWithNull(list,'-'),'userId'),
-          tableLoading: false,
-          pagination
-        })
-      })
-    }
-
-    // 等后端接口更新
-    tableFirstFind(params = {}) {
-      this.setState({
-        tableLoading: true,
-        page: params.page
-      });
-      let data = {
-        volume: this.volume,
-        username: this.input,
-        ...params
-      }
-      userAdminSearchPage(data).then((res)=>{
-        console.log(res)
-        const pagination = { ...this.state.pagination };
         let list = res.list
-        // pagination.total = res.total;
-        pagination.total = 200
-        pagination.current = 1
+        pagination.total = res.total;
+        pagination.current = params.page
         this.setState({
           dataSource : execListWithKey(execListWithNull(list,'-'),'userId'),
           tableLoading: false,

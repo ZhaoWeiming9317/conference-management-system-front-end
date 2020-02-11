@@ -34,10 +34,10 @@ class RoomTable extends React.Component {
           ellipsis: true
         },
         {
-            title: '城市',
-            dataIndex: 'city',
-            width: '120px',
-            ellipsis: true
+          title: '城市',
+          dataIndex: 'city',
+          width: '120px',
+          ellipsis: true
         },
         {
           title: '大厦',
@@ -117,7 +117,6 @@ class RoomTable extends React.Component {
         })
       })
     }
-
     // 等后端接口更新
     tableFirstFind(params = {}) {
       this.setState({
@@ -143,16 +142,13 @@ class RoomTable extends React.Component {
         // })
       })
     }
-    
     //---------上部搜索框查询-----------------------
     handleSearch = res => {
       this.input = res.value
     }
-    
     searchByUsername = () => {
       this.tableFind({page: 1})    
     };
-
     //------------添加 更改 用户----------------------
     handleDelete = key => {
       const dataSource = [...this.state.dataSource];
@@ -247,7 +243,7 @@ class RoomTable extends React.Component {
             </div>
           </div>
           <Table
-            tableLayout='fixed'
+            tableLayout='auto'
             rowClassName={() => 'editable-row'}
             dataSource={dataSource}
             columns={columns}
