@@ -10,6 +10,7 @@ class Status extends React.Component {
     componentDidMount() {
     };
     quit() {
+        localStorage.removeItem('cookie')
         this.props.logout()
     }
     render() {    
