@@ -53,13 +53,15 @@ class Regist extends React.Component {
     };    
     };
     componentDidMount(){
-        console.log(this.props.username)
+        console.log('ha',this.props.username)
         if (this.props.type === 'modify') {
             userShowInfo({username:this.props.username}).then((res)=>{ 
-                this.setState(res)
-                this.refs.updateName.updateValue(this.name)
-                this.refs.updateEmail.updateValue(this.email)
-                this.refs.updatePhone.updateValue(this.phone)        
+                this.setState({...res,
+                    passwordAgain:res.password})
+                this.refs.updateName.updateValue(res.name)
+                this.refs.updateEmail.updateValue(res.email)
+                this.refs.updateGender.updateValue(res.gender)
+                this.refs.updatePhone.updateValue(res.phone)        
             })    
         }
     }
@@ -293,7 +295,6 @@ class Regist extends React.Component {
             alert('姓名不能为空')
             return false
         } else {
-            alert('注册成功')
             return true
         }
     }
@@ -318,7 +319,12 @@ class Regist extends React.Component {
         }
         if (this.canRegist()) {
             userRegist(JSON.stringify(data)).then((res)=>{
-                this.props.gotoLogin()
+                if (res.state == 1) {                   
+                    this.props.gotoLogin()
+                    alert('注册成功')
+                } else {
+                    alert('注册失败')
+                }
             })    
         };
     };
