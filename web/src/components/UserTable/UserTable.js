@@ -221,13 +221,14 @@ class UserTable extends React.Component {
             </div>
           </div>
           <Table
-            tableLayout='fixed'
+            tableLayout='auto'
             rowClassName={() => 'editable-row'}
             dataSource={dataSource}
             columns={columns}
             loading={tableLoading}
             onChange={this.handleTableChange}
             pagination={this.state.pagination}
+            scroll={{ x: 1000 }}
           />
           <Modal
             visible={modalAddVisible}

@@ -17,19 +17,19 @@ class RoomTable extends React.Component {
       this.columns = [
         {
           title: '会议室名称',
-          dataIndex: 'room_name',
+          dataIndex: 'roomName',
           width: '130px',
           ellipsis: true
         },
         {
           title: '会议室编号',
-          dataIndex: 'room_number',
+          dataIndex: 'roomNumber',
           width: '130px',
           ellipsis: true
         },
         {
           title: '会议室容量',
-          dataIndex: 'room_volume',
+          dataIndex: 'roomVolume',
           width: '130px',
           ellipsis: true
         },
@@ -92,7 +92,7 @@ class RoomTable extends React.Component {
   
     componentDidMount() {
       this.setState({tableLoading: true})
-      this.tableFirstFind({page: 1})
+      this.tableFind({page: 1})
     }
     // 刷新table
     tableFind(params = {}) {
@@ -107,39 +107,14 @@ class RoomTable extends React.Component {
       }
       roomSearchPage(data).then((res)=>{
         const pagination = { ...this.state.pagination };
-        let list = res
-        // pagination.total = res.total;
+        let list = res.list
+        pagination.total = res.total;
         pagination.current = params.page
         this.setState({
           dataSource : execListWithKey(execListWithNull(list,'-'),'userId'),
           tableLoading: false,
           pagination
         })
-      })
-    }
-    // 等后端接口更新
-    tableFirstFind(params = {}) {
-      this.setState({
-        tableLoading: true,
-        page: params.page
-      });
-      let data = {
-        volume: this.volume,
-        username: this.input,
-        ...params
-      }
-      roomSearchPage(data).then((res)=>{
-        console.log(res)
-        const pagination = { ...this.state.pagination };
-        let list = res
-        // pagination.total = res.total;
-        pagination.total = 200
-        pagination.current = 1
-        // this.setState({
-        //   dataSource : execListWithKey(execListWithNull(list,'-'),'userId'),
-        //   tableLoading: false,
-        //   pagination
-        // })
       })
     }
     //---------上部搜索框查询-----------------------
@@ -149,6 +124,7 @@ class RoomTable extends React.Component {
     searchByUsername = () => {
       this.tableFind({page: 1})    
     };
+
     //------------添加 更改 用户----------------------
     handleDelete = key => {
       const dataSource = [...this.state.dataSource];
