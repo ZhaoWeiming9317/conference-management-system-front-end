@@ -6,7 +6,7 @@ import './loadable.css'
 const loadingComponent =()=>{
     return (
         <div className="loading-wrapper">
-            <div class="loadingio-spinner-wedges-sddaz9d51yq"><div class="ldio-i0euq82ryyp">
+            <div className="loadingio-spinner-wedges-sddaz9d51yq"><div className="ldio-i0euq82ryyp">
             <div><div><div></div></div><div><div></div></div><div><div></div></div><div><div></div></div></div>
             </div></div>
         </div>

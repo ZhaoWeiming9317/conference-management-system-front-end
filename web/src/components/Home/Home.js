@@ -1,5 +1,6 @@
 import React from 'react'
 import './Home.sass'
+import { userLoginVerification } from '../../api/apiUser'
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import { connect } from 'react-redux';
 import { CSSTransition } from 'react-transition-group'
@@ -9,12 +10,22 @@ import User from '../User/User'
 import Meeting from '../Meeting/Meeting'
 import Room from '../Room/Room'
 import Device from '../Device/Device'
+import { logout } from '../../actions/index'
 
 class Home extends React.Component {
     constructor(props) {
         super(props);
     }  
     componentDidMount() {
+        let cookie = localStorage.getItem('cookie') || 0
+        console.log(cookie)
+        const data = {cookie : cookie}    
+        userLoginVerification(JSON.stringify(data)).then((res) => {
+            if (res.state == 0) {
+                this.props.logout()
+                console.log(this.props.isLogin)
+            }
+        })    
     };
     render() {    
         let { nav } = this.props
@@ -38,8 +49,7 @@ class Home extends React.Component {
     }
 }
 function Change(props) {
-    console.log(props)
-    let nav = props.nav;
+    let nav = props.nav
     if (nav === 1) {
         return (
             <Redirect to={{ pathname: '/meeting'}}/>
@@ -56,7 +66,7 @@ function Change(props) {
         return (
             <Redirect to={{ pathname: '/device'}}/>
         );
-    }
+    }    
 }
 
 const mapStateToProps = (state) => {
@@ -66,5 +76,5 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(Home);
+export default connect(mapStateToProps , { logout })(Home);
   

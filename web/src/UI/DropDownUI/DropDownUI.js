@@ -28,6 +28,9 @@ class DropDownUI extends React.Component {
             }
         }
     }
+    updateValue = (value) => {
+        this.setState({value: value})
+    }
     render() {    
         const list = this.props.list;
         const listItems = list.map((listItem) =>

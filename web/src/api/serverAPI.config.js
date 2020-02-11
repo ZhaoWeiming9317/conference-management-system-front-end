@@ -13,6 +13,7 @@ const URL ={
     userAdminDelete: HISTORY + '/user/admin_delete',
     userModifyInfo: HISTORY + '/user/modify_info',
     userShowInfo: HISTORY + '/user/show_info',
+    userLoginVerification: HISTORY + '/user/login_verification',
 
     roomAdd: HISTORY + '/room/room_add',
     roomDelete: HISTORY + '/room/room_delete',

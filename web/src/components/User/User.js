@@ -1,13 +1,23 @@
 import React from 'react'
 import './User.sass'
+import { userLoginVerification } from '../../api/apiUser'
 import { connect } from 'react-redux';
 import UserTable from '../UserTable/UserTable'
+import { logout } from '../../actions/index'
 
 class User extends React.Component {
     constructor(props) {
         super(props);
     }  
     componentDidMount() {
+        let cookie = localStorage.getItem('cookie') || 0
+        console.log(cookie)
+        const data = {cookie : cookie}    
+        userLoginVerification(JSON.stringify(data)).then((res) => {
+            if (res.state == 0) {
+                this.props.logout()
+            }
+        })
     };
     render() {    
         let { isLogin } = this.props
@@ -26,5 +36,5 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(User);
+export default connect(mapStateToProps, {logout})(User);
   

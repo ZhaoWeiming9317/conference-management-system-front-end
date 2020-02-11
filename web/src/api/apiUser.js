@@ -86,3 +86,12 @@ export function userShowInfo(data){
         data: data || {}
     })
 }
+
+export function userLoginVerification(data) {
+    return server({
+        url: url.userLoginVerification,
+        method: 'post',
+        dataType: "json",
+        data: data || {}
+    })
+}

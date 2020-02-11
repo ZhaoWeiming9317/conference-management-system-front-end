@@ -1,13 +1,23 @@
 import React from 'react'
 import './Room.sass'
+import { userLoginVerification } from '../../api/apiUser'
 import { connect } from 'react-redux';
 import RoomTable from '../RoomTable/RoomTable'
-  
+import { logout } from '../../actions/index'
+
 class Room extends React.Component {
     constructor(props) {
         super(props);
     }  
     componentDidMount() {
+        let cookie = localStorage.getItem('cookie') || 0
+        console.log(cookie)
+        const data = {cookie : cookie}    
+        userLoginVerification(JSON.stringify(data)).then((res) => {
+            if (res.state == 0) {
+                this.props.logout()
+            }
+        })
     };
     render() {    
         let { isLogin } = this.props
@@ -26,5 +36,5 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(Room);
+    export default connect(mapStateToProps, {logout})(Room);
   

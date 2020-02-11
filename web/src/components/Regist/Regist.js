@@ -55,7 +55,12 @@ class Regist extends React.Component {
     componentDidMount(){
         console.log(this.props.username)
         if (this.props.type === 'modify') {
-            userShowInfo({username:this.props.username}).then((res)=> this.setState(res))    
+            userShowInfo({username:this.props.username}).then((res)=>{ 
+                this.setState(res)
+                this.refs.updateName.updateValue(this.name)
+                this.refs.updateEmail.updateValue(this.email)
+                this.refs.updatePhone.updateValue(this.phone)        
+            })    
         }
     }
     //给密码，判断相应级别
@@ -241,7 +246,7 @@ class Regist extends React.Component {
 
     pageChange = flag => {
         return (e)=>{
-            const {username, password, passwordAgain, name, email, phone, organization, department, position, page} = this.state
+            const {username, password, passwordAgain, name, email, phone, organization, department, position, page, gender} = this.state
             let nowPage = flag === 'forward' ? page + 1 :  page - 1
             // 由于react的内在机制，input的值会被清空，因此需要强制刷新
             this.setState({
@@ -250,8 +255,9 @@ class Regist extends React.Component {
                 if (this.state.page === 1){
                     this.refs.updateName.updateValue(name)
                     this.refs.updateEmail.updateValue(email)
+                    this.refs.updateGender.updateValue(gender)
                     this.refs.updatePhone.updateValue(phone)        
-                } else if (this.state.page === 2){
+                } else if (this.state.page === 2) {
                     this.refs.updateOrganization.updateValue(organization)
                     this.refs.updateDepartment.updateValue(department)
                     this.refs.updatePosition.updateValue(position)        
@@ -261,7 +267,6 @@ class Regist extends React.Component {
                     this.refs.updatePasswordAgain.updateValue(passwordAgain)        
                 }
             });
-    
         }
     }
 
@@ -369,7 +374,7 @@ class Regist extends React.Component {
                 <InputUI getValue={this.handleChangePassAgain} type='password' label='再次密码' ref='updatePasswordAgain' status={this.state.passwordAgainState} message={this.state.passwordAgainMessage}></InputUI>
             </div>
             <div key='role' className = "regist__item regist__item--input">
-                <DropDownUI getValue={this.handleChangeRole} list={loginDropDownList} label='权限'></DropDownUI>
+                <DropDownUI getValue={this.handleChangeRole} list={loginDropDownList} label='权限' ref='updateRole'></DropDownUI>
             </div>
             <div key='forward' className = "regist__item regist__item--button">
                 <ButtonUI label="上一步" buttonStyle="fill" onClick={this.pageChange('backward')}></ButtonUI>

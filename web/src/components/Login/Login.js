@@ -45,7 +45,8 @@ class Login extends React.Component {
       userLogin(JSON.stringify(data)).then((res)=>{  
           // 成功
           if (res.state == 1) {
-            this.props.login();
+            localStorage.setItem("cookie", res.set_cookie)
+            this.props.login()
           } else {
             alert(res.message)
           }
@@ -95,4 +96,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, {gotoRegist , login})(Login);
+export default connect(mapStateToProps, { gotoRegist , login })(Login);
