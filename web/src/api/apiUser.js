@@ -95,3 +95,12 @@ export function userLoginVerification(data) {
         data: data || {}
     })
 }
+
+export function userLoginExit(data) {
+    return server({
+        url: url.userLoginExit,
+        method: 'post',
+        dataType: "json",
+        data: data || {}
+    })
+}

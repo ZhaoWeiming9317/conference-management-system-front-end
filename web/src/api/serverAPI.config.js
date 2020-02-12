@@ -14,6 +14,7 @@ const URL ={
     userModifyInfo: HISTORY + '/user/modify_info',
     userShowInfo: HISTORY + '/user/show_info',
     userLoginVerification: HISTORY + '/user/login_verification',
+    userLoginExit: HISTORY + '/user/login_exit',
 
     roomAdd: HISTORY + '/room/room_add',
     roomDelete: HISTORY + '/room/room_delete',

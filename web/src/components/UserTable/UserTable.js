@@ -133,8 +133,9 @@ class UserTable extends React.Component {
       const username = dataSource.find(item => item.key === key).username
       userAdminDelete({username}).then((res)=>{
         console.log(res)
-        if(res.state === 1){
+        if(res.state == 1){
           this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
+          this.tableFind({page: this.state.page})
         }
       })
     };

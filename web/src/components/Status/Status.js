@@ -1,7 +1,10 @@
 import React from 'react'
 import './Status.sass'
 import { connect } from 'react-redux';
-import { logout } from '../../actions/index'
+import { logout } from '../../actions/index';
+import { userLoginExit } from '../../api/apiUser';
+
+
 class Status extends React.Component {
     constructor(props) {
         super(props);
@@ -10,8 +13,14 @@ class Status extends React.Component {
     componentDidMount() {
     };
     quit() {
-        localStorage.removeItem('cookie')
-        this.props.logout()
+        userLoginExit({token : localStorage.getItem('cookie')}).then((res) => {
+            if (res.state == 1) {
+                localStorage.removeItem('cookie')
+                this.props.logout()
+            }
+        }).catch(() => {
+            alert('退出失败')
+        })
     }
     render() {    
         let { isLogin } = this.props
