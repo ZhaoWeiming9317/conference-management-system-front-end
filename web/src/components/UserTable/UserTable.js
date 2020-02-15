@@ -1,8 +1,8 @@
 import React from 'react'
 import './UserTable.sass'
 import { connect } from 'react-redux';
-import { Table, Popconfirm, Modal, Divider} from 'antd';
-import { userAdminSearchPage, userAdminSearch,userAdminDelete} from '../../api/apiUser'
+import { Table, Popconfirm, Modal, Divider, List, Card} from 'antd';
+import { userAdminSearchCertain, userAdminSearch, userAdminDelete } from '../../api/apiUser'
 import InputUI from '../../UI/InputUI/InputUI'
 import ButtonUI from '../../UI/ButtonUI/ButtonUI'
 import Regist from '../../components/Regist/Regist'
@@ -15,6 +15,12 @@ class UserTable extends React.Component {
       this.volume = 10
       this.input = ''
       this.columns = [
+        {
+          title: '用户ID',
+          dataIndex: 'userId',
+          width: '100px',
+          ellipsis: true
+        },
         {
           title: '用户名',
           dataIndex: 'username',
@@ -67,7 +73,7 @@ class UserTable extends React.Component {
                   <a>删除</a>
               </Popconfirm>              
               <Divider type="vertical" />
-              <a>详细</a>
+              <a onClick={() => this.handleDetail(record.key)}>详细</a>
             </span>
           ):(
             <span>
@@ -85,8 +91,11 @@ class UserTable extends React.Component {
         modalLoading: false,
         modalAddVisible: false,
         modalModifyVisible: false,
+        modalDetailVisible: false,
         selectedRowKeys: [],
-        pagination: {}
+        pagination: {},
+        detail: [],
+        nowRowData:[]
       };
     }
   
@@ -110,8 +119,18 @@ class UserTable extends React.Component {
         let list = res.list
         pagination.total = res.total;
         pagination.current = params.page
+        let covertListWithRole = list.map((item)=>{
+          if (item.role === 0) {
+            item.role = '部门经理'
+          } else if (item.role === 1){
+            item.role = '系统管理员'
+          } else {
+            item.role = '普通员工'
+          }
+          return item
+        })
         this.setState({
-          dataSource : execListWithKey(execListWithNull(list,'-'),'userId'),
+          dataSource : execListWithKey(execListWithNull(covertListWithRole,'-'),'userId'),
           tableLoading: false,
           pagination
         })
@@ -147,26 +166,66 @@ class UserTable extends React.Component {
     };
 
     handleModify = key => {
-      console.log(key)
       const dataSource = [...this.state.dataSource];
-      const username = dataSource.find(item => item.key === key).username
-      this.setState({
-        username: username,
-      },()=>{
+      const userId = dataSource.find(item => item.key === key).userId
+      userAdminSearchCertain({user_id:userId}).then((res)=>{ 
         this.setState({
-          modalModifyVisible: true,
+          nowRowData:res
+        },()=>{
+          this.setState({
+            modalModifyVisible: true,
+          })
         })
-      });  
+      })
     };
 
+    handleDetail = key => {
+      const dataSource = [...this.state.dataSource];
+      const userId = dataSource.find(item => item.key === key).userId
+      userAdminSearchCertain({user_id:userId}).then((res)=>{ 
+        let data = []
+        for (let i in res) {
+          if (i === 'role') {
+            if (res[i] === 0) {
+              res[i] = '部门经理'
+            } else if (res[i] === 1){
+              res[i] = '系统管理员'
+            } else {
+              res[i] = '普通员工'
+            }
+          }
+          if (res[i] === "null") {
+            res[i] = '-'
+          }
+          let item = {
+            title:i,
+            content:res[i]
+          }
+          data.unshift(item)
+          console.log(data)
+        }
+        this.setState({
+          nowRowData:data
+        },()=>{
+          this.setState({
+            modalDetailVisible: true,
+          })
+        })
+      })
+    }
+
     handleCancelAdd = () => {
-      this.setState({ modalAddVisible: false, modalModifyVisible: false });
+      this.setState({ modalAddVisible: false, modalModifyVisible: false,modalDetailVisible: false });
       this.tableFind({page: 1})  
     };
 
     handleCancelModify = () => {
-      this.setState({ modalAddVisible: false, modalModifyVisible: false });
+      this.setState({ modalAddVisible: false, modalModifyVisible: false,modalDetailVisible: false });
       this.tableFind({page: this.state.page})  
+    };
+
+    handleCancelDetail = () => {
+      this.setState({ modalAddVisible: false, modalModifyVisible: false,modalDetailVisible: false });
     };
 
     onSelectChange = selectedRowKeys => {
@@ -188,7 +247,7 @@ class UserTable extends React.Component {
       this.tableFind(data)    
     };  
     render() {
-      const { dataSource,  selectedRowKeys, tableLoading, pagination, modalAddVisible,modalModifyVisible,  username} = this.state;
+      const { dataSource,  selectedRowKeys, tableLoading, pagination, modalAddVisible,modalModifyVisible,  modalDetailVisible, nowRowData} = this.state;
       const columns = this.columns.map(col => {
         if (!col.editable) {
           return col;
@@ -229,7 +288,7 @@ class UserTable extends React.Component {
             loading={tableLoading}
             onChange={this.handleTableChange}
             pagination={this.state.pagination}
-            scroll={{ x: 1000 }}
+            scroll={{ x: 1100 }}
           />
           <Modal
             visible={modalAddVisible}
@@ -249,7 +308,25 @@ class UserTable extends React.Component {
             footer={null}
             destroyOnClose
           >
-            <Regist type="modify" username={username}></Regist>
+            <Regist type="modify" data={nowRowData}></Regist>
+          </Modal>
+          <Modal
+            visible={modalDetailVisible}
+            title="详细信息"
+            onOk={this.handleOk}
+            onCancel={this.handleCancelDetail}
+            footer={null}
+            destroyOnClose
+          >
+            <List
+              grid={{ gutter: 16, column: 2}}
+              dataSource={nowRowData}
+              renderItem={item => (
+                <List.Item>
+                  <Card title={item.title}>{item.content}</Card>
+                </List.Item>
+              )}
+            />,
           </Modal>
         </div>
       );

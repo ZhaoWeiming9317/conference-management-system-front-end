@@ -1,6 +1,6 @@
 import React from 'react'
 import './Regist.sass'
-import { userRegist, userShowInfo } from '../../api/apiUser';
+import { userRegist, userAdminSearchCertain, userModifyInfo } from '../../api/apiUser';
 import InputUI from '../../UI/InputUI/InputUI'
 import DropDownUI from '../../UI/DropDownUI/DropDownUI'
 import ButtonUI from '../../UI/ButtonUI/ButtonUI'
@@ -11,7 +11,7 @@ import { loginDropDownList } from '../../constants/dropDownListConstants'
  * 
  *  注册界面， 由于和管理员添加或修改用户的功能很相似，因此增加Props来区分
  *  type: regist  ===> 注册  add ===> 添加 modify ===> 修改 默认 regist
- *  username:string
+ *  data:string //当前用户数据
  *
  */
 class Regist extends React.Component {
@@ -53,16 +53,15 @@ class Regist extends React.Component {
     };    
     };
     componentDidMount(){
-        console.log('ha',this.props.username)
+        console.log('ha',this.props.data)
+        let data = this.props.data
         if (this.props.type === 'modify') {
-            userShowInfo({username:this.props.username}).then((res)=>{ 
-                this.setState({...res,
-                    passwordAgain:res.password})
-                this.refs.updateName.updateValue(res.name)
-                this.refs.updateEmail.updateValue(res.email)
-                this.refs.updateGender.updateValue(res.gender)
-                this.refs.updatePhone.updateValue(res.phone)        
-            })    
+            this.setState({...data,
+                passwordAgain : data.password})
+            this.refs.updateName.updateValue(data.name)
+            this.refs.updateEmail.updateValue(data.email)
+            this.refs.updateGender.updateValue(data.gender)
+            this.refs.updatePhone.updateValue(data.phone)        
         }
     }
     //给密码，判断相应级别
@@ -304,7 +303,8 @@ class Regist extends React.Component {
     }
 
     submitRegist = event => {
-        const {username, password, passwordAgain, role, name, gender, email, organization, department, phone} = this.state
+        const { type } = this.props;
+        const {userId, username, password, passwordAgain, role, name, gender, email, organization, department, phone} = this.state
         const data = {
             username: username, 
             password: password,
@@ -316,16 +316,28 @@ class Regist extends React.Component {
             organization: organization,
             department: department,
             phone: phone,
+            user_id: userId
         }
         if (this.canRegist()) {
-            userRegist(JSON.stringify(data)).then((res)=>{
-                if (res.state == 1) {                   
-                    this.props.gotoLogin()
-                    alert('注册成功')
-                } else {
-                    alert('注册失败')
-                }
-            })    
+            if (type === 'regist' || type === 'add') {
+                userRegist(JSON.stringify(data)).then((res)=>{
+                    if (res.state == 1) {                   
+                        this.props.gotoLogin()
+                        alert('注册成功')
+                    } else {
+                        alert('注册失败')
+                    }
+                }) 
+            }else if (type === 'modify') {
+                userModifyInfo(JSON.stringify(data)).then((res)=>{
+                    if (res.state == 1) {                   
+                        this.props.gotoLogin()
+                        alert('修改成功')
+                    } else {
+                        alert('修改失败')
+                    }
+                })
+            }     
         };
     };
 
@@ -408,6 +420,7 @@ class Regist extends React.Component {
         } else {
             addDisplay = statusInfor
         }
+        
         // type: regist  ===> 注册  add ===> 添加 modify ===> 修改
         if (type === 'regist') {
             labelDisplay = ( <div className="regist__label">注 &nbsp;册</div>)

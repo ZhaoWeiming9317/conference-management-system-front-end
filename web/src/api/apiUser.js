@@ -87,6 +87,20 @@ export function userShowInfo(data){
     })
 }
 
+/**
+ * 获取用户信息
+ * @param {user_id: string} data  
+ */
+export function userAdminSearchCertain(data){
+    return server({
+        url: url.userAdminSearchCertain,
+        method: 'post',
+        dataType: "json",
+        data: data || {}
+    })
+}
+
+
 export function userLoginVerification(data) {
     return server({
         url: url.userLoginVerification,
