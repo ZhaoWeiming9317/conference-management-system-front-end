@@ -1,11 +1,11 @@
 import React from 'react'
 import './RoomTable.sass'
 import { connect } from 'react-redux';
-import { Table, Popconfirm, Modal, Divider} from 'antd';
-import { roomSearchPage, roomDelete,roomSearch} from '../../api/apiRoom'
+import { Table, Popconfirm, Modal, Divider, List, Card } from 'antd';
+import { roomSearchPage, roomDelete,roomSearch, roomDetail} from '../../api/apiRoom'
 import InputUI from '../../UI/InputUI/InputUI'
 import ButtonUI from '../../UI/ButtonUI/ButtonUI'
-import Regist from '../../components/Regist/Regist'
+import RoomAdd from '../../components/RoomAdd/RoomAdd'
 import {execListWithNull, execListWithKey} from '../../util/util'
 class RoomTable extends React.Component {
     constructor(props) {
@@ -15,6 +15,12 @@ class RoomTable extends React.Component {
       this.volume = 10
       this.input = ''
       this.columns = [
+        {
+          title: '会议室Id',
+          dataIndex: 'roomId',
+          width: '100px',
+          ellipsis: true
+        },
         {
           title: '会议室名称',
           dataIndex: 'roomName',
@@ -67,7 +73,7 @@ class RoomTable extends React.Component {
                   <a>删除</a>
               </Popconfirm>              
               <Divider type="vertical" />
-              <a>详细</a>
+              <a onClick={() => this.handleDetail(record.key)}>详细</a>
             </span>
           ):(
             <span>
@@ -86,7 +92,8 @@ class RoomTable extends React.Component {
         modalAddVisible: false,
         modalModifyVisible: false,
         selectedRowKeys: [],
-        pagination: {}
+        pagination: {},
+        nowRowData:[]
       };
     }
   
@@ -102,10 +109,10 @@ class RoomTable extends React.Component {
       });
       let data = {
         volume: this.volume,
-        username: this.input,
+        room_name: this.input,
         ...params
       }
-      roomSearchPage(data).then((res)=>{
+      roomSearch(data).then((res)=>{
         const pagination = { ...this.state.pagination };
         let list = res.list
         pagination.total = res.total;
@@ -128,13 +135,14 @@ class RoomTable extends React.Component {
     //------------添加 更改 用户----------------------
     handleDelete = key => {
       const dataSource = [...this.state.dataSource];
-      const room_id = dataSource.find(item => item.key === key).room_id
-      roomDelete({room_id}).then((res)=>{
+      const roomId = dataSource.find(item => item.key === key).roomId
+      roomDelete({ room_id : roomId}).then((res)=>{
         console.log(res)
         if(res.state === 1){
           this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
         }
       })
+      this.tableFind({page: this.state.page})
     };
   
     handleAdd = () => {
@@ -144,26 +152,56 @@ class RoomTable extends React.Component {
     };
 
     handleModify = key => {
-      console.log(key)
       const dataSource = [...this.state.dataSource];
-      const username = dataSource.find(item => item.key === key).username
-      this.setState({
-        username: username,
-      },()=>{
+      const roomId = dataSource.find(item => item.key === key).roomId
+      roomDetail({room_id : roomId}).then((res)=>{ 
         this.setState({
-          modalModifyVisible: true,
+          nowRowData:res
+        },()=>{
+          this.setState({
+            modalModifyVisible: true,
+          })
         })
-      });  
+      })  
     };
 
+    handleDetail = key => {
+      const dataSource = [...this.state.dataSource];
+      const roomId = dataSource.find(item => item.key === key).roomId
+      roomDetail({room_id:roomId}).then((res)=>{ 
+        let data = []
+        for (let i in res) {
+          if (res[i] === "null") {
+            res[i] = '-'
+          }
+          let item = {
+            title:i,
+            content:res[i]
+          }
+          data.unshift(item)
+        }
+        this.setState({
+          nowRowData:data
+        },()=>{
+          this.setState({
+            modalDetailVisible: true,
+          })
+        })
+      })
+    }
+
     handleCancelAdd = () => {
-      this.setState({ modalAddVisible: false, modalModifyVisible: false });
+      this.setState({ modalAddVisible: false, modalModifyVisible: false,modalDetailVisible: false });
       this.tableFind({page: 1})  
     };
 
     handleCancelModify = () => {
-      this.setState({ modalAddVisible: false, modalModifyVisible: false });
+      this.setState({ modalAddVisible: false, modalModifyVisible: false,modalDetailVisible: false });
       this.tableFind({page: this.state.page})  
+    };
+
+    handleCancelDetail = () => {
+      this.setState({ modalAddVisible: false, modalModifyVisible: false,modalDetailVisible: false });
     };
 
     onSelectChange = selectedRowKeys => {
@@ -185,7 +223,7 @@ class RoomTable extends React.Component {
       this.tableFind(data)    
     };  
     render() {
-      const { dataSource,  selectedRowKeys, tableLoading, pagination, modalAddVisible,modalModifyVisible,  username} = this.state;
+      const { dataSource,  selectedRowKeys, tableLoading, pagination, modalAddVisible,modalModifyVisible,  modalDetailVisible, nowRowData} = this.state;
       const columns = this.columns.map(col => {
         if (!col.editable) {
           return col;
@@ -226,6 +264,7 @@ class RoomTable extends React.Component {
             loading={tableLoading}
             onChange={this.handleTableChange}
             pagination={this.state.pagination}
+            scroll={{ x: 1100 }}
           />
           <Modal
             visible={modalAddVisible}
@@ -235,7 +274,7 @@ class RoomTable extends React.Component {
             footer={null}
             destroyOnClose
           >
-            <Regist type="add"></Regist>
+            <RoomAdd type="add"></RoomAdd>
           </Modal>
           <Modal
             visible={modalModifyVisible}
@@ -245,7 +284,25 @@ class RoomTable extends React.Component {
             footer={null}
             destroyOnClose
           >
-            <Regist type="modify" username={username}></Regist>
+            <RoomAdd type="modify" data={nowRowData}></RoomAdd>
+          </Modal>
+          <Modal
+            visible={modalDetailVisible}
+            title="详细信息"
+            onOk={this.handleOk}
+            onCancel={this.handleCancelDetail}
+            footer={null}
+            destroyOnClose
+          >
+            <List
+              grid={{ gutter: 16, column: 2}}
+              dataSource={nowRowData}
+              renderItem={item => (
+                <List.Item>
+                  <Card title={item.title}>{item.content}</Card>
+                </List.Item>
+              )}
+            />,
           </Modal>
         </div>
       );

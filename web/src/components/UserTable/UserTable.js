@@ -94,7 +94,6 @@ class UserTable extends React.Component {
         modalDetailVisible: false,
         selectedRowKeys: [],
         pagination: {},
-        detail: [],
         nowRowData:[]
       };
     }
@@ -202,7 +201,6 @@ class UserTable extends React.Component {
             content:res[i]
           }
           data.unshift(item)
-          console.log(data)
         }
         this.setState({
           nowRowData:data
