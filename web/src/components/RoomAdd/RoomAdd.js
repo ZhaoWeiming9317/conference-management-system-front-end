@@ -7,6 +7,8 @@ import ButtonUI from '../../UI/ButtonUI/ButtonUI'
 import { connect } from 'react-redux';
 import { gotoLogin } from '../../actions/index'
 import { loginDropDownList } from '../../constants/dropDownListConstants'
+import { message } from 'antd';
+
 /**
  * 
  *  会议室界面
@@ -157,17 +159,17 @@ class RoomAdd extends React.Component {
             if (type === 'add') {
                 roomAdd(JSON.stringify(data)).then((res)=>{
                     if (res.state == 1) {                   
-                        alert('添加成功')
+                        message.success('添加成功')
                     } else {
-                        alert('添加失败')
+                        message.error('添加失败')
                     }
                 })
             }else if (type === 'modify') {
                 roomModify(JSON.stringify(data)).then((res) => {
                     if (res.state == 1) {                   
-                        alert('修改成功')
+                        message.success('修改成功')
                     } else {
-                        alert('修改失败')
+                        message.error('修改失败')
                     }
                 })
             }    

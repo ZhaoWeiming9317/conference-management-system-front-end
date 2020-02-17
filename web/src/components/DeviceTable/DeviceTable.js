@@ -1,11 +1,11 @@
 import React from 'react'
-import './RoomTable.sass'
+import './DeviceTable.sass'
 import { connect } from 'react-redux';
 import { Table, Popconfirm, Modal, Divider, List, Card } from 'antd';
-import { roomSearchPage, roomDelete,roomSearch, roomDetail} from '../../api/apiRoom'
+import { deviceAdd, deviceDelete,deviceSearch, deviceDetail} from '../../api/apiDevice'
 import InputUI from '../../UI/InputUI/InputUI'
 import ButtonUI from '../../UI/ButtonUI/ButtonUI'
-import RoomAdd from '../../components/RoomAdd/RoomAdd'
+import DeviceAdd from '../../components/DeviceAdd/DeviceAdd'
 import {execListWithNull, execListWithKey} from '../../util/util'
 class RoomTable extends React.Component {
     constructor(props) {
@@ -16,46 +16,46 @@ class RoomTable extends React.Component {
       this.input = ''
       this.columns = [
         {
-          title: '会议室ID',
-          dataIndex: 'roomId',
+          title: '设备ID',
+          dataIndex: 'deviceId',
           width: '100px',
           ellipsis: true
         },
         {
-          title: '会议室名称',
-          dataIndex: 'roomName',
+          title: '设备名称',
+          dataIndex: 'deviceName',
           width: '130px',
           ellipsis: true
         },
         {
-          title: '会议室编号',
-          dataIndex: 'roomNumber',
+          title: '商标',
+          dataIndex: 'brand',
           width: '130px',
           ellipsis: true
         },
         {
-          title: '会议室容量',
-          dataIndex: 'roomVolume',
-          width: '130px',
-          ellipsis: true
-        },
-        {
-          title: '城市',
-          dataIndex: 'city',
+          title: '类型',
+          dataIndex: 'deviceType',
           width: '120px',
           ellipsis: true
         },
         {
-          title: '大厦',
-          dataIndex: 'building',
-          width: '130px',
+          title: '设备平均维修时间',
+          dataIndex: 'mttr',
+          width: '120px',
           ellipsis: true
         },
         {
-          title: '楼层',
-          dataIndex: 'floor',
-          width: '120px',
-          ellipsis: true
+            title: '设备平均故障间隔时间',
+            dataIndex: 'mtbf',
+            width: '120px',
+            ellipsis: true
+        },
+        {
+            title: '设备所在会议室名称',
+            dataIndex: 'roomName',
+            width: '120px',
+            ellipsis: true
         },
         {
           title: '操作',
@@ -93,7 +93,8 @@ class RoomTable extends React.Component {
         modalModifyVisible: false,
         selectedRowKeys: [],
         pagination: {},
-        nowRowData:[]
+        nowRowData:[],
+        roomData: []
       };
     }
   
@@ -109,21 +110,42 @@ class RoomTable extends React.Component {
       });
       let data = {
         volume: this.volume,
-        room_name: this.input,
+        device_name: this.input,
         ...params
       }
-      roomSearch(data).then((res)=>{
+      deviceSearch(data).then((res)=>{
         const pagination = { ...this.state.pagination };
         let list = res.list
         pagination.total = res.total;
         pagination.current = params.page
         this.setState({
-          dataSource : execListWithKey(execListWithNull(list,'-'),'roomId'),
+          dataSource : [...execListWithKey(execListWithNull(this.execListWithRoom(list),'-'),'deviceId')],
           tableLoading: false,
           pagination
         })
       })
     }
+
+    execListWithRoom(list){
+        let res = []
+        for (let i in list) {
+            let itemRes = {}
+            let item = list[i]
+            for (let element in item) {
+                if (element === 'room') {
+                    let roomList = item[element]
+                    for (let j in roomList) {
+                        itemRes[j] = roomList[j]
+                    }
+                } else {
+                    itemRes[element] = item[element]
+                }
+            }
+            res.push(itemRes)
+        }
+        return res
+    }
+
     //---------上部搜索框查询-----------------------
     handleSearch = res => {
       this.input = res.value
@@ -135,9 +157,8 @@ class RoomTable extends React.Component {
     //------------添加 更改 用户----------------------
     handleDelete = key => {
       const dataSource = [...this.state.dataSource];
-      const roomId = dataSource.find(item => item.key === key).roomId
-      roomDelete({ room_id : roomId}).then((res)=>{
-        console.log(res)
+      const deviceId = dataSource.find(item => item.key === key).deviceId
+      deviceDelete({ device_id : deviceId}).then((res)=>{
         if(res.state === 1){
           this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
         }
@@ -153,8 +174,8 @@ class RoomTable extends React.Component {
 
     handleModify = key => {
       const dataSource = [...this.state.dataSource];
-      const roomId = dataSource.find(item => item.key === key).roomId
-      roomDetail({room_id : roomId}).then((res)=>{ 
+      const deviceId = dataSource.find(item => item.key === key).deviceId
+      deviceDetail({device_id : deviceId}).then((res)=>{ 
         this.setState({
           nowRowData:res
         },()=>{
@@ -167,19 +188,34 @@ class RoomTable extends React.Component {
 
     handleDetail = key => {
       const dataSource = [...this.state.dataSource];
-      const roomId = dataSource.find(item => item.key === key).roomId
-      roomDetail({room_id:roomId}).then((res)=>{ 
+      const deviceId = dataSource.find(item => item.key === key).deviceId
+      deviceDetail({device_id:deviceId}).then((res)=>{ 
         let data = []
         for (let i in res) {
           if (res[i] === "null") {
             res[i] = '-'
           }
-          let item = {
-            title:i,
-            content:res[i]
+          if (i !== "room") {
+            let item = {
+                title:i,
+                content:res[i]
+            }
+            data.unshift(item)
+          } else {
+            let roomList = res[i]
+            for (let j in roomList) {
+                if (roomList[j] === "null") {
+                    roomList[j] = '-'
+                }
+                let item = {
+                    title:j,
+                    content:roomList[j]
+                }
+                data.unshift(item)
+            }
           }
-          data.unshift(item)
         }
+        console.log(res)
         this.setState({
           nowRowData:data
         },()=>{
@@ -245,14 +281,14 @@ class RoomTable extends React.Component {
       };  
       return (
         <div>
-          <div className="roomtable__wrapper--upper">
-            <div className="roomtable__search__bar">
+          <div className="devicetable__wrapper--upper">
+            <div className="devicetable__search__bar">
               <InputUI getValue={this.handleSearch} type='text' size='large'></InputUI>
             </div>
-            <div className="roomtable__search__button" >
+            <div className="devicetable__search__button" >
               <ButtonUI label="搜索" buttonStyle="fill" size="small" onClick={this.searchByUsername}></ButtonUI>
             </div>
-            <div className="roomtable__search__button" >
+            <div className="devicetable__search__button" >
               <ButtonUI label="添加" buttonStyle="hollow-fill" size="small" onClick={this.handleAdd}></ButtonUI>
             </div>
           </div>
@@ -264,31 +300,30 @@ class RoomTable extends React.Component {
             loading={tableLoading}
             onChange={this.handleTableChange}
             pagination={this.state.pagination}
-            scroll={{ x: 1100 }}
+            scroll={{ x: 1200 }}
           />
           <Modal
             visible={modalAddVisible}
-            title="添加会议室"
+            title="添加设备"
             onOk={this.handleOk}
             onCancel={this.handleCancelAdd}
             footer={null}
             destroyOnClose
           >
-            <RoomAdd type="add"></RoomAdd>
           </Modal>
           <Modal
             visible={modalModifyVisible}
-            title="修改会议室"
+            title="修改设备"
             onOk={this.handleOk}
             onCancel={this.handleCancelModify}
             footer={null}
             destroyOnClose
           >
-            <RoomAdd type="modify" data={nowRowData}></RoomAdd>
+            <DeviceAdd></DeviceAdd>
           </Modal>
           <Modal
             visible={modalDetailVisible}
-            title="详细信息"
+            title="设备详细信息"
             onOk={this.handleOk}
             onCancel={this.handleCancelDetail}
             footer={null}

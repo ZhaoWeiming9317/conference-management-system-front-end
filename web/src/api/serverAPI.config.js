@@ -28,7 +28,7 @@ const URL ={
     deviceDelete: HISTORY + '/device/device_delete',
     deviceModify: HISTORY + '/device/device_modify',
     deviceSearch: HISTORY + '/device/device_search',
-    deviceSearchPage: HISTORY + 'device/device_search_page',
-    deviceDetail: HISTORY + 'device/device_detail'
+    deviceSearchPage: HISTORY + '/device/device_search_page',
+    deviceDetail: HISTORY + '/device/device_detail'
 }
 export default URL

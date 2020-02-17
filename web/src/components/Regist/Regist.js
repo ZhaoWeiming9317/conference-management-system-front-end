@@ -7,6 +7,8 @@ import ButtonUI from '../../UI/ButtonUI/ButtonUI'
 import { connect } from 'react-redux';
 import { gotoLogin } from '../../actions/index'
 import { loginDropDownList } from '../../constants/dropDownListConstants'
+import { message } from 'antd';
+
 /**
  * 
  *  注册界面， 由于和管理员添加或修改用户的功能很相似，因此增加Props来区分
@@ -319,25 +321,32 @@ class Regist extends React.Component {
             user_id: userId
         }
         if (this.canRegist()) {
-            if (type === 'regist' || type === 'add') {
+            if (type === 'regist') {
                 userRegist(JSON.stringify(data)).then((res)=>{
                     if (res.state == 1) {                   
                         this.props.gotoLogin()
-                        alert('注册成功')
+                        message.success('注册成功')
                     } else {
-                        alert('注册失败')
+                        message.error('注册失败')
                     }
                 }) 
             }else if (type === 'modify') {
                 userModifyInfo(JSON.stringify(data)).then((res)=>{
                     if (res.state == 1) {                   
-                        this.props.gotoLogin()
-                        alert('修改成功')
+                        message.success('修改成功')
                     } else {
-                        alert('修改失败')
+                        message.error('修改失败')
                     }
                 })
-            }     
+            } else {
+                userRegist(JSON.stringify(data)).then((res)=>{
+                    if (res.state == 1) {                   
+                        message.success('添加成功')
+                    } else {
+                        message.error('添加成功')
+                    }
+                }) 
+            }
         };
     };
 

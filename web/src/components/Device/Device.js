@@ -1,9 +1,8 @@
 import React from 'react'
 import './Device.sass'
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+import { userLoginVerification } from '../../api/apiUser'
+import DeviceTable from '../DeviceTable/DeviceTable'
 import { connect } from 'react-redux';
-import { CSSTransition } from 'react-transition-group'
-import Nav from '../Nav/Nav'
 
   
 class Device extends React.Component {
@@ -12,11 +11,22 @@ class Device extends React.Component {
         console.log(props)
     }  
     componentDidMount() {
+        let cookie = localStorage.getItem('cookie') || 0
+        console.log(cookie)
+        const data = {cookie : cookie}    
+        userLoginVerification(JSON.stringify(data)).then((res) => {
+            if (res.state == 0) {
+                this.props.logout()
+            }
+        })
     };
     render() {    
         let { isLogin } = this.props
         return (
-            <div className="device__Container">
+            <div className="device__container">
+                <div className="device__table">
+                    <DeviceTable></DeviceTable>
+                </div>
             </div>
         );
     }
