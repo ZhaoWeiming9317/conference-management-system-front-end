@@ -1,7 +1,7 @@
 import React from 'react'
 import './RoomTable.sass'
 import { connect } from 'react-redux';
-import { Table, Popconfirm, Modal, Divider, List, Card } from 'antd';
+import { Table, Popconfirm, Modal, Divider, Descriptions } from 'antd';
 import { roomSearchPage, roomDelete,roomSearch, roomDetail} from '../../api/apiRoom'
 import InputUI from '../../UI/InputUI/InputUI'
 import ButtonUI from '../../UI/ButtonUI/ButtonUI'
@@ -168,26 +168,16 @@ class RoomTable extends React.Component {
     handleDetail = key => {
       const dataSource = [...this.state.dataSource];
       const roomId = dataSource.find(item => item.key === key).roomId
-      roomDetail({room_id:roomId}).then((res)=>{ 
-        let data = []
-        for (let i in res) {
-          if (res[i] === "null") {
-            res[i] = '-'
-          }
-          let item = {
-            title:i,
-            content:res[i]
-          }
-          data.unshift(item)
-        }
+      roomDetail({room_id : roomId}).then((res)=>{ 
+        console.log(res)
         this.setState({
-          nowRowData:data
+          nowRowData:res
         },()=>{
           this.setState({
             modalDetailVisible: true,
           })
         })
-      })
+      }) 
     }
 
     handleCancelAdd = () => {
@@ -292,17 +282,24 @@ class RoomTable extends React.Component {
             onOk={this.handleOk}
             onCancel={this.handleCancelDetail}
             footer={null}
+            width={850}
             destroyOnClose
           >
-            <List
-              grid={{ gutter: 16, column: 2}}
-              dataSource={nowRowData}
-              renderItem={item => (
-                <List.Item>
-                  <Card title={item.title}>{item.content}</Card>
-                </List.Item>
-              )}
-            />,
+            <Descriptions title="会议室信息" bordered >
+              <Descriptions.Item label="会议室名称">{nowRowData.roomName}</Descriptions.Item>
+              <Descriptions.Item label="会议室编号">{nowRowData.roomNumber}</Descriptions.Item>
+              <Descriptions.Item label="会议室ID">{nowRowData.roomId}</Descriptions.Item>
+              <Descriptions.Item label="会议室容量">{nowRowData.roomVolume}</Descriptions.Item>
+              <Descriptions.Item label="国家" >{nowRowData.country}</Descriptions.Item>
+              <Descriptions.Item label="省份/自治区"> {nowRowData.province}</Descriptions.Item>
+              <Descriptions.Item label="城市"> {nowRowData.city}</Descriptions.Item>
+              <Descriptions.Item label="街区">{nowRowData.block}</Descriptions.Item>
+              <Descriptions.Item label="大厦">{nowRowData.building}</Descriptions.Item>
+              <Descriptions.Item label="楼层">{nowRowData.floor}</Descriptions.Item>
+              <Descriptions.Item label="备注" span={3}>{nowRowData.mark}</Descriptions.Item>
+              <Descriptions.Item label="创建时间" span={3}>{nowRowData.createTime}</Descriptions.Item>
+              <Descriptions.Item label="修改时间" span={3}>{nowRowData.modifyTime}</Descriptions.Item>
+            </Descriptions>
           </Modal>
         </div>
       );

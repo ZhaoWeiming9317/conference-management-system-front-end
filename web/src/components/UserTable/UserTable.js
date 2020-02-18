@@ -1,7 +1,7 @@
 import React from 'react'
 import './UserTable.sass'
 import { connect } from 'react-redux';
-import { Table, Popconfirm, Modal, Divider, List, Card} from 'antd';
+import { Table, Popconfirm, Modal, Divider, Descriptions} from 'antd';
 import { userAdminSearchCertain, userAdminSearch, userAdminDelete } from '../../api/apiUser'
 import InputUI from '../../UI/InputUI/InputUI'
 import ButtonUI from '../../UI/ButtonUI/ButtonUI'
@@ -182,28 +182,9 @@ class UserTable extends React.Component {
       const dataSource = [...this.state.dataSource];
       const userId = dataSource.find(item => item.key === key).userId
       userAdminSearchCertain({user_id:userId}).then((res)=>{ 
-        let data = []
-        for (let i in res) {
-          if (i === 'role') {
-            if (res[i] === 0) {
-              res[i] = '部门经理'
-            } else if (res[i] === 1){
-              res[i] = '系统管理员'
-            } else {
-              res[i] = '普通员工'
-            }
-          }
-          if (res[i] === "null") {
-            res[i] = '-'
-          }
-          let item = {
-            title:i,
-            content:res[i]
-          }
-          data.unshift(item)
-        }
+        console.log(res)
         this.setState({
-          nowRowData:data
+          nowRowData:res
         },()=>{
           this.setState({
             modalDetailVisible: true,
@@ -314,17 +295,23 @@ class UserTable extends React.Component {
             onOk={this.handleOk}
             onCancel={this.handleCancelDetail}
             footer={null}
+            width={850}
             destroyOnClose
           >
-            <List
-              grid={{ gutter: 16, column: 2}}
-              dataSource={nowRowData}
-              renderItem={item => (
-                <List.Item>
-                  <Card title={item.title}>{item.content}</Card>
-                </List.Item>
-              )}
-            />,
+            <Descriptions title="用户信息" bordered >
+              <Descriptions.Item label="用户ID">{nowRowData.userId}</Descriptions.Item>
+              <Descriptions.Item label="用户名">{nowRowData.username}</Descriptions.Item>
+              <Descriptions.Item label="密码">{nowRowData.password}</Descriptions.Item>
+              <Descriptions.Item label="性别">{nowRowData.gender}</Descriptions.Item>
+              <Descriptions.Item label="权限" >{nowRowData.role}</Descriptions.Item>
+              <Descriptions.Item label="部门"> {nowRowData.department}</Descriptions.Item>
+              <Descriptions.Item label="组织"> {nowRowData.organization}</Descriptions.Item>
+              <Descriptions.Item label="职位"> {nowRowData.position}</Descriptions.Item>
+              <Descriptions.Item label="电话" span={2}>{nowRowData.phone}</Descriptions.Item>
+              <Descriptions.Item label="邮箱" span={2}>{nowRowData.email}</Descriptions.Item>
+              <Descriptions.Item label="创建时间" span={3}>{nowRowData.createTime}</Descriptions.Item>
+              <Descriptions.Item label="修改时间" span={3}>{nowRowData.modifyTime}</Descriptions.Item>
+            </Descriptions>
           </Modal>
         </div>
       );

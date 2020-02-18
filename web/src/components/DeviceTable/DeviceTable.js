@@ -1,7 +1,7 @@
 import React from 'react'
 import './DeviceTable.sass'
 import { connect } from 'react-redux';
-import { Table, Popconfirm, Modal, Divider, List, Card } from 'antd';
+import { Table, Popconfirm, Modal, Divider, List, Card, Descriptions} from 'antd';
 import { deviceAdd, deviceDelete,deviceSearch, deviceDetail} from '../../api/apiDevice'
 import InputUI from '../../UI/InputUI/InputUI'
 import ButtonUI from '../../UI/ButtonUI/ButtonUI'
@@ -34,7 +34,7 @@ class RoomTable extends React.Component {
           ellipsis: true
         },
         {
-          title: '类型',
+          title: '设备型号',
           dataIndex: 'deviceType',
           width: '120px',
           ellipsis: true
@@ -189,41 +189,19 @@ class RoomTable extends React.Component {
     handleDetail = key => {
       const dataSource = [...this.state.dataSource];
       const deviceId = dataSource.find(item => item.key === key).deviceId
-      deviceDetail({device_id:deviceId}).then((res)=>{ 
-        let data = []
-        for (let i in res) {
-          if (res[i] === "null") {
-            res[i] = '-'
-          }
-          if (i !== "room") {
-            let item = {
-                title:i,
-                content:res[i]
-            }
-            data.unshift(item)
-          } else {
-            let roomList = res[i]
-            for (let j in roomList) {
-                if (roomList[j] === "null") {
-                    roomList[j] = '-'
-                }
-                let item = {
-                    title:j,
-                    content:roomList[j]
-                }
-                data.unshift(item)
-            }
-          }
-        }
-        console.log(res)
+      deviceDetail({device_id : deviceId}).then((res)=>{ 
+        res = {...res,
+        roomName: res.room.roomName,
+        roomId: res.room.roomId}
         this.setState({
-          nowRowData:data
+          nowRowData:res
         },()=>{
+          console.log(this.state.nowRowData)
           this.setState({
             modalDetailVisible: true,
           })
         })
-      })
+      }) 
     }
 
     handleCancelAdd = () => {
@@ -310,6 +288,7 @@ class RoomTable extends React.Component {
             footer={null}
             destroyOnClose
           >
+            <DeviceAdd type="add" data={this.state.nowRowData}></DeviceAdd>
           </Modal>
           <Modal
             visible={modalModifyVisible}
@@ -319,7 +298,7 @@ class RoomTable extends React.Component {
             footer={null}
             destroyOnClose
           >
-            <DeviceAdd></DeviceAdd>
+            <DeviceAdd type="modify" data={this.state.nowRowData}></DeviceAdd>
           </Modal>
           <Modal
             visible={modalDetailVisible}
@@ -328,16 +307,20 @@ class RoomTable extends React.Component {
             onCancel={this.handleCancelDetail}
             footer={null}
             destroyOnClose
+            width= {850}
           >
-            <List
-              grid={{ gutter: 16, column: 2}}
-              dataSource={nowRowData}
-              renderItem={item => (
-                <List.Item>
-                  <Card title={item.title}>{item.content}</Card>
-                </List.Item>
-              )}
-            />,
+              <Descriptions title="设备信息" bordered >
+                <Descriptions.Item label="设备名称">{nowRowData.deviceName}</Descriptions.Item>
+                <Descriptions.Item label="设备ID">{nowRowData.deviceId}</Descriptions.Item>
+                <Descriptions.Item label="设备型号">{nowRowData.deviceType}</Descriptions.Item>
+                <Descriptions.Item label="商标">{nowRowData.brand}</Descriptions.Item>
+                <Descriptions.Item label="设备平均维修时间" span={2}>
+                  {nowRowData.mttr}
+                </Descriptions.Item>
+                <Descriptions.Item label="设备平均故障间隔时间" span={2}> {nowRowData.mtbf}</Descriptions.Item>
+                <Descriptions.Item label="设备所在会议室ID"> {nowRowData.roomId}</Descriptions.Item>
+                <Descriptions.Item label="设备所在会议室名称">{nowRowData.roomName}</Descriptions.Item>
+              </Descriptions>
           </Modal>
         </div>
       );
