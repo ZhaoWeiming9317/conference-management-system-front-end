@@ -9,10 +9,11 @@ class DeviceApp extends React.Component {
     this.state = {
       device_name : '',
       brand:'',
-      device_type:'',
+      type:'',
       mttr:'',
       mtbf:'',
-      room_name:''
+      room_id:'',
+      repair_time:''
     }
   }
   componentWillMount() {
@@ -21,9 +22,8 @@ class DeviceApp extends React.Component {
         console.log(data)
         this.setState({...data,
         device_name: data.deviceName,
-        room_name:data.room.roomName,
         room_id: data.room.roomId,
-        device_type:data.deviceType})
+        type:data.deviceType})
     }
   }
   handleSubmit = e => {
@@ -31,6 +31,7 @@ class DeviceApp extends React.Component {
     let deviceInfo = this.props.form.getFieldsValue();
     this.props.form.validateFields((err, values) => {
       if (!err) {
+        console.log(deviceInfo)
         if(this.props.type === 'add') {
           deviceAdd(JSON.stringify(deviceInfo)).then((res)=>{
             if (res.state == 1) {
@@ -61,8 +62,8 @@ class DeviceApp extends React.Component {
     return (
       <Form labelCol={{ span: 8 , offset: 2}} wrapperCol={{ span: 12 }} labelAlign='left' onSubmit={this.handleSubmit}>
         <Form.Item label="设备名称">
-          {getFieldDecorator('deviceName', {
-            initialValue: this.state.deviceName, 
+          {getFieldDecorator('device_name', {
+            initialValue: this.state.device_name, 
             rules: [{ required: true, message: '请输入设备名称' }],
           })(<Input autoComplete="new-password"/>)}
         </Form.Item>
@@ -73,9 +74,15 @@ class DeviceApp extends React.Component {
           })(<Input autoComplete="new-password"/>)}
         </Form.Item>
         <Form.Item label="设备型号">
-          {getFieldDecorator('device_type', {
-            initialValue: this.state.device_type,
+          {getFieldDecorator('type', {
+            initialValue: this.state.type,
             rules: [{ required: true, message: '请输入设备型号' }],
+          })(<Input autoComplete="new-password"/>)}
+        </Form.Item>
+        <Form.Item label="维修次数">
+          {getFieldDecorator('repair_time', {
+            initialValue: this.state.repair_time,
+            rules: [{ required: true, message: '请输入维修次数' }],
           })(<Input autoComplete="new-password"/>)}
         </Form.Item>
         <Form.Item label="设备平均维修时间">
@@ -90,10 +97,10 @@ class DeviceApp extends React.Component {
             rules: [{ required: true, message: '请输入设备平均故障间隔时间' }],
           })(<Input autoComplete="new-password"/>)}
         </Form.Item>
-        <Form.Item label="设备所在会议室名称">
-          {getFieldDecorator('room_name', {
-            initialValue: this.state.room_name,
-            rules: [{ required: true, message: '请输入设备所在会议室名称' }],
+        <Form.Item label="设备所在会议室ID">
+          {getFieldDecorator('room_id', {
+            initialValue: this.state.room_id,
+            rules: [{ required: true, message: '请输入设备所在会议室ID' }],
           })(<Input autoComplete="new-password"/>)}
         </Form.Item>
         <Form.Item wrapperCol={{ span: 12, offset: 10 }}>
