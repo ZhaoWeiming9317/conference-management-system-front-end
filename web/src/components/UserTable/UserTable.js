@@ -1,7 +1,7 @@
 import React from 'react'
 import './UserTable.sass'
 import { connect } from 'react-redux';
-import { Table, Popconfirm, Modal, Divider, Descriptions} from 'antd';
+import { Table, Popconfirm, Modal, Divider, Row, Col, Descriptions, Input,Button, Card } from 'antd';
 import { userAdminSearchCertain, userAdminSearch, userAdminDelete } from '../../api/apiUser'
 import InputUI from '../../UI/InputUI/InputUI'
 import ButtonUI from '../../UI/ButtonUI/ButtonUI'
@@ -138,10 +138,10 @@ class UserTable extends React.Component {
     
     //---------上部搜索框查询-----------------------
     handleSearch = res => {
-      this.input = res.value
+      this.input = res
     }
     
-    searchByUsername = () => {
+    searchByName = () => {
       this.tableFind({page: 1})    
     };
 
@@ -248,71 +248,83 @@ class UserTable extends React.Component {
       };  
       return (
         <div>
-          <div className="usertable__wrapper--upper">
-            <div className="usertable__search__bar">
-              <InputUI getValue={this.handleSearch} type='text' size='large'></InputUI>
-            </div>
-            <div className="usertable__search__button" >
-              <ButtonUI label="搜索" buttonStyle="fill" size="small" onClick={this.searchByUsername}></ButtonUI>
-            </div>
-            <div className="usertable__search__button" >
-              <ButtonUI label="添加" buttonStyle="hollow-fill" size="small" onClick={this.handleAdd}></ButtonUI>
-            </div>
+         <div style={{padding: 12 + 'px'}}>
+            <Row type="flex" justify="start">
+                <Col span={12}>
+                  <Input.Search
+                    placeholder="请输入模糊查找的用户名称"
+                    enterButton="搜索"
+                    onSearch={(value) => {
+                      this.handleSearch(value)
+                      this.searchByName()
+                    } }
+                  />
+                </Col>
+                <Col span={3} offset={1}>
+                  <div>
+                    <Button type="primary" onClick={this.handleAdd}>添加</Button>
+                  </div>
+                </Col>
+            </Row>
           </div>
-          <Table
-            tableLayout='auto'
-            rowClassName={() => 'editable-row'}
-            dataSource={dataSource}
-            columns={columns}
-            loading={tableLoading}
-            onChange={this.handleTableChange}
-            pagination={this.state.pagination}
-            scroll={{ x: 1100 }}
-          />
-          <Modal
-            visible={modalAddVisible}
-            title="添加用户"
-            onOk={this.handleOk}
-            onCancel={this.handleCancelAdd}
-            footer={null}
-            destroyOnClose
-          >
-            <Regist type="add"></Regist>
-          </Modal>
-          <Modal
-            visible={modalModifyVisible}
-            title="修改用户"
-            onOk={this.handleOk}
-            onCancel={this.handleCancelModify}
-            footer={null}
-            destroyOnClose
-          >
-            <Regist type="modify" data={nowRowData}></Regist>
-          </Modal>
-          <Modal
-            visible={modalDetailVisible}
-            title="详细信息"
-            onOk={this.handleOk}
-            onCancel={this.handleCancelDetail}
-            footer={null}
-            width={850}
-            destroyOnClose
-          >
-            <Descriptions title="用户信息" bordered >
-              <Descriptions.Item label="用户ID">{nowRowData.userId}</Descriptions.Item>
-              <Descriptions.Item label="用户名">{nowRowData.username}</Descriptions.Item>
-              <Descriptions.Item label="密码">{nowRowData.password}</Descriptions.Item>
-              <Descriptions.Item label="性别">{nowRowData.gender}</Descriptions.Item>
-              <Descriptions.Item label="权限" >{nowRowData.role}</Descriptions.Item>
-              <Descriptions.Item label="部门"> {nowRowData.department}</Descriptions.Item>
-              <Descriptions.Item label="组织"> {nowRowData.organization}</Descriptions.Item>
-              <Descriptions.Item label="职位"> {nowRowData.position}</Descriptions.Item>
-              <Descriptions.Item label="电话" span={2}>{nowRowData.phone}</Descriptions.Item>
-              <Descriptions.Item label="邮箱" span={2}>{nowRowData.email}</Descriptions.Item>
-              <Descriptions.Item label="创建时间" span={3}>{nowRowData.createTime}</Descriptions.Item>
-              <Descriptions.Item label="修改时间" span={3}>{nowRowData.modifyTime}</Descriptions.Item>
-            </Descriptions>
-          </Modal>
+          <div style={{padding: 12 + 'px'}}>
+            <Card bordered={true}>
+              <Table
+              tableLayout='auto'
+              rowClassName={() => 'editable-row'}
+              dataSource={dataSource}
+              columns={columns}
+              loading={tableLoading}
+              onChange={this.handleTableChange}
+              pagination={this.state.pagination}
+              scroll={{ x: 1100 }}
+            />
+            <Modal
+              visible={modalAddVisible}
+              title="添加用户"
+              onOk={this.handleOk}
+              onCancel={this.handleCancelAdd}
+              footer={null}
+              destroyOnClose
+            >
+              <Regist type="add"></Regist>
+            </Modal>
+            <Modal
+              visible={modalModifyVisible}
+              title="修改用户"
+              onOk={this.handleOk}
+              onCancel={this.handleCancelModify}
+              footer={null}
+              destroyOnClose
+            >
+              <Regist type="modify" data={nowRowData}></Regist>
+            </Modal>
+            <Modal
+              visible={modalDetailVisible}
+              title="详细信息"
+              onOk={this.handleOk}
+              onCancel={this.handleCancelDetail}
+              footer={null}
+              width={850}
+              destroyOnClose
+            >
+              <Descriptions title="用户信息" bordered >
+                <Descriptions.Item label="用户ID">{nowRowData.userId}</Descriptions.Item>
+                <Descriptions.Item label="用户名">{nowRowData.username}</Descriptions.Item>
+                <Descriptions.Item label="密码">{nowRowData.password}</Descriptions.Item>
+                <Descriptions.Item label="性别">{nowRowData.gender}</Descriptions.Item>
+                <Descriptions.Item label="权限" >{nowRowData.role}</Descriptions.Item>
+                <Descriptions.Item label="部门"> {nowRowData.department}</Descriptions.Item>
+                <Descriptions.Item label="组织"> {nowRowData.organization}</Descriptions.Item>
+                <Descriptions.Item label="职位"> {nowRowData.position}</Descriptions.Item>
+                <Descriptions.Item label="电话" span={2}>{nowRowData.phone}</Descriptions.Item>
+                <Descriptions.Item label="邮箱" span={2}>{nowRowData.email}</Descriptions.Item>
+                <Descriptions.Item label="创建时间" span={3}>{nowRowData.createTime}</Descriptions.Item>
+                <Descriptions.Item label="修改时间" span={3}>{nowRowData.modifyTime}</Descriptions.Item>
+              </Descriptions>
+            </Modal>
+            </Card>
+          </div>
         </div>
       );
     }

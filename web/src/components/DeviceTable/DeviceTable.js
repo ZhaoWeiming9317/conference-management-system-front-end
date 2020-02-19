@@ -1,10 +1,8 @@
 import React from 'react'
 import './DeviceTable.sass'
 import { connect } from 'react-redux';
-import { Table, Popconfirm, Modal, Divider, List, Card, Descriptions} from 'antd';
-import { deviceAdd, deviceDelete,deviceSearch, deviceDetail} from '../../api/apiDevice'
-import InputUI from '../../UI/InputUI/InputUI'
-import ButtonUI from '../../UI/ButtonUI/ButtonUI'
+import { Table, Popconfirm, Modal, Divider, Row, Col, Descriptions, Input,Button, Card } from 'antd';
+import { deviceDelete,deviceSearch, deviceDetail} from '../../api/apiDevice'
 import DeviceAdd from '../../components/DeviceAdd/DeviceAdd'
 import {execListWithNull, execListWithKey} from '../../util/util'
 class RoomTable extends React.Component {
@@ -148,9 +146,9 @@ class RoomTable extends React.Component {
 
     //---------上部搜索框查询-----------------------
     handleSearch = res => {
-      this.input = res.value
+      this.input = res
     }
-    searchByUsername = () => {
+    searchByName = () => {
       this.tableFind({page: 1})    
     };
 
@@ -235,7 +233,8 @@ class RoomTable extends React.Component {
         page: pager.current
       }
       this.tableFind(data)    
-    };  
+    }
+
     render() {
       const { dataSource,  selectedRowKeys, tableLoading, pagination, modalAddVisible,modalModifyVisible,  modalDetailVisible, nowRowData} = this.state;
       const columns = this.columns.map(col => {
@@ -257,71 +256,84 @@ class RoomTable extends React.Component {
         selectedRowKeys,
         onChange: this.onSelectChange,
       };  
+
       return (
         <div>
-          <div className="devicetable__wrapper--upper">
-            <div className="devicetable__search__bar">
-              <InputUI getValue={this.handleSearch} type='text' size='large'></InputUI>
-            </div>
-            <div className="devicetable__search__button" >
-              <ButtonUI label="搜索" buttonStyle="fill" size="small" onClick={this.searchByUsername}></ButtonUI>
-            </div>
-            <div className="devicetable__search__button" >
-              <ButtonUI label="添加" buttonStyle="hollow-fill" size="small" onClick={this.handleAdd}></ButtonUI>
-            </div>
+          <div style={{padding: 12 + 'px'}}>
+            <Row type="flex" justify="start">
+                <Col span={12}>
+                  <Input.Search
+                    placeholder="请输入模糊查找的设备名称"
+                    enterButton="搜索"
+                    onSearch={(value) => {
+                      this.handleSearch(value)
+                      this.searchByName()
+                    } }
+                  />
+                </Col>
+                <Col span={3} offset={1}>
+                  <div>
+                    <Button type="primary" onClick={this.handleAdd}>添加</Button>
+                  </div>
+                </Col>
+            </Row>
           </div>
-          <Table
-            tableLayout='auto'
-            rowClassName={() => 'editable-row'}
-            dataSource={dataSource}
-            columns={columns}
-            loading={tableLoading}
-            onChange={this.handleTableChange}
-            pagination={this.state.pagination}
-            scroll={{ x: 1200 }}
-          />
-          <Modal
-            visible={modalAddVisible}
-            title="添加设备"
-            onOk={this.handleOk}
-            onCancel={this.handleCancelAdd}
-            footer={null}
-            destroyOnClose
-          >
-            <DeviceAdd type="add" data={this.state.nowRowData}></DeviceAdd>
-          </Modal>
-          <Modal
-            visible={modalModifyVisible}
-            title="修改设备"
-            onOk={this.handleOk}
-            onCancel={this.handleCancelModify}
-            footer={null}
-            destroyOnClose
-          >
-            <DeviceAdd type="modify" data={this.state.nowRowData}></DeviceAdd>
-          </Modal>
-          <Modal
-            visible={modalDetailVisible}
-            title="设备详细信息"
-            onOk={this.handleOk}
-            onCancel={this.handleCancelDetail}
-            footer={null}
-            destroyOnClose
-            width= {850}
-          >
-              <Descriptions title="设备信息" bordered >
-                <Descriptions.Item label="设备名称">{nowRowData.deviceName}</Descriptions.Item>
-                <Descriptions.Item label="设备ID">{nowRowData.deviceId}</Descriptions.Item>
-                <Descriptions.Item label="设备型号">{nowRowData.deviceType}</Descriptions.Item>
-                <Descriptions.Item label="商标">{nowRowData.brand}</Descriptions.Item>
-                <Descriptions.Item label="设备平均维修时间" span={2}>
-                  {nowRowData.mttr}
-                </Descriptions.Item>
-                <Descriptions.Item label="设备平均故障间隔时间" span={2}> {nowRowData.mtbf}</Descriptions.Item>
-                <Descriptions.Item label="设备所在会议室ID"> {nowRowData.roomId}</Descriptions.Item>
-                <Descriptions.Item label="设备所在会议室名称">{nowRowData.roomName}</Descriptions.Item>
-              </Descriptions>
-          </Modal>
+          <div style={{padding: 12 + 'px'}}>
+            <Card bordered={true}>
+            <Table
+              tableLayout='auto'
+              rowClassName={() => 'editable-row'}
+              dataSource={dataSource}
+              columns={columns}
+              loading={tableLoading}
+              onChange={this.handleTableChange}
+              pagination={this.state.pagination}
+              scroll={{ x: 1200 }}
+            />
+            <Modal
+              visible={modalAddVisible}
+              title="添加设备"
+              onOk={this.handleOk}
+              onCancel={this.handleCancelAdd}
+              footer={null}
+              destroyOnClose
+            >
+              <DeviceAdd type="add" data={this.state.nowRowData}></DeviceAdd>
+            </Modal>
+            <Modal
+              visible={modalModifyVisible}
+              title="修改设备"
+              onOk={this.handleOk}
+              onCancel={this.handleCancelModify}
+              footer={null}
+              destroyOnClose
+            >
+              <DeviceAdd type="modify" data={this.state.nowRowData}></DeviceAdd>
+            </Modal>
+            <Modal
+              visible={modalDetailVisible}
+              title="设备详细信息"
+              onOk={this.handleOk}
+              onCancel={this.handleCancelDetail}
+              footer={null}
+              destroyOnClose
+              width= {850}
+            >
+                <Descriptions title="设备信息" bordered >
+                  <Descriptions.Item label="设备名称">{nowRowData.deviceName}</Descriptions.Item>
+                  <Descriptions.Item label="设备ID">{nowRowData.deviceId}</Descriptions.Item>
+                  <Descriptions.Item label="设备型号">{nowRowData.deviceType}</Descriptions.Item>
+                  <Descriptions.Item label="商标">{nowRowData.brand}</Descriptions.Item>
+                  <Descriptions.Item label="设备平均维修时间" span={2}>
+                    {nowRowData.mttr}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="设备平均故障间隔时间" span={2}> {nowRowData.mtbf}</Descriptions.Item>
+                  <Descriptions.Item label="设备所在会议室ID"> {nowRowData.roomId}</Descriptions.Item>
+                  <Descriptions.Item label="设备所在会议室名称">{nowRowData.roomName}</Descriptions.Item>
+                </Descriptions>
+            </Modal>
+          </Card>
+          </div>
         </div>
       );
     }

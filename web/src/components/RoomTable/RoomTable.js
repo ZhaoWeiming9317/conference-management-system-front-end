@@ -1,10 +1,8 @@
 import React from 'react'
 import './RoomTable.sass'
 import { connect } from 'react-redux';
-import { Table, Popconfirm, Modal, Divider, Descriptions } from 'antd';
+import { Table, Popconfirm, Modal, Divider, Row, Col, Descriptions, Input,Button, Card } from 'antd';
 import { roomSearchPage, roomDelete,roomSearch, roomDetail} from '../../api/apiRoom'
-import InputUI from '../../UI/InputUI/InputUI'
-import ButtonUI from '../../UI/ButtonUI/ButtonUI'
 import RoomAdd from '../../components/RoomAdd/RoomAdd'
 import {execListWithNull, execListWithKey} from '../../util/util'
 class RoomTable extends React.Component {
@@ -93,7 +91,8 @@ class RoomTable extends React.Component {
         modalModifyVisible: false,
         selectedRowKeys: [],
         pagination: {},
-        nowRowData:[]
+        nowRowData:[],
+        input:''
       };
     }
   
@@ -126,9 +125,9 @@ class RoomTable extends React.Component {
     }
     //---------上部搜索框查询-----------------------
     handleSearch = res => {
-      this.input = res.value
+      this.input = res
     }
-    searchByUsername = () => {
+    searchByName = () => {
       this.tableFind({page: 1})    
     };
 
@@ -235,72 +234,84 @@ class RoomTable extends React.Component {
       };  
       return (
         <div>
-          <div className="roomtable__wrapper--upper">
-            <div className="roomtable__search__bar">
-              <InputUI getValue={this.handleSearch} type='text' size='large'></InputUI>
-            </div>
-            <div className="roomtable__search__button" >
-              <ButtonUI label="搜索" buttonStyle="fill" size="small" onClick={this.searchByUsername}></ButtonUI>
-            </div>
-            <div className="roomtable__search__button" >
-              <ButtonUI label="添加" buttonStyle="hollow-fill" size="small" onClick={this.handleAdd}></ButtonUI>
-            </div>
+          <div style={{padding: 12 + 'px'}}>
+            <Row type="flex" justify="start">
+                <Col span={12}>
+                  <Input.Search
+                    placeholder="请输入模糊查找的会议室名称"
+                    enterButton="搜索"
+                    onSearch={(value) => {
+                      this.handleSearch(value)
+                      this.searchByName()
+                    } }
+                  />
+                </Col>
+                <Col span={3} offset={1}>
+                  <div>
+                    <Button type="primary" onClick={this.handleAdd}>添加</Button>
+                  </div>
+                </Col>
+            </Row>
           </div>
-          <Table
-            tableLayout='auto'
-            rowClassName={() => 'editable-row'}
-            dataSource={dataSource}
-            columns={columns}
-            loading={tableLoading}
-            onChange={this.handleTableChange}
-            pagination={this.state.pagination}
-            scroll={{ x: 1100 }}
-          />
-          <Modal
-            visible={modalAddVisible}
-            title="添加会议室"
-            onOk={this.handleOk}
-            onCancel={this.handleCancelAdd}
-            footer={null}
-            destroyOnClose
-          >
-            <RoomAdd type="add"></RoomAdd>
-          </Modal>
-          <Modal
-            visible={modalModifyVisible}
-            title="修改会议室"
-            onOk={this.handleOk}
-            onCancel={this.handleCancelModify}
-            footer={null}
-            destroyOnClose
-          >
-            <RoomAdd type="modify" data={nowRowData}></RoomAdd>
-          </Modal>
-          <Modal
-            visible={modalDetailVisible}
-            title="详细信息"
-            onOk={this.handleOk}
-            onCancel={this.handleCancelDetail}
-            footer={null}
-            width={850}
-            destroyOnClose
-          >
-            <Descriptions title="会议室信息" bordered >
-              <Descriptions.Item label="会议室名称">{nowRowData.roomName}</Descriptions.Item>
-              <Descriptions.Item label="会议室编号">{nowRowData.roomNumber}</Descriptions.Item>
-              <Descriptions.Item label="会议室ID">{nowRowData.roomId}</Descriptions.Item>
-              <Descriptions.Item label="会议室容量">{nowRowData.roomVolume}</Descriptions.Item>
-              <Descriptions.Item label="国家" >{nowRowData.country}</Descriptions.Item>
-              <Descriptions.Item label="省份/自治区"> {nowRowData.province}</Descriptions.Item>
-              <Descriptions.Item label="城市"> {nowRowData.city}</Descriptions.Item>
-              <Descriptions.Item label="街区">{nowRowData.block}</Descriptions.Item>
-              <Descriptions.Item label="大厦">{nowRowData.building}</Descriptions.Item>
-              <Descriptions.Item label="楼层">{nowRowData.floor}</Descriptions.Item>
-              <Descriptions.Item label="备注" span={3}>{nowRowData.mark}</Descriptions.Item>
-              <Descriptions.Item label="创建时间" span={3}>{nowRowData.createTime}</Descriptions.Item>
-              <Descriptions.Item label="修改时间" span={3}>{nowRowData.modifyTime}</Descriptions.Item>
-            </Descriptions>
-          </Modal>
+          <div style={{padding: 12 + 'px'}}>
+            <Card bordered={true}>
+            <Table
+              tableLayout='auto'
+              rowClassName={() => 'editable-row'}
+              dataSource={dataSource}
+              columns={columns}
+              loading={tableLoading}
+              onChange={this.handleTableChange}
+              pagination={this.state.pagination}
+              scroll={{ x: 1100 }}
+            />
+            <Modal
+              visible={modalAddVisible}
+              title="添加会议室"
+              onOk={this.handleOk}
+              onCancel={this.handleCancelAdd}
+              footer={null}
+              destroyOnClose
+            >
+              <RoomAdd type="add"></RoomAdd>
+            </Modal>
+            <Modal
+              visible={modalModifyVisible}
+              title="修改会议室"
+              onOk={this.handleOk}
+              onCancel={this.handleCancelModify}
+              footer={null}
+              destroyOnClose
+            >
+              <RoomAdd type="modify" data={nowRowData}></RoomAdd>
+            </Modal>
+            <Modal
+              visible={modalDetailVisible}
+              title="详细信息"
+              onOk={this.handleOk}
+              onCancel={this.handleCancelDetail}
+              footer={null}
+              width={850}
+              destroyOnClose
+            >
+              <Descriptions title="会议室信息" bordered >
+                <Descriptions.Item label="会议室名称">{nowRowData.roomName}</Descriptions.Item>
+                <Descriptions.Item label="会议室编号">{nowRowData.roomNumber}</Descriptions.Item>
+                <Descriptions.Item label="会议室ID">{nowRowData.roomId}</Descriptions.Item>
+                <Descriptions.Item label="会议室容量">{nowRowData.roomVolume}</Descriptions.Item>
+                <Descriptions.Item label="国家" >{nowRowData.country}</Descriptions.Item>
+                <Descriptions.Item label="省份/自治区"> {nowRowData.province}</Descriptions.Item>
+                <Descriptions.Item label="城市"> {nowRowData.city}</Descriptions.Item>
+                <Descriptions.Item label="街区">{nowRowData.block}</Descriptions.Item>
+                <Descriptions.Item label="大厦">{nowRowData.building}</Descriptions.Item>
+                <Descriptions.Item label="楼层">{nowRowData.floor}</Descriptions.Item>
+                <Descriptions.Item label="备注" span={3}>{nowRowData.mark}</Descriptions.Item>
+                <Descriptions.Item label="创建时间" span={3}>{nowRowData.createTime}</Descriptions.Item>
+                <Descriptions.Item label="修改时间" span={3}>{nowRowData.modifyTime}</Descriptions.Item>
+              </Descriptions>
+            </Modal>
+            </Card>
+          </div>
         </div>
       );
     }

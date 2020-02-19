@@ -3,7 +3,7 @@ import * as actions from '../actions/index';
 
 const initialState = {
     loginView: true,
-    nav: 2
+    nav: 0
 };
   
 const navReducer = handleActions({
@@ -17,6 +17,12 @@ const navReducer = handleActions({
         return {
             ...state,
             loginView : false,
+        }
+    },
+    [`${actions.gotoMain}`](state, action){
+        return {
+            ...state,
+            nav : 0
         }
     },
     [`${actions.gotoMeeting}`](state, action){
@@ -42,7 +48,13 @@ const navReducer = handleActions({
             ...state,
             nav : 4
         }
-    }
+    },
+    [`${actions.gotoForm}`](state, action){
+        return {
+            ...state,
+            nav : 5
+        }
+    },
 
 },
 initialState);
