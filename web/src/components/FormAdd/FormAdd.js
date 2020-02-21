@@ -56,9 +56,13 @@ class FormApp extends React.Component {
   handleSubmit = e => {
     e.preventDefault();
     let formInfo = this.props.form.getFieldsValue();
+    formInfo['service_time'] = formInfo['service_time'].format("YYYY-MM-DD HH:mm:ss")
+    formInfo['repair_time'] = formInfo['repair_time'].format("YYYY-MM-DD HH:mm:ss")
+    formInfo['finish_time'] = formInfo['finish_time'].format("YYYY-MM-DD HH:mm:ss")
+
     this.props.form.validateFields((err, values) => {
+      console.log(formInfo)
       if (!err) {
-        console.log(formInfo)
         if(this.props.type === 'add') {
           formAdd(JSON.stringify(formInfo)).then((res)=>{
             if (res.state == 1) {
@@ -169,30 +173,33 @@ class FormApp extends React.Component {
           </Form.Item>}
           {currentStep === 2 && <Form.Item label="维修时间">
             {getFieldDecorator('repair_time', {
+              initialValue: moment(this.state.repair_time),
               rules: [
                 { required: true, message: '请填写维修时间' },
               ],
               preserve: true, // 即便字段不再使用，也保留该字段的值（做分布表单的关键）
             })(<DatePicker locale={locale}
-               defaultValue={moment(this.state.repair_time)} placeholder="请填写维修时间" style={{ width: '100%' }} format="YYYY-MM-DD HH:mm:ss" showTime={true}/>)}
+               placeholder="请填写维修时间" style={{ width: '100%' }} format="YYYY-MM-DD HH:mm:ss" showTime={true}/>)}
           </Form.Item>}
           {currentStep === 2 && <Form.Item label="服务时间">
             {getFieldDecorator('service_time', {
+              initialValue: moment(this.state.service_time),
               rules: [
                 { required: true, message: '请填写服务时间' },
               ],
               preserve: true, // 即便字段不再使用，也保留该字段的值（做分布表单的关键）
             })(<DatePicker locale={locale}
-              defaultValue={moment(this.state.service_time)} placeholder="请填写服务时间" style={{ width: '100%' }} format="YYYY-MM-DD HH:mm:ss" showTime={true}/>)}
+               placeholder="请填写服务时间" style={{ width: '100%' }} format="YYYY-MM-DD HH:mm:ss" showTime={true}/>)}
           </Form.Item>}
           {currentStep === 2 && <Form.Item label="完成时间">
             {getFieldDecorator('finish_time', {
+              initialValue: moment(this.state.finish_time),
               rules: [
                 { required: true, message: '请填写完成时间' },
               ],
               preserve: true, // 即便字段不再使用，也保留该字段的值（做分布表单的关键）
             })(<DatePicker locale={locale}
-              defaultValue={moment(this.state.finish_time)} placeholder="请填写完成时间" style={{ width: '100%' }} format="YYYY-MM-DD HH:mm:ss" showTime={true}/>)}
+               placeholder="请填写完成时间" format="YYYY-MM-DD HH:mm:ss" style={{ width: '100%' }} showTime={true}/>)}
           </Form.Item>}
         </Form>
         <div className="steps-action">
