@@ -29,6 +29,13 @@ const URL ={
     deviceModify: HISTORY + '/device/device_modify',
     deviceSearch: HISTORY + '/device/device_search',
     deviceSearchPage: HISTORY + '/device/device_search_page',
-    deviceDetail: HISTORY + '/device/device_detail'
+    deviceDetail: HISTORY + '/device/device_detail',
+
+    formAdd: HISTORY + '/form/form_add',
+    formDelete: HISTORY + '/form/form_delete',
+    formModify: HISTORY + '/form/form_modify',
+    formSearch: HISTORY + '/form/form_search',
+    formSearchPage: HISTORY + '/form/form_search_page',
+    formDetail: HISTORY + '/form/form_detail',
 }
 export default URL

@@ -3,6 +3,7 @@ import './Home.css'
 import { userLoginVerification ,userLoginExit} from '../../api/apiUser'
 import { BrowserRouter, Switch, Route, Redirect, Link } from "react-router-dom";
 import { connect } from 'react-redux';
+import Order from '../Order/Order'
 import User from '../User/User'
 import Meeting from '../Meeting/Meeting'
 import Room from '../Room/Room'
@@ -10,7 +11,7 @@ import Device from '../Device/Device'
 import Main from '../Main/Main'
 import Form from '../Form/Form'
 import { logout } from '../../actions/index'
-import { Layout, Menu, Icon, Typography, Row, Col} from 'antd'
+import { Avatar, Badge, Layout, Menu, Icon, Typography, Row, Col} from 'antd'
 import { navList } from '../../constants/navListConstants' 
 const { Header, Sider, Content, } = Layout;
 const { Title } = Typography;
@@ -94,9 +95,15 @@ class Home extends React.Component {
                             }}>
                                 <Title level={3}>{this.state.title}</Title>
                             </div>
+                        </Col> 
+                        <Col span={14}>
                         </Col>
-                        <Col span={2} offset={13}>
-                            <Icon type="bulb" style={{width: 50, fontSize: 22}}/>
+                        <Col span={1}>
+                            <Badge count={1}>
+                                <Avatar shape="square" icon="user" />
+                            </Badge>
+                        </Col>
+                        <Col span={1}>
                             <Icon type="close" style={{width: 50, fontSize: 22}} onClick={this.quit}/>
                         </Col>
                     </Row>
@@ -110,6 +117,7 @@ class Home extends React.Component {
                     >
                         <Switch>
                             <Route path="/main" component={Main}></Route>
+                            <Route path="/order" component={Order}></Route>
                             <Route path="/user" component={User}></Route>
                             <Route path="/meeting" component={Meeting}></Route>
                             <Route path="/room" component={Room}></Route>

@@ -1,8 +1,9 @@
 import React from 'react'
 import './RoomAdd.sass'
 import { connect } from 'react-redux';
-import { Form, Input, Button, message } from 'antd';
+import { Form, Input, Button, message, Steps, InputNumber } from 'antd';
 import {roomAdd, roomModify} from '../../api/apiRoom';
+const { Step } = Steps;
 
 class DeviceApp extends React.Component {
   constructor(props) {
@@ -14,10 +15,11 @@ class DeviceApp extends React.Component {
       province:'',
       country:'',
       mark:'',
-      floor:'',
+      floor:'1',
       city:'',
       building:'',
-      block:''
+      block:'',
+      currentStep: 0,
     }
   }
   componentWillMount() {
@@ -26,6 +28,15 @@ class DeviceApp extends React.Component {
         this.setState({...data,
         })
     }
+  }
+  next() {
+    const currentStep = this.state.currentStep + 1;
+    this.setState({ currentStep });
+  }
+
+  prev() {
+    const currentStep = this.state.currentStep - 1;
+    this.setState({ currentStep });
   }
 
   handleSubmit = e => {
@@ -68,68 +79,111 @@ class DeviceApp extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const { currentStep } = this.state;
+
     return (
-      <Form labelCol={{ span: 8 , offset: 2}} wrapperCol={{ span: 12 }} labelAlign='left' onSubmit={this.handleSubmit}>
-        <Form.Item label="会议室容量">
+      <div>
+        <Steps current={currentStep} onChange={current => this.setState({ currentStep: current })}>
+          <Step title="会议室基础" />
+          <Step title="位置信息" />
+          <Step title="其他信息" />
+        </Steps>
+        <Form style={{paddingTop: 20}} labelCol={{ span: 8 , offset: 2}} wrapperCol={{ span: 12 }} labelAlign='left' onSubmit={this.handleSubmit}>
+        {currentStep === 0 && <Form.Item label="会议室容量">
           {getFieldDecorator('roomVolume', {
             initialValue: this.state.roomVolume, 
             rules: [{ required: true, message: '请输入会议室容量' }],
+            preserve: true,
           })(<Input autoComplete="new-password"/>)}
-        </Form.Item>
-        <Form.Item label="会议室编号">
+        </Form.Item>}
+        {currentStep === 0 && <Form.Item label="会议室编号">
           {getFieldDecorator('roomNumber', {
             initialValue: this.state.roomNumber, 
             rules: [{ required: true, message: '请输入会议室编号' }],
+            preserve: true,
           })(<Input autoComplete="new-password"/>)}
-        </Form.Item>
-        <Form.Item label="会议室名称">
+        </Form.Item>}
+        {currentStep === 0 && <Form.Item label="会议室名称">
           {getFieldDecorator('roomName', {
             initialValue: this.state.roomName,
             rules: [{ required: true, message: '请输入会议室名称' }],
+            preserve: true,
           })(<Input autoComplete="new-password"/>)}
-        </Form.Item>
-        <Form.Item label="国家">
+        </Form.Item>}
+        {currentStep === 1 && <Form.Item label="国家">
           {getFieldDecorator('country', {
             initialValue: this.state.country,
             rules: [{ required: true, message: '请输入国家名称' }],
+            preserve: true,
           })(<Input autoComplete="new-password"/>)}
-        </Form.Item>
-        <Form.Item label="城市">
+        </Form.Item>}
+        {currentStep === 1 && <Form.Item label="省份/自治区">
+          {getFieldDecorator('province', {
+            initialValue: this.state.province,
+            rules: [{ required: true, message: '请输入省份/自治区名称' }],
+            preserve: true,
+          })(<Input autoComplete="new-password"/>)}
+        </Form.Item>}
+        {currentStep === 1 && <Form.Item label="城市">
           {getFieldDecorator('city', {
             initialValue: this.state.city,
             rules: [{ required: true, message: '请输入城市名称' }],
+            preserve: true,
           })(<Input autoComplete="new-password"/>)}
-        </Form.Item>
-        <Form.Item label="街区">
+        </Form.Item>}
+        {currentStep === 1 && <Form.Item label="街区">
           {getFieldDecorator('block', {
             initialValue: this.state.block,
             rules: [{ required: true, message: '请输入街区名称' }],
+            preserve: true,
           })(<Input autoComplete="new-password"/>)}
-        </Form.Item>
-        <Form.Item label="大楼">
+        </Form.Item>}
+        {currentStep === 1 && <Form.Item label="大楼">
           {getFieldDecorator('building', {
             initialValue: this.state.building,
             rules: [{ required: true, message: '请输入大楼名称' }],
+            preserve: true,
           })(<Input autoComplete="new-password"/>)}
-        </Form.Item>
-        <Form.Item label="楼层">
+        </Form.Item>}
+        {currentStep === 1 && <Form.Item label="楼层">
           {getFieldDecorator('floor', {
             initialValue: this.state.floor,
             rules: [{ required: true, message: '请输入楼层数' }],
-          })(<Input autoComplete="new-password"/>)}
-        </Form.Item>
-        <Form.Item label="备注">
+            preserve: true,
+          })(<InputNumber
+            defaultValue={1}
+            min={-5}
+            max={100}
+            formatter={value => `${value}楼`}
+            parser={value => value.replace('楼', '')}
+          />)}
+        </Form.Item>}
+        {currentStep === 2 && <Form.Item label="备注">
           {getFieldDecorator('mark', {
             initialValue: this.state.mark,
             rules: [{ required: false }],
-          })(<Input autoComplete="new-password"/>)}
-        </Form.Item>
-        <Form.Item wrapperCol={{ span: 12, offset: 10 }}>
-          <Button type="primary" htmlType="submit" onClick={this.handleSubmit}>
-            提交
-          </Button>
-        </Form.Item>
+            preserve: true,
+          })(<Input.TextArea rows={4} autoComplete="new-password"/>)}
+        </Form.Item>}
       </Form>
+      <div className="steps-action">
+          {currentStep < 2 && (
+            <Button type="primary" onClick={() => this.next()}>
+              下一步
+            </Button>
+          )}
+          {currentStep === 2 && (
+            <Button type="primary" onClick={this.handleSubmit}>
+              提交
+            </Button>
+          )}
+          {currentStep > 0 && (
+            <Button style={{ marginLeft: 8 }} onClick={() => this.prev()}>
+              上一步
+            </Button>
+          )}
+        </div>
+      </div>
     );
   }
 }

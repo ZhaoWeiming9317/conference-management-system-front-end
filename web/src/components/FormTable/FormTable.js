@@ -1,14 +1,10 @@
 import React from 'react'
-import './UserTable.sass'
 import { connect } from 'react-redux';
 import { Table, Popconfirm, Modal, Divider, Row, Col, Descriptions, Input,Button, Card } from 'antd';
-import { userAdminSearchCertain, userAdminSearch, userAdminDelete } from '../../api/apiUser'
-import InputUI from '../../UI/InputUI/InputUI'
-import ButtonUI from '../../UI/ButtonUI/ButtonUI'
-import Regist from '../../components/Regist/Regist'
-import UserAdd from '../../components/UserAdd/UserAdd'
+import { formDelete,formSearch, formDetail} from '../../api/apiForm'
+import FormAdd from '../../components/FormAdd/FormAdd'
 import {execListWithNull, execListWithKey} from '../../util/util'
-class UserTable extends React.Component {
+class formTable extends React.Component {
     constructor(props) {
       super(props);
       this.handleSearch = this.handleSearch.bind(this)
@@ -17,46 +13,46 @@ class UserTable extends React.Component {
       this.input = ''
       this.columns = [
         {
-          title: '用户ID',
-          dataIndex: 'userId',
+          title: '表单ID',
+          dataIndex: 'formId',
           width: '100px',
           ellipsis: true
         },
         {
-          title: '用户名',
-          dataIndex: 'username',
+          title: '表单名称',
+          dataIndex: 'formName',
           width: '130px',
           ellipsis: true
         },
         {
-          title: '姓名',
-          dataIndex: 'name',
+          title: '检修措施',
+          dataIndex: 'measure',
           width: '130px',
           ellipsis: true
         },
         {
-          title: '性别',
-          dataIndex: 'gender',
-          width: '80px',
+          title: '故障原因',
+          dataIndex: 'reason',
+          width: '100px',
           ellipsis: true
         },
         {
-          title: '权限',
-          dataIndex: 'role',
-          width: '130px',
+          title: '设备名称',
+          dataIndex: 'deviceName',
+          width: '100px',
           ellipsis: true
         },
         {
-          title: '电话',
-          dataIndex: 'phone',
-          width: '150px',
-          ellipsis: true
+            title: '设备所在会议室名称',
+            dataIndex: 'roomName',
+            width: '100px',
+            ellipsis: true
         },
         {
-          title: '邮箱',
-          dataIndex: 'email',
-          width: '200px',
-          ellipsis: true
+            title: '维修人员',
+            dataIndex: 'repairMan',
+            width: '100px',
+            ellipsis: true
         },
         {
           title: '操作',
@@ -92,10 +88,10 @@ class UserTable extends React.Component {
         modalLoading: false,
         modalAddVisible: false,
         modalModifyVisible: false,
-        modalDetailVisible: false,
         selectedRowKeys: [],
         pagination: {},
-        nowRowData:[]
+        nowRowData:[],
+        roomData: []
       };
     }
   
@@ -103,6 +99,7 @@ class UserTable extends React.Component {
       this.setState({tableLoading: true})
       this.tableFind({page: 1})
     }
+
     // 刷新table
     tableFind(params = {}) {
       this.setState({
@@ -111,37 +108,51 @@ class UserTable extends React.Component {
       });
       let data = {
         volume: this.volume,
-        username: this.input,
+        form_name: this.input,
         ...params
       }
-      userAdminSearch(data).then((res)=>{
+      formSearch(data).then((res)=>{
         const pagination = { ...this.state.pagination };
         let list = res.list
         pagination.total = res.total;
         pagination.current = params.page
-        let covertListWithRole = list.map((item)=>{
-          if (item.role === 0) {
-            item.role = '部门经理'
-          } else if (item.role === 1){
-            item.role = '系统管理员'
-          } else {
-            item.role = '普通员工'
-          }
-          return item
-        })
         this.setState({
-          dataSource : execListWithKey(execListWithNull(covertListWithRole,'-'),'userId'),
+          dataSource : [...execListWithKey(execListWithNull(this.execListWithRoomAndDevice(list),'-'),'formId')],
           tableLoading: false,
           pagination
         })
       })
     }
-    
+
+    execListWithRoomAndDevice(list){
+        let res = []
+        for (let i in list) {
+            let itemRes = {}
+            let item = list[i]
+            for (let element in item) {
+                if (element === 'room') {
+                    let roomList = item[element]
+                    for (let j in roomList) {
+                        itemRes[j] = roomList[j]
+                    }
+                } else if (element === 'device'){
+                    let deviceList = item[element]
+                    for (let j in deviceList) {
+                        itemRes[j] = deviceList[j]
+                    }
+                } else {
+                    itemRes[element] = item[element]
+                }
+            }
+            res.push(itemRes)
+        }
+        return res
+    }
+
     //---------上部搜索框查询-----------------------
     handleSearch = res => {
       this.input = res
     }
-    
     searchByName = () => {
       this.tableFind({page: 1})    
     };
@@ -149,14 +160,13 @@ class UserTable extends React.Component {
     //------------添加 更改 用户----------------------
     handleDelete = key => {
       const dataSource = [...this.state.dataSource];
-      const username = dataSource.find(item => item.key === key).username
-      userAdminDelete({username}).then((res)=>{
-        console.log(res)
-        if(res.state == 1){
+      const formId = dataSource.find(item => item.key === key).formId
+      formDelete({ form_id : formId}).then((res)=>{
+        if(res.state === 1){
           this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
-          this.tableFind({page: this.state.page})
         }
       })
+      this.tableFind({page: this.state.page})
     };
   
     handleAdd = () => {
@@ -167,8 +177,8 @@ class UserTable extends React.Component {
 
     handleModify = key => {
       const dataSource = [...this.state.dataSource];
-      const userId = dataSource.find(item => item.key === key).userId
-      userAdminSearchCertain({user_id:userId}).then((res)=>{ 
+      const formId = dataSource.find(item => item.key === key).formId
+      formDetail({form_id : formId}).then((res)=>{ 
         this.setState({
           nowRowData:res
         },()=>{
@@ -176,14 +186,18 @@ class UserTable extends React.Component {
             modalModifyVisible: true,
           })
         })
-      })
+      })  
     };
 
     handleDetail = key => {
       const dataSource = [...this.state.dataSource];
-      const userId = dataSource.find(item => item.key === key).userId
-      userAdminSearchCertain({user_id:userId}).then((res)=>{ 
-        console.log(res)
+      const formId = dataSource.find(item => item.key === key).formId
+      formDetail({form_id : formId}).then((res)=>{ 
+        res = {...res,
+        roomName: res.room.roomName,
+        roomId: res.room.roomId,
+        deviceName: res.device.deviceName,
+        deviceId: res.device.deviceId}
         this.setState({
           nowRowData:res
         },()=>{
@@ -191,7 +205,7 @@ class UserTable extends React.Component {
             modalDetailVisible: true,
           })
         })
-      })
+      }) 
     }
 
     handleCancelAdd = () => {
@@ -225,7 +239,8 @@ class UserTable extends React.Component {
         page: pager.current
       }
       this.tableFind(data)    
-    };  
+    }
+
     render() {
       const { dataSource,  selectedRowKeys, tableLoading, pagination, modalAddVisible,modalModifyVisible,  modalDetailVisible, nowRowData} = this.state;
       const columns = this.columns.map(col => {
@@ -247,13 +262,14 @@ class UserTable extends React.Component {
         selectedRowKeys,
         onChange: this.onSelectChange,
       };  
+
       return (
         <div>
-         <div style={{padding: 12 + 'px'}}>
+          <div style={{padding: 12 + 'px'}}>
             <Row type="flex" justify="start">
                 <Col span={12}>
                   <Input.Search
-                    placeholder="请输入模糊查找的用户名称"
+                    placeholder="请输入模糊查找的表单名称"
                     enterButton="搜索"
                     onSearch={(value) => {
                       this.handleSearch(value)
@@ -270,7 +286,7 @@ class UserTable extends React.Component {
           </div>
           <div style={{padding: 12 + 'px'}}>
             <Card bordered={true}>
-              <Table
+            <Table
               tableLayout='auto'
               rowClassName={() => 'editable-row'}
               dataSource={dataSource}
@@ -282,49 +298,49 @@ class UserTable extends React.Component {
             />
             <Modal
               visible={modalAddVisible}
-              title="添加用户"
+              title="添加表单"
               onOk={this.handleOk}
               onCancel={this.handleCancelAdd}
               footer={null}
               destroyOnClose
             >
-              <UserAdd type="add"></UserAdd>
+              <FormAdd type="add" data={this.state.nowRowData}></FormAdd>
             </Modal>
             <Modal
               visible={modalModifyVisible}
-              title="修改用户"
+              title="修改表单"
               onOk={this.handleOk}
               onCancel={this.handleCancelModify}
               footer={null}
               destroyOnClose
             >
-              <UserAdd type="modify" data={nowRowData}></UserAdd>
+              <FormAdd type="modify" data={this.state.nowRowData}></FormAdd>
             </Modal>
             <Modal
               visible={modalDetailVisible}
-              title="详细信息"
+              title="表单详细信息"
               onOk={this.handleOk}
               onCancel={this.handleCancelDetail}
               footer={null}
-              width={850}
               destroyOnClose
+              width= {850}
             >
-              <Descriptions title="用户信息" bordered >
-                <Descriptions.Item label="用户ID">{nowRowData.userId}</Descriptions.Item>
-                <Descriptions.Item label="用户名">{nowRowData.username}</Descriptions.Item>
-                <Descriptions.Item label="密码">{nowRowData.password}</Descriptions.Item>
-                <Descriptions.Item label="性别">{nowRowData.gender}</Descriptions.Item>
-                <Descriptions.Item label="权限" >{nowRowData.role}</Descriptions.Item>
-                <Descriptions.Item label="部门"> {nowRowData.department}</Descriptions.Item>
-                <Descriptions.Item label="组织"> {nowRowData.organization}</Descriptions.Item>
-                <Descriptions.Item label="职位"> {nowRowData.position}</Descriptions.Item>
-                <Descriptions.Item label="电话" span={2}>{nowRowData.phone}</Descriptions.Item>
-                <Descriptions.Item label="邮箱" span={2}>{nowRowData.email}</Descriptions.Item>
-                <Descriptions.Item label="创建时间" span={3}>{nowRowData.createTime}</Descriptions.Item>
-                <Descriptions.Item label="修改时间" span={3}>{nowRowData.modifyTime}</Descriptions.Item>
-              </Descriptions>
+                <Descriptions title="表单信息" bordered >
+                  <Descriptions.Item label="表单名称">{nowRowData.formName}</Descriptions.Item>
+                  <Descriptions.Item label="表单ID">{nowRowData.formId}</Descriptions.Item>
+                  <Descriptions.Item label="会议室名称">{nowRowData.roomName}</Descriptions.Item>
+                  <Descriptions.Item label="设备名称">{nowRowData.deviceName}</Descriptions.Item>
+                  <Descriptions.Item label="故障原因" span={1}>{nowRowData.reason}</Descriptions.Item>
+                  <Descriptions.Item label="检修措施" span={1}> {nowRowData.measure}</Descriptions.Item>
+                  <Descriptions.Item label="维修人员姓名"> {nowRowData.repairMan}</Descriptions.Item>
+                  <Descriptions.Item label="服务人员姓名">{nowRowData.serviceMan}</Descriptions.Item>
+                  <Descriptions.Item label="审查人员姓名" span={1}>{nowRowData.verifyMan}</Descriptions.Item>
+                  <Descriptions.Item label="维修时间" span={3}>{nowRowData.repairTime}</Descriptions.Item>
+                  <Descriptions.Item label="服务时间" span={3}>{nowRowData.serviceTime}</Descriptions.Item>
+                  <Descriptions.Item label="完成时间" span={3}>{nowRowData.finishTime}</Descriptions.Item>
+                </Descriptions>
             </Modal>
-            </Card>
+          </Card>
           </div>
         </div>
       );
@@ -336,4 +352,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(UserTable);
+export default connect(mapStateToProps)(formTable);

@@ -1,7 +1,7 @@
 import React from 'react'
 import { userLoginVerification } from '../../api/apiUser'
 import { connect } from 'react-redux';
-import UserTable from '../UserTable/UserTable'
+import FormTable from '../FormTable/FormTable'
 import { logout } from '../../actions/index'
 
 class Form extends React.Component {
@@ -23,7 +23,7 @@ class Form extends React.Component {
         return (
             <div className="user__container">
                 <div className="user__table">
-                    <UserTable> </UserTable>
+                    <FormTable> </FormTable>
                 </div>
             </div>
         );

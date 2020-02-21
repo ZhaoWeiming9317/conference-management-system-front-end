@@ -5,6 +5,9 @@ import './App.sass'
 import loadable from './util/loadable'
 const Home = loadable(()=>import('./components/Home/Home'))
 const Welcome = loadable(()=>import('./components/Welcome/Welcome'))
+import { ConfigProvider } from 'antd';
+import enUS from 'antd/es/locale/en_US';
+import zhCN from 'antd/es/locale/zh_CN';
 
 function Change(props) {
     let isLogin = props.isLogin;
@@ -21,17 +24,22 @@ function Change(props) {
 class App extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            locale: zhCN,
+        };
     }  
     render () {
         const { isLogin } = this.props
         return (
-            <BrowserRouter>
-            <Switch>
-                <Route path="/home" component={Home}></Route>
-                <Route path="/welcome" component={Welcome}></Route>
-            </Switch>
-            <Change isLogin={isLogin}></Change>
-            </BrowserRouter>
+            <ConfigProvider locale={this.state.locale}>
+                <BrowserRouter>
+                    <Switch>
+                        <Route path="/home" component={Home}></Route>
+                        <Route path="/welcome" component={Welcome}></Route>
+                    </Switch>
+                    <Change isLogin={isLogin}></Change>
+                </BrowserRouter>
+            </ConfigProvider>
         )  
     }
 }
