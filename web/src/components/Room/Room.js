@@ -36,5 +36,5 @@ const mapStateToProps = (state) => {
     };
 };
 
-    export default connect(mapStateToProps, {logout})(Room);
+export default connect(mapStateToProps, {logout})(Room);
   

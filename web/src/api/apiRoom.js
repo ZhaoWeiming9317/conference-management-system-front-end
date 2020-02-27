@@ -97,3 +97,23 @@ export function roomSearchPage(data){
     })
 }
 
+export function roomBuildingSearch(data){
+    return server({
+        url: url.roomBuildingSearch,
+        method: 'get',
+        dataType: "json",
+        data: data || {}
+    })
+}
+
+
+
+export function roomFloorSearch(data){
+    return server({
+        url: url.roomFloorSearch,
+        method: 'post',
+        dataType: "json",
+        data: data || {}
+    })
+}
+

@@ -23,6 +23,8 @@ const URL ={
     roomDetail: HISTORY + '/room/room_detail',
     roomSearch: HISTORY + '/room/room_search',
     roomSearchPage: HISTORY + '/room/room_search_page',
+    roomBuildingSearch: HISTORY + '/room/building_search',
+    roomFloorSearch: HISTORY + '/room/floor_search',
 
     deviceAdd: HISTORY + '/device/device_add',
     deviceDelete: HISTORY + '/device/device_delete',
@@ -37,5 +39,14 @@ const URL ={
     formSearch: HISTORY + '/form/form_search',
     formSearchPage: HISTORY + '/form/form_search_page',
     formDetail: HISTORY + '/form/form_detail',
+
+    meetingSearch: HISTORY + '/meeting/meeting_search ',
+    meetingSearchCertain: HISTORY + '/meeting/meeting_search_certain ',
+    meetingSearchAll: HISTORY + '/meeting/meeting_search_all ',
+    meetingSearch2: HISTORY + '/meeting/meeting_search2 ',
+    meetingSearch3: HISTORY + '/meeting/meeting_search3 ',
+    meetingAdd: HISTORY + '/meeting/meeting_search ',
+    meetingModify: HISTORY + '/meeting/meeting_modify ',
+    meetingDelete: HISTORY + '/meeting/meeting_delete ',
 }
 export default URL
