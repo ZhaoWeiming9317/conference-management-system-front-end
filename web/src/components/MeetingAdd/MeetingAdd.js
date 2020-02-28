@@ -13,12 +13,12 @@ class DeviceApp extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      meetingName : '',
-      roomId:'',
-      hostId:'',
-      startTime:'',
-      endTimes:'',
-      hostName:'',
+      meeting_name : '',
+      room_id:'',
+      user_id:'',// host_id
+      start_time:'',
+      end_time:'',
+      host:'',
       recoder:'',
       members:[],
       topic:'',
@@ -48,32 +48,42 @@ class DeviceApp extends React.Component {
   handleSubmit = e => {
     e.preventDefault();
     let meetingInfo = this.props.form.getFieldsValue();
-    meetingInfo['start_time'] = meetingInfo['start_time'].format("YYYY-MM-DD HH:mm:ss")
-    meetingInfo['end_time'] = meetingInfo['end_time'].format("YYYY-MM-DD HH:mm:ss")
-    meetingInfo['room'] = {room_id : meetingInfo['roomId']}
 
-    meetingInfo['host'] = {user_id :meetingInfo['hostId'],name : meetingInfo['hostName']}
-    meetingInfo['recorder'] = {name: meetingInfo['recorder']}  
-    meetingInfo['members'] = []
+    let execMeetingInfo = {}
+    execMeetingInfo['meeting_name'] = meetingInfo['meeting_name']
+    execMeetingInfo['room'] = {room_id : meetingInfo['room_id']}
+    execMeetingInfo['start_time'] = meetingInfo['start_time'].format("YYYY-MM-DD HH:mm:ss")
+    execMeetingInfo['end_time'] = meetingInfo['end_time'].format("YYYY-MM-DD HH:mm:ss")
+    execMeetingInfo['host'] = {user_id :meetingInfo['user_id'],name : meetingInfo['host']}
+    execMeetingInfo['recorder'] = {name : meetingInfo['recorder']}
+    execMeetingInfo['members'] = []
     meetingInfo['keys'].map((key) => {
-        meetingInfo['members'].push({name: meetingInfo['names'][key]})}
+      execMeetingInfo['members'].push({name: meetingInfo['names'][key]})}
         )
-    console.log(meetingInfo)
+    execMeetingInfo['topic'] = meetingInfo['topic']
+    execMeetingInfo['meetingAbstract'] = meetingInfo['meetingAbstract']
+    execMeetingInfo['remark'] = meetingInfo['remark']
+
+    console.log(execMeetingInfo)
     this.props.form.validateFields((err, values) => {
         if (!err) {
           if(this.props.type === 'add') {
-            meetingAdd(JSON.stringify(meetingInfo)).then((res)=>{
-              if (res.state == 1) {
+            meetingAdd(JSON.stringify(execMeetingInfo)).then((res)=>{
+              if (res.state == 2) {
                 message.success("添加成功")
+              } else if (res.state == 1){
+                message.error("成员中存在姓名不合法的情况")
+              } else if (res.state == 0) {
+                message.error("记录者不存在")
               } else {
-                message.error("添加失败")
+                message.error("未知错误")
               }
             }).catch((error)=>{
               message.error("系统错误")
             })
           } else {
-            meetingModify(JSON.stringify({...meetingInfo,
-            meetingId: this.props.data.meetingId})).then((res)=>{
+            meetingModify(JSON.stringify({...execMeetingInfo,
+            meetingId: this.props.data.meeting_id})).then((res)=>{
               if (res.state == 1) {
                 message.success("修改成功")
               } else {
@@ -168,15 +178,15 @@ class DeviceApp extends React.Component {
         </Steps>
         <Form style={{paddingTop: 20}} labelCol={{ span: 8 , offset: 2}} wrapperCol={{ span: 12 }} labelAlign='left' onSubmit={this.handleSubmit}>
         {currentStep === 0 && <Form.Item label="会议名称">
-          {getFieldDecorator('meetingName', {
-            initialValue: this.state.meetingName, 
+          {getFieldDecorator('meeting_name', {
+            initialValue: this.state.meeting_name, 
             rules: [{ required: true, message: '请输入会议名称' }],
             preserve: true,
           })(<Input placeholder="请输入会议名称" autoComplete="new-password"/>)}
         </Form.Item>}
         {currentStep === 0 && <Form.Item label="会议室ID">
-          {getFieldDecorator('roomId', {
-            initialValue: this.state.roomId, 
+          {getFieldDecorator('room_id', {
+            initialValue: this.state.room_id, 
             rules: [{ required: true, message: '请输入会议室ID' }],
             preserve: true,
           })(<Input placeholder="请输入会议室ID" autoComplete="new-password"/>)}
@@ -200,15 +210,15 @@ class DeviceApp extends React.Component {
                placeholder="请填写结束时间" style={{ width: '100%' }} format="YYYY-MM-DD HH:mm:ss" showTime={true}/>)}
           </Form.Item>}
           {currentStep === 1 && <Form.Item label="发起人Id">
-            {getFieldDecorator('hostId', {
-                initialValue: this.state.hostId,
+            {getFieldDecorator('user_id', {
+                initialValue: this.state.user_id,
                 rules: [{ required: true, message: '请输入发起人Id' }],
                 preserve: true,
             })(<Input autoComplete="new-password"/>)}
           </Form.Item>}
         {currentStep === 1 && <Form.Item label="发起人">
-          {getFieldDecorator('hostName', {
-            initialValue: this.state.hostName,
+          {getFieldDecorator('host', {
+            initialValue: this.state.host,
             rules: [{ required: true, message: '请输入发起人名称' }],
             preserve: true,
           })(<Input autoComplete="new-password"/>)}

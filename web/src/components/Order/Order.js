@@ -19,48 +19,21 @@ class Order extends React.Component {
         super(props);
         this.init = []
         this.state = {
-            baseArr: [
-                {   room: '会议室302',
-                    location: '南方科技大学 图书馆 302',
-                    list:[{time: '9', people: '赵韦铭', chosen: true},
-                    {time: '10', people: '', chosen: false},
-                    {time: '11', people: '', chosen: false},
-                    {time: '12', people: '', chosen: false},
-                    {time: '13', people: '', chosen: false},
-                    {time: '14', people: '', chosen: false},
-                    {time: '15', people: '', chosen: false},
-                    {time: '16', people: '唐德轩', chosen: true},
-                    {time: '17', people: '唐德轩', chosen: true},
-                    {time: '18', people: '', chosen: false}]
-                },
-                {   room: '会议室303',
-                    location: '南方科技大学 图书馆 303',
-                    list:[{time: '9', people: '杨宇杰', chosen: true},
-                    {time: '10', people: '杨宇杰', chosen: true},
-                    {time: '11', people: '', chosen: false},
-                    {time: '12', people: '', chosen: false},
-                    {time: '13', people: '', chosen: false},
-                    {time: '14', people: '', chosen: false},
-                    {time: '15', people: '唐德轩', chosen: true},
-                    {time: '16', people: '唐德轩', chosen: true},
-                    {time: '17', people: '', chosen: false},
-                    {time: '18', people: '', chosen: false}]
-                },
-            ],
+            baseArr: [],
             execArr: [],
             myName: '随便',
+            myOrder: {room: '', time: []},
             cascaderChosen: [],
             dayList: [],
             building: '',
             floor: '',
-            day: {start_time: '', end_time: ''}
+            day: {start_time: '', end_time: ''} 
         }
         this.cascaderLoadData = this.cascaderLoadData.bind(this)
         this.cascaderOnChange = this.cascaderOnChange.bind(this)
     }  
     componentDidMount() {
         let cookie = localStorage.getItem('cookie') || 0
-        console.log(cookie)
         const data = {cookie : cookie}    
         userLoginVerification(JSON.stringify(data)).then((res) => {
             if (res.state == 0) {
@@ -68,12 +41,9 @@ class Order extends React.Component {
             }
         })
         this.initExec()
-        this.setState({execArr : this.getAllResult(this.state.baseArr)})
     };
     initExec() {
-        meetingSearchAll().then((res)=>{
-            console.log(res)
-            this.init = res
+        meetingSearchAll().then((initArr)=>{
         })
         let cascaderChosen = []
         roomBuildingSearch().then((res)=>{
@@ -92,10 +62,52 @@ class Order extends React.Component {
         })
         this.dayListFormat()
     }
+    execInitArr (initArr) {
+        let baseArr = []
+        initArr.map((roomItem)=>{
+            let roomMeetingList = roomItem['meeting_list']
+            let tempList = []
+            for (let i = 9;i <= 18; i++) {
+                tempList.push({
+                    time: i,
+                    people: '',
+                    chosen: false,
+                    meetingName: '',
+                    meetingId: '',
+                    meetingState: ''
+                })
+            }
+            roomMeetingList.map((meetingItem)=>{
+                let start_time = meetingItem['startTime']
+                let end_time = meetingItem['endTime']
+                let beginTime = parseInt(moment(start_time,"YYYY/MM/DD HH:mm:ss").format("HH"))
+                let afterTime = parseInt(moment(end_time,"YYYY/MM/DD HH:mm:ss").format("HH"))
+                if (beginTime >= 9 && afterTime <= 18) {
+                    for (let i = beginTime; i <= afterTime; i++) {
+                        tempList[i - 9]['time'] = i
+                        tempList[i - 9]['people'] = meetingItem['hostName']
+                        tempList[i - 9]['meetingId'] = meetingItem['meetingId']
+                        tempList[i - 9]['meetingState'] = meetingItem['meetingState']
+                        tempList[i - 9]['meetingName'] = meetingItem['meetingName']
+                        tempList[i - 9]['chosen'] = true
+                    }
+                }
+            })
+            baseArr.push({
+                room_id: roomItem['room_id'],
+                room_name: roomItem['room_name'],
+                meetingList: tempList
+            })
+        })
+        this.setState({
+            baseArr: baseArr,
+            execArr: this.getAllResult(baseArr)
+        })
+    }
     dayListFormat() {
         let { day } = this.state
         let dayList = []
-        for (let i = 0; i <= 6; i++){
+        for (let i = -1; i <= 6; i++){
             dayList.push(
                {start_time: moment().add(i, 'days').format("YYYY-MM-DD 00:00:00"),
                 end_time: moment().add(i, 'day').format("YYYY-MM-DD 23:59:59"),
@@ -152,14 +164,14 @@ class Order extends React.Component {
             start_time: day['start_time'],
             end_time: day['end_time']
         }
-        console.log(data)
         if (data['building'] == '' || data['floor'] == '') {
             message.error('大楼或楼层没有选择哦')
         } else if (data['start_time'] == '' || data['end_time'] == '') {
             message.error('没有选择时间哦')
         } else {
             meetingSearch3(JSON.stringify(data)).then((res)=>{
-                console.log(res)
+                this.init = res
+                this.execInitArr(res) 
             })
         }
     }
@@ -197,9 +209,19 @@ class Order extends React.Component {
                     col: 1
                 })
             } else if (index > 0) {
+                // 如果名字相同，先判断是否是同一个meetingId
                 if (item.people === temp[temp.length - 1].people && item.people !== '') {
-                    temp[temp.length - 1].col++
-                    temp[temp.length - 1].afterTime = parseInt(item.time) + 1
+                    if (item.meetingId == temp[temp.length - 1].meetingId) {
+                        temp[temp.length - 1].col++
+                        temp[temp.length - 1].afterTime = parseInt(item.time) + 1    
+                    }else{
+                        temp.push({
+                            ...item,
+                            beforeTime: parseInt(item.time),
+                            afterTime: parseInt(item.time) + 1,
+                            col: 1
+                        })    
+                    }
                 } else {
                     temp.push({
                         ...item,
@@ -217,8 +239,7 @@ class Order extends React.Component {
                 result.push({
                     ...item,
                     afterSame: false,
-                    first: true,
-                    myChosen: false
+                    first: true
                     }
                 )
             } else {
@@ -254,23 +275,26 @@ class Order extends React.Component {
         arr.map((item)=>{
             result.push({
                 ...item,
-                list:this.execArrWithColSpan(item.list)})
+                meetingList:this.execArrWithColSpan(item.meetingList)})
         })
         return result
     }   
     addConference (value, e) {
     }
-    chooseBlock (list, room,e) {
-        let { baseArr, execArr } = this.state
+    chooseBlock (list, room_name,e) {
+        let { baseArr } = this.state
+        console.log('list',list)
+        console.log('room_name',room_name)
         let time = list.time
         for (let i = 0; i < baseArr.length ; i++){
-            if (baseArr[i]['room'] === room) {
-                let baseList = baseArr[i]['list']
+            if (baseArr[i]['room_name'] === room_name) {
+                let baseList = baseArr[i]['meetingList']
                 for (let j = 0; j < baseList.length; j++) {
                     if (baseList[j]['time'] == time) {
                         if (baseList[j]['people'] == this.state.myName) {
                             baseList[j]['people'] = ''
                             baseList[j]['chosen'] = 'false'    
+                            baseList[j]['meetingId'] = ''
                         } else if (baseList[j]['people'] != ''){
                             message.error('选过了哦')
                         } else {
@@ -281,9 +305,10 @@ class Order extends React.Component {
                 }
             }
         }
-        console.log(execArr)
         this.setState({baseArr : baseArr}, ()=>{
-            this.setState({execArr : this.getAllResult(baseArr)})
+            this.setState({execArr : this.getAllResult(baseArr)},()=>{
+                console.log(this.state.execArr)
+            })
         })
     }
     render() {    
@@ -318,18 +343,19 @@ class Order extends React.Component {
                     <Row style={{ padding: 20}}>
                         <Col span={24}>
                             <div style={{border: '1px solid #d9d9d9', padding: 20}}>
-                                <Title level={4} style={{padding: 10,paddingLeft: 0}}>{item.room}</Title>
-                                <div style={{color: '#d9d9d9', padding: 10,paddingLeft: 0}}>类型: {item.topic}</div>
+                                <Title level={4} style={{padding: 10,paddingLeft: 0}}>{item.room_name}</Title>
+                                <div style={{color: '#d9d9d9', padding: 10,paddingLeft: 0}}> {}</div>
                                 <table style={{ width: '100%',tableLayout:'fixed'}}>
                                     <tbody >
                                         <tr style={{height:100}}>
-                                            {item.list.map((listItem)=>{
+                                            {item.meetingList.map((listItem)=>{
                                                 return(
-                                                    <td onClick={(e)=>this.chooseBlock(listItem,item.room,e)} className={`item__chosen--${listItem.chosen} item__aftersame--${listItem.afterSame}`} style={{verticalAlign: 'top', cursor: 'pointer'}}>
+                                                    <td onClick={(e)=>this.chooseBlock(listItem,item.room_name,e)} className={`item__chosen--${listItem.chosen} item__aftersame--${listItem.afterSame}`} style={{verticalAlign: 'top', cursor: 'pointer'}}>
                                                         {listItem.first === true &&  
                                                         <div>
                                                             <div style={{color: 'white',fontSize: 14}}>{`${listItem.beforeTime}:00 - ${listItem.afterTime}:00`}</div> 
-                                                            <div style={{color: 'white'}}>{listItem.people}</div>
+                                                            <div style={{color: 'white'}}>{`${listItem.meetingName}`}</div>
+                                                            <div style={{color: 'white'}}>{`${listItem.people}`}</div>
                                                         </div>
                                                         } 
                                                     </td>

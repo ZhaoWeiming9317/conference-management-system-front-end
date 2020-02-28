@@ -1,9 +1,10 @@
 export const navList = [
-    {'label': '首页', 'key': 0, 'linkTo': '/main', 'type': "pie-chart" },
-    {'label': '会议预定', 'key': 1, 'linkTo': '/order', 'type': "pie-chart" },
-    {'label': '会议管理', 'key': 2, 'linkTo': '/meeting', 'type': "team"   },
-    {'label': '用户管理', 'key': 3, 'linkTo': '/user', 'type': "user"  },
-    {'label': '会议室管理', 'key': 4, 'linkTo': '/room', 'type': "home"   },
-    {'label': '设备管理', 'key': 5, 'linkTo': '/device', 'type': "desktop"   },
-    {'label': '表单管理', 'key': 6, 'linkTo': '/form', 'type': "form"   }
+    {'label': '首页', 'key': 0, 'linkTo': '/main', 'type': "pie-chart" ,'role':2},
+    {'label': '会议预定', 'key': 1, 'linkTo': '/order', 'type': "pie-chart" ,'role':2},
+    {'label': '信息通知', 'key': 2, 'linkTo': '/order', 'type': "pie-chart" ,'role':2},
+    {'label': '会议管理', 'key': 3, 'linkTo': '/meeting', 'type': "team", 'role':1},
+    {'label': '用户管理', 'key': 4, 'linkTo': '/user', 'type': "user"  ,'role':1},
+    {'label': '会议室管理', 'key': 5, 'linkTo': '/room', 'type': "home"   ,'role':1},
+    {'label': '设备管理', 'key': 6, 'linkTo': '/device', 'type': "desktop"   ,'role':1},
+    {'label': '表单管理', 'key': 7, 'linkTo': '/form', 'type': "form"  ,'role':1 }
 ]

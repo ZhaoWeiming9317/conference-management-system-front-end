@@ -45,7 +45,7 @@ const URL ={
     meetingSearchAll: HISTORY + '/meeting/meeting_search_all ',
     meetingSearch2: HISTORY + '/meeting/meeting_search2 ',
     meetingSearch3: HISTORY + '/meeting/meeting_search3 ',
-    meetingAdd: HISTORY + '/meeting/meeting_search ',
+    meetingAdd: HISTORY + '/meeting/meeting_add ',
     meetingModify: HISTORY + '/meeting/meeting_modify ',
     meetingDelete: HISTORY + '/meeting/meeting_delete ',
 }

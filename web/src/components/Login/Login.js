@@ -42,10 +42,11 @@ class Login extends React.Component {
 
     submitLogin = event => {
       const data = {username: this.state.username,password: this.state.password, role: this.state.role}
-      userLogin(JSON.stringify(data)).then((res)=>{  
+      userLogin(JSON.stringify(data)).then((res)=>{
           // 成功
           if (res.state == 1) {
             localStorage.setItem("cookie", res.set_cookie)
+            localStorage.setItem("role", data.role)
             this.props.login()
           } else {
             alert(res.message)

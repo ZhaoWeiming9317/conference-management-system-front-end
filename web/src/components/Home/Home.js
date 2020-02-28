@@ -43,6 +43,7 @@ class Home extends React.Component {
         userLoginExit({token : localStorage.getItem('cookie')}).then((res) => {
             if (res.state == 1) {
                 localStorage.removeItem('cookie')
+                localStorage.removeItem('role')
                 this.props.logout()
             } else {
                 this.props.logout()
@@ -68,13 +69,19 @@ class Home extends React.Component {
                 <Sider trigger={null} collapsible collapsed={this.state.collapsed}>
                     <div className="logo" />
                     <Menu onClick={this.handleNav} theme="dark" mode="inline" style={{ lineHeight: '40px' }} defaultSelectedKeys={['0']}>
-                        {navList.map((res) => (
-                            <Menu.Item key={res.key}>
-                                <Icon type={res.type} />
-                                <span>{res.label}</span>
-                                <Link to={res.linkTo}></Link>
-                            </Menu.Item>
-                        ))}
+                        {navList.map((res) => 
+                            {
+                            let role = localStorage.getItem('role') || 2
+                            if (res.role >= role) {
+                                return(
+                                    <Menu.Item key={res.key}>
+                                        <Icon type={res.type} />
+                                        <span>{res.label}</span>
+                                        <Link to={res.linkTo}></Link>
+                                    </Menu.Item>
+                                )}
+                            }
+                        )}
                     </Menu>
                 </Sider>
                 <Layout style={{ minHeight: '100vh' }}>
