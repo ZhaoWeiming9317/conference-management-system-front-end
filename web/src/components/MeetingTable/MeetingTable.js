@@ -272,8 +272,7 @@ class RoomTable extends React.Component {
             />
             <Modal
               visible={modalAddVisible}
-              title="添加会议室"
-              onOk={this.handleOk}
+              title="添加会议"
               onCancel={this.handleCancelAdd}
               footer={null}
               destroyOnClose
@@ -283,7 +282,6 @@ class RoomTable extends React.Component {
             <Modal
               visible={modalModifyVisible}
               title="修改会议室"
-              onOk={this.handleOk}
               onCancel={this.handleCancelModify}
               footer={null}
               destroyOnClose
@@ -293,7 +291,6 @@ class RoomTable extends React.Component {
             <Modal
               visible={modalDetailVisible}
               title="详细信息"
-              onOk={this.handleOk}
               onCancel={this.handleCancelDetail}
               footer={null}
               width={850}

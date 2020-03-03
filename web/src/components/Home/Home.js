@@ -11,7 +11,7 @@ import Device from '../Device/Device'
 import Main from '../Main/Main'
 import Form from '../Form/Form'
 import { logout } from '../../actions/index'
-import { Avatar, Badge, Layout, Menu, Icon, Typography, Row, Col} from 'antd'
+import { Avatar, Badge, Layout, Menu, Icon, Typography, Row, Col,Popover,} from 'antd'
 import { navList } from '../../constants/navListConstants' 
 const { Header, Sider, Content, } = Layout;
 const { Title } = Typography;
@@ -63,6 +63,14 @@ class Home extends React.Component {
     }
     render() {    
         let { nav } = this.state
+        const text = <span>消息</span>;
+        const content = (
+        <div>
+            <p>Content</p>
+            <p>Content</p>
+        </div>
+        );
+
         return (
             <BrowserRouter>
                 <Layout>
@@ -106,9 +114,11 @@ class Home extends React.Component {
                         <Col span={14}>
                         </Col>
                         <Col span={1}>
-                            <Badge count={1}>
-                                <Avatar shape="square" icon="user" />
-                            </Badge>
+                            <Popover placement="bottom" title={text} content={content} >
+                                <Badge count={1}>
+                                    <Avatar style={{cursor: 'pointer'}} shape="square" icon="user" />
+                                </Badge>
+                            </Popover>
                         </Col>
                         <Col span={1}>
                             <Icon type="close" style={{width: 50, fontSize: 22}} onClick={this.quit}/>

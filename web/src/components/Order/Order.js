@@ -5,7 +5,9 @@ import { meetingSearch3, meetingSearchCertain, meetingSearchAll } from '../../ap
 import { roomBuildingSearch, roomFloorSearch } from '../../api/apiRoom'
 import { connect } from 'react-redux';
 import { logout } from '../../actions/index'
-import { Row, Col, Typography, Cascader, Button, message } from 'antd';
+import { Row, Col, Typography, Cascader, Button, message, Modal } from 'antd';
+import MeetingAdd from '../../components/MeetingAdd/MeetingAdd'
+
 const { Title } = Typography;
 import moment from 'moment'
 
@@ -27,7 +29,9 @@ class Order extends React.Component {
             dayList: [],
             building: '',
             floor: '',
-            day: {start_time: '', end_time: ''} 
+            day: {start_time: '', end_time: ''} ,
+            modalAddVisible: false,
+            userAddMeetingData: []
         }
         this.cascaderLoadData = this.cascaderLoadData.bind(this)
         this.cascaderOnChange = this.cascaderOnChange.bind(this)
@@ -107,7 +111,7 @@ class Order extends React.Component {
     dayListFormat() {
         let { day } = this.state
         let dayList = []
-        for (let i = -1; i <= 6; i++){
+        for (let i = 0; i <= 6; i++){
             dayList.push(
                {start_time: moment().add(i, 'days').format("YYYY-MM-DD 00:00:00"),
                 end_time: moment().add(i, 'day').format("YYYY-MM-DD 23:59:59"),
@@ -279,16 +283,44 @@ class Order extends React.Component {
         })
         return result
     }   
-    addConference (value, e) {
-    }
     chooseBlock (list, room_name,e) {
         let { baseArr } = this.state
         console.log('list',list)
         console.log('room_name',room_name)
-        let time = list.time
+        let time = parseInt(list.time)
         for (let i = 0; i < baseArr.length ; i++){
             if (baseArr[i]['room_name'] === room_name) {
                 let baseList = baseArr[i]['meetingList']
+                let nowChooseList = []
+                let flag = 'add'
+                for (let j = 0; j < baseList.length; j++) {
+                    if (baseList[j]['time'] == time) {
+                        if (baseList[j]['chosen'] == 'myself') {
+                            flag = "delete"
+                        }
+                    } else if (baseList[j]['chosen'] == 'myself') {
+                        nowChooseList.push(baseList[j]['time'])
+                    }
+                }
+                if ((nowChooseList.length >= 2 && flag == 'add')) {
+                    message.error('不能预定超过两个小时')
+                    break
+                } else {
+                    if (flag == 'add') {
+                        nowChooseList.push(time)
+                        nowChooseList.sort()
+                        let canbreak = false
+                        for (let m = 0; m < nowChooseList.length - 1; m++) {
+                            if (nowChooseList[m] + 1 != nowChooseList[m + 1]) {
+                                message.error('会议时间应该连续')
+                                canbreak = true
+                            }
+                        }
+                        if (canbreak == true) {
+                            break
+                        }
+                    }
+                }
                 for (let j = 0; j < baseList.length; j++) {
                     if (baseList[j]['time'] == time) {
                         if (baseList[j]['people'] == this.state.myName) {
@@ -311,9 +343,40 @@ class Order extends React.Component {
             })
         })
     }
+    addConference  (room_id,e) {
+        let { execArr } = this.state
+        let start_time = ''
+        let end_time = ''
+        let nowDay = moment(start_time,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD")
+        let canAdd = false
+        for (let i = 0; i < execArr.length ; i++){
+            if (execArr[i]['room_id'] === room_id) {
+                let execMeetingList = execArr[i]['meetingList']
+                for (let j = 0; j < execMeetingList.length ; j++) {
+                    console.log(execMeetingList[j]['chosen'])
+                    console.log(execMeetingList[j]['afterSame'])
+                    if(execMeetingList[j]['chosen'] == 'myself' && !execMeetingList[j]['afterSame']) {
+                        start_time = `${nowDay} ${execMeetingList[j]['beforeTime']}:00:00`
+                        end_time = `${nowDay} ${execMeetingList[j]['afterTime']}:00:00` 
+                        canAdd = true
+                    }
+                }
+            }
+        }
+        if (canAdd) {
+            this.setState({
+                modalAddVisible: true,
+            });          
+        } else {
+            message.error('请先选择时间')
+        }
+    }
+    handleCancelAdd = () => {
+        this.setState({ modalAddVisible: false});
+    }
     render() {    
         let { isLogin } = this.props
-        let { execArr, cascaderChosen, dayList } = this.state
+        let { execArr, cascaderChosen, dayList, modalAddVisible, userAddMeetingData } = this.state
         return (
             <div>
                 <Row style={{ padding: 20}}>
@@ -373,7 +436,16 @@ class Order extends React.Component {
                                         </tr> */}
                                     </tbody>
                                 </table>
-                                <Button style={{ marginTop: 20}} onClick={(e)=>this.addConference(item,e)}>添加会议</Button>
+                                <Modal
+                                    visible={modalAddVisible}
+                                    title="添加会议"
+                                    onCancel={this.handleCancelAdd}
+                                    footer={null}
+                                    destroyOnClose
+                                >
+                                <MeetingAdd type="userAdd" userAddMeeting={userAddMeetingData}></MeetingAdd>
+                                </Modal>
+                                <Button style={{ marginTop: 20}} onClick={(e)=>this.addConference(item.room_id,e)}>添加会议</Button>
                             </div>
                         </Col>
                     </Row>)
