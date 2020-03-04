@@ -1,8 +1,14 @@
 import React from 'react'
+import './MeetingAdd.css'
+
 import { connect } from 'react-redux';
-import { Form, Input, Button, message, Steps, DatePicker, Icon } from 'antd';
-import {meetingAdd, meetingDelete} from '../../api/apiMeeting';
+import { Form, Input, Button, message, Steps, DatePicker, Icon , Select } from 'antd';
+const { Option } = Select;
 const { Step } = Steps;
+
+import {meetingAdd, meetingDelete} from '../../api/apiMeeting';
+import {userNameSearch} from '../../api/apiUser';
+
 import moment from 'moment'
 import locale from 'antd/lib/date-picker/locale/zh_CN'
 import 'moment/locale/zh-cn'
@@ -25,13 +31,22 @@ class DeviceApp extends React.Component {
       meetingAbstract:'',
       remark: '',
       currentStep: 0,
+      searchDown: [],
+      tempValue: '',
+      scrollPage: 1
     }
     this.id = 0
+    this.timeout = null
   }
   componentWillMount() {
-    let data = this.props.data
+    let {data,userAddMeetingData} = this.props
     if (this.props.type === 'modify') {
         this.setState({...data,
+        })
+    } else if(this.props.type === 'userAdd'){
+        this.setState({...userAddMeetingData,
+        },()=>{
+          console.log(userAddMeetingData)
         })
     }
   }
@@ -98,12 +113,34 @@ class DeviceApp extends React.Component {
   };
 
   handleSelectChange = value => {
-    console.log(value);
     this.props.form.setFieldsValue({
       note: `Hi, ${value === 'male' ? 'man' : 'lady'}!`,
     });
   };
 
+  disabledDate = (current) => {
+    // Can not select days before today and today
+    return current < moment().add(-1, 'days');
+  }
+
+  range = (start, end) => {
+    const result = [];
+    for (let i = start; i < end; i++) {
+      result.push(i);
+    }
+    return result;
+  }
+  
+  disabledDateTime = () => {
+    console.log(this)
+    return {
+      disabledHours: () => this.range(0, 9).concat(this.range(19, 24)),
+      disabledMinutes: () => this.range(1, 60),
+      disabledSeconds: () => this.range(1, 60),
+    };
+  }
+  
+  
   remove = k => {
     const { form } = this.props;
     // can use data-binding to get
@@ -131,16 +168,61 @@ class DeviceApp extends React.Component {
     });
   };
 
+  searchName = (page,e) => {
+    let { tempValue,searchDown } = this.state
+    let scrollPage = page
+    this.setState({tempValue, scrollPage})
+    setTimeout(() => {
+      const { getFieldsValue } = this.props.form;
+      let meetingInfo = getFieldsValue()
+      console.log(meetingInfo)
+      let data = {
+        name: tempValue || '',
+        start_time:this.state.start_time,
+        end_time:this.state.end_times,
+        page: page,
+        volume: 5
+      }
+      userNameSearch(JSON.stringify(data)).then((res)=>{
+        console.log(res)
+        if (page == 1) {searchDown = []}
+        res.list.map(r => {
+          searchDown.push({
+            value: r['name'],
+            text: r['name'],
+          });
+        });
+        console.log(searchDown)
+        this.setState({
+          searchDown
+        })
+      })  
+    }, 0);
+  }
+
+  searchScroll = e => {
+      e.persist();
+      const { target } = e;
+      if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
+        const { scrollPage } = this.state;
+        const nextScrollPage = scrollPage + 1;
+        this.setState({ scrollPage: nextScrollPage });
+        this.searchName(nextScrollPage); // 调用api方法
+     }
+ };
+    
   render() {
     const { getFieldDecorator, getFieldValue } = this.props.form;
+    const { type } = this.props;
     const { currentStep } = this.state;
     getFieldDecorator('keys', { initialValue: [] });
     const keys = getFieldValue('keys');
     const formItemLayout = {
         labelCol: { span: 8 , offset: 2},
-        wrapperCol: { span: 12 },
+        wrapperCol: { span: 14 },
         labelAlign: 'left'
       };
+    const options = this.state.searchDown.map(d => <Option key={d.value}>{d.text}</Option>);
     const formItems = keys.map((k, index) => (
       <Form.Item
         {...formItemLayout}
@@ -158,8 +240,19 @@ class DeviceApp extends React.Component {
             },
           ],
           preserve: true,
-        })(<Input placeholder="参会人员名字" style={{ width: '60%', marginRight: 8 }} />)}
-        {keys.length > 1 ? (
+        })(<Select style={{height:"50px"}} placeholder="参会人员名字" 
+        value={this.state.tempValue}
+        style={{ width: '80%', marginRight: 8 }} 
+        onChange={(e)=>this.searchName(1,e)} 
+        onFocus={(e)=>this.searchName(1,e)}
+        notFoundContent={null}
+        onPopupScroll={this.searchScroll}
+        showSearch
+        allowClear>
+          {options}
+        </Select>
+        )}
+        {keys.length >= 1 ? (
           <Icon
             className="dynamic-delete-button"
             type="minus-circle-o"
@@ -184,29 +277,72 @@ class DeviceApp extends React.Component {
             preserve: true,
           })(<Input placeholder="请输入会议名称" autoComplete="new-password"/>)}
         </Form.Item>}
-        {currentStep === 0 && <Form.Item label="会议室ID">
+        {currentStep === 0  && type === 'add' && <Form.Item label="会议室ID">
           {getFieldDecorator('room_id', {
             initialValue: this.state.room_id, 
             rules: [{ required: true, message: '请输入会议室ID' }],
             preserve: true,
           })(<Input placeholder="请输入会议室ID" autoComplete="new-password"/>)}
         </Form.Item>}
-        {currentStep === 0 && <Form.Item label="开始时间">
+        {currentStep === 0 && type === 'add' && <Form.Item label="开始时间">
             {getFieldDecorator('start_time', {
               rules: [
                 { required: true, message: '请填写开始时间' },
               ],
               preserve: true, // 即便字段不再使用，也保留该字段的值（做分布表单的关键）
             })(<DatePicker locale={locale}
-               placeholder="请填写开始时间" style={{ width: '100%' }} format="YYYY-MM-DD HH:mm:ss" showTime={true}/>)}
+            placeholder="请填写开始时间" style={{ width: '100%' }} format="YYYY-MM-DD HH:mm:ss"
+            showTime={{
+              defaultValue: moment('09:00:00', 'HH:mm:ss'),
+            }}             
+            disabledDate={this.disabledDate}
+            disabledTime={this.disabledDateTime}
+            showToday={false}
+         />)}
           </Form.Item>}
-          {currentStep === 0 && <Form.Item label="结束时间">
+          {currentStep === 0 && type === 'add' && <Form.Item label="结束时间">
             {getFieldDecorator('end_time', {
               rules: [
                 { required: true, message: '请填写结束时间' },
               ],
               preserve: true, // 即便字段不再使用，也保留该字段的值（做分布表单的关键）
             })(<DatePicker locale={locale}
+               placeholder="请填写结束时间" style={{ width: '100%' }} format="YYYY-MM-DD HH:mm:ss" 
+               showTime={{
+                  defaultValue: moment('09:00:00', 'HH:mm:ss'),
+                }}             
+               disabledDate={this.disabledDate}
+               disabledTime={this.disabledDateTime}
+               showToday={false}
+         />)}
+          </Form.Item>}
+          {currentStep === 0 && type === 'userAdd' && <Form.Item label="会议室ID">
+          {getFieldDecorator('room_id', {
+            initialValue: this.state.room_id, 
+            rules: [{ required: true, message: '请输入会议室ID' }],
+            preserve: true,
+          })(<Input placeholder="请输入会议室ID" disabled autoComplete="new-password"/>)}
+        </Form.Item>}
+          {currentStep === 0 && type === 'userAdd' && <Form.Item label="开始时间">
+            {getFieldDecorator('start_time', {
+              initialValue: moment(this.state.start_time), 
+              rules: [
+                { required: true, message: '请填写开始时间' },
+              ],
+              preserve: true, // 即便字段不再使用，也保留该字段的值（做分布表单的关键）
+            })(<DatePicker locale={locale}
+              disabled
+            placeholder="请填写开始时间" style={{ width: '100%' }} format="YYYY-MM-DD HH:mm:ss" showTime={true}/>)}
+          </Form.Item>}
+          {currentStep === 0 && type === 'userAdd' && <Form.Item label="结束时间">
+            {getFieldDecorator('end_time', {
+              initialValue: moment(this.state.end_time), 
+              rules: [
+                { required: true, message: '请填写结束时间' },
+              ],
+              preserve: true, // 即便字段不再使用，也保留该字段的值（做分布表单的关键）
+            })(<DatePicker locale={locale}
+               disabled
                placeholder="请填写结束时间" style={{ width: '100%' }} format="YYYY-MM-DD HH:mm:ss" showTime={true}/>)}
           </Form.Item>}
           {currentStep === 1 && <Form.Item label="发起人Id">
@@ -214,25 +350,33 @@ class DeviceApp extends React.Component {
                 initialValue: this.state.user_id,
                 rules: [{ required: true, message: '请输入发起人Id' }],
                 preserve: true,
-            })(<Input autoComplete="new-password"/>)}
+            })(<Input disabled={ type === 'userAdd' && true} autoComplete="new-password"/>)}
           </Form.Item>}
         {currentStep === 1 && <Form.Item label="发起人">
           {getFieldDecorator('host', {
             initialValue: this.state.host,
             rules: [{ required: true, message: '请输入发起人名称' }],
             preserve: true,
-          })(<Input autoComplete="new-password"/>)}
+          })(<Input disabled={ type === 'userAdd' && true} autoComplete="new-password"/>)}
         </Form.Item>}
         {currentStep === 1 && <Form.Item label="记录人员">
           {getFieldDecorator('recorder', {
             initialValue: this.state.recorder,
             rules: [{ required: true }],
             preserve: true,
-          })(<Input autoComplete="new-password"/>)}
+          })(<Select placeholder="记录人员名字" 
+          style={{ width: '80%', marginRight: 8 }} 
+          onChange={(e)=>this.searchName(1,e)} 
+          onFocus={(e)=>this.searchName(1,e)}
+          notFoundContent={null}
+          showSearch
+          allowClear>
+            {options}
+          </Select>)}
         </Form.Item>}
-        {currentStep === 1 && formItems}
+          {currentStep === 1 && formItems}
         {currentStep === 1 && <Form.Item label="增加参会人员">
-          <Button type="dashed" onClick={this.add} style={{ width: '60%' }}>
+          <Button type="dashed" onClick={this.add} style={{ width: '100%' }}>
             <Icon type="plus" /> 增加参会人员
           </Button>
         </Form.Item>}

@@ -16,6 +16,7 @@ const URL ={
     userLoginVerification: HISTORY + '/user/login_verification',
     userLoginExit: HISTORY + '/user/login_exit',
     userAdminSearchCertain:HISTORY + '/user/admin_search_certain',
+    userNameSearch: HISTORY + '/user/user_name_search',
 
     roomAdd: HISTORY + '/room/room_add',
     roomDelete: HISTORY + '/room/room_delete',

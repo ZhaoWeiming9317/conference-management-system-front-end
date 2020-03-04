@@ -3,6 +3,7 @@ import './Order.sass'
 import { userLoginVerification } from '../../api/apiUser'
 import { meetingSearch3, meetingSearchCertain, meetingSearchAll } from '../../api/apiMeeting'
 import { roomBuildingSearch, roomFloorSearch } from '../../api/apiRoom'
+import { userNameSearch } from '../../api/apiUser'
 import { connect } from 'react-redux';
 import { logout } from '../../actions/index'
 import { Row, Col, Typography, Cascader, Button, message, Modal } from 'antd';
@@ -23,7 +24,8 @@ class Order extends React.Component {
         this.state = {
             baseArr: [],
             execArr: [],
-            myName: '随便',
+            host: '',
+            user_id: 1,
             myOrder: {room: '', time: []},
             cascaderChosen: [],
             dayList: [],
@@ -42,6 +44,11 @@ class Order extends React.Component {
         userLoginVerification(JSON.stringify(data)).then((res) => {
             if (res.state == 0) {
                 this.props.logout()
+            } else {
+                this.setState({
+                    host: res.username,
+                    user_id: res.user_id
+                })
             }
         })
         this.initExec()
@@ -283,10 +290,17 @@ class Order extends React.Component {
         })
         return result
     }   
+    compare = function (x, y) {//比较函数
+        if (x < y) {
+            return -1;
+        } else if (x > y) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
     chooseBlock (list, room_name,e) {
         let { baseArr } = this.state
-        console.log('list',list)
-        console.log('room_name',room_name)
         let time = parseInt(list.time)
         for (let i = 0; i < baseArr.length ; i++){
             if (baseArr[i]['room_name'] === room_name) {
@@ -308,7 +322,7 @@ class Order extends React.Component {
                 } else {
                     if (flag == 'add') {
                         nowChooseList.push(time)
-                        nowChooseList.sort()
+                        nowChooseList.sort(this.compare)
                         let canbreak = false
                         for (let m = 0; m < nowChooseList.length - 1; m++) {
                             if (nowChooseList[m] + 1 != nowChooseList[m + 1]) {
@@ -323,14 +337,14 @@ class Order extends React.Component {
                 }
                 for (let j = 0; j < baseList.length; j++) {
                     if (baseList[j]['time'] == time) {
-                        if (baseList[j]['people'] == this.state.myName) {
+                        if (baseList[j]['people'] == this.state.host) {
                             baseList[j]['people'] = ''
                             baseList[j]['chosen'] = 'false'    
                             baseList[j]['meetingId'] = ''
                         } else if (baseList[j]['people'] != ''){
                             message.error('选过了哦')
                         } else {
-                            baseList[j]['people'] = this.state.myName
+                            baseList[j]['people'] = this.state.host
                             baseList[j]['chosen'] = 'myself'    
                         }
                     }
@@ -339,36 +353,48 @@ class Order extends React.Component {
         }
         this.setState({baseArr : baseArr}, ()=>{
             this.setState({execArr : this.getAllResult(baseArr)},()=>{
-                console.log(this.state.execArr)
             })
         })
     }
+    //num传入的数字，n需要的字符长度
+    //js 数字前面自动补零
+    PrefixInteger = (num, n) => {
+        return (Array(n).join(0) + num).slice(-n);
+    }
     addConference  (room_id,e) {
-        let { execArr } = this.state
+        let { execArr, day } = this.state
         let start_time = ''
         let end_time = ''
-        let nowDay = moment(start_time,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD")
+        let nowDay = moment(day['start_time'],"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD")
         let canAdd = false
         for (let i = 0; i < execArr.length ; i++){
             if (execArr[i]['room_id'] === room_id) {
                 let execMeetingList = execArr[i]['meetingList']
                 for (let j = 0; j < execMeetingList.length ; j++) {
-                    console.log(execMeetingList[j]['chosen'])
-                    console.log(execMeetingList[j]['afterSame'])
                     if(execMeetingList[j]['chosen'] == 'myself' && !execMeetingList[j]['afterSame']) {
-                        start_time = `${nowDay} ${execMeetingList[j]['beforeTime']}:00:00`
-                        end_time = `${nowDay} ${execMeetingList[j]['afterTime']}:00:00` 
+                        start_time = `${nowDay} ${this.PrefixInteger(execMeetingList[j]['beforeTime'],2)}:00:00`
+                        end_time = `${nowDay} ${this.PrefixInteger(execMeetingList[j]['afterTime'],2)}:00:00` 
                         canAdd = true
                     }
                 }
+                if (canAdd) {
+                    this.setState({
+                            userAddMeetingData: {room_id:room_id,
+                            start_time:start_time,
+                            end_time:end_time,
+                            host: this.state.host,
+                            user_id:this.state.user_id}
+                    },()=>{
+                        console.log(this.state.userAddMeetingData)
+                        this.setState({
+                            modalAddVisible: true
+                        })     
+                    })
+                } else {
+                    message.error('请先选择时间')
+                }
+        
             }
-        }
-        if (canAdd) {
-            this.setState({
-                modalAddVisible: true,
-            });          
-        } else {
-            message.error('请先选择时间')
         }
     }
     handleCancelAdd = () => {
@@ -443,9 +469,9 @@ class Order extends React.Component {
                                     footer={null}
                                     destroyOnClose
                                 >
-                                <MeetingAdd type="userAdd" userAddMeeting={userAddMeetingData}></MeetingAdd>
+                                <MeetingAdd type="userAdd" userAddMeetingData={userAddMeetingData}></MeetingAdd>
                                 </Modal>
-                                <Button style={{ marginTop: 20}} onClick={(e)=>this.addConference(item.room_id,e)}>添加会议</Button>
+                                <Button name={item.room_name} style={{ marginTop: 20}} onClick={(e)=>this.addConference(item.room_id,e)}>添加会议</Button>
                             </div>
                         </Col>
                     </Row>)

@@ -1,0 +1,4 @@
+.ant-menu-submenu > .ant-menu {
+    height: 50px;
+    overflow: auto;
+}

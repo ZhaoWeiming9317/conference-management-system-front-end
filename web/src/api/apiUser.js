@@ -118,3 +118,12 @@ export function userLoginExit(data) {
         data: data || {}
     })
 }
+
+export function userNameSearch(data) {
+    return server({
+        url: url.userNameSearch,
+        method: 'post',
+        dataType: "json",
+        data: data || {}
+    })
+}
