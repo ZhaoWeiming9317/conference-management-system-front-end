@@ -1,12 +1,11 @@
 import React from 'react'
 import './Order.sass'
-import { userLoginVerification } from '../../api/apiUser'
+import { userLoginVerification, userShowInfo } from '../../api/apiUser'
 import { meetingSearch3, meetingSearchCertain, meetingSearchAll } from '../../api/apiMeeting'
 import { roomBuildingSearch, roomFloorSearch } from '../../api/apiRoom'
-import { userNameSearch } from '../../api/apiUser'
 import { connect } from 'react-redux';
 import { logout } from '../../actions/index'
-import { Row, Col, Typography, Cascader, Button, message, Modal } from 'antd';
+import { Row, Col, Typography, Cascader, Button, message, Modal, Dropdown, Menu} from 'antd';
 import MeetingAdd from '../../components/MeetingAdd/MeetingAdd'
 
 const { Title } = Typography;
@@ -24,7 +23,7 @@ class Order extends React.Component {
         this.state = {
             baseArr: [],
             execArr: [],
-            host: '',
+            hostName: '',
             user_id: 1,
             myOrder: {room: '', time: []},
             cascaderChosen: [],
@@ -33,7 +32,10 @@ class Order extends React.Component {
             floor: '',
             day: {start_time: '', end_time: ''} ,
             modalAddVisible: false,
-            userAddMeetingData: []
+            modalModifyVisible: false,
+            userMeetingData: [],
+            nowContextMenuMeetingId: 1, // 会议右键的id
+            canChooseContextMenu: false
         }
         this.cascaderLoadData = this.cascaderLoadData.bind(this)
         this.cascaderOnChange = this.cascaderOnChange.bind(this)
@@ -46,8 +48,15 @@ class Order extends React.Component {
                 this.props.logout()
             } else {
                 this.setState({
-                    host: res.username,
                     user_id: res.user_id
+                },()=>{
+                    userShowInfo(JSON.stringify({username:res.username})).then((res)=>{
+                        console.log(res)
+                        this.setState({
+                            hostName: res.name
+                        })
+                    })
+
                 })
             }
         })
@@ -81,7 +90,7 @@ class Order extends React.Component {
             for (let i = 9;i <= 18; i++) {
                 tempList.push({
                     time: i,
-                    people: '',
+                    hostName: '',
                     chosen: false,
                     meetingName: '',
                     meetingId: '',
@@ -94,13 +103,17 @@ class Order extends React.Component {
                 let beginTime = parseInt(moment(start_time,"YYYY/MM/DD HH:mm:ss").format("HH"))
                 let afterTime = parseInt(moment(end_time,"YYYY/MM/DD HH:mm:ss").format("HH"))
                 if (beginTime >= 9 && afterTime <= 18) {
-                    for (let i = beginTime; i <= afterTime; i++) {
+                    for (let i = beginTime; i < afterTime; i++) {
                         tempList[i - 9]['time'] = i
-                        tempList[i - 9]['people'] = meetingItem['hostName']
+                        tempList[i - 9]['hostName'] = meetingItem['hostName']
                         tempList[i - 9]['meetingId'] = meetingItem['meetingId']
                         tempList[i - 9]['meetingState'] = meetingItem['meetingState']
                         tempList[i - 9]['meetingName'] = meetingItem['meetingName']
-                        tempList[i - 9]['chosen'] = true
+                        if (tempList[i - 9]['hostName'] == this.state.hostName) {
+                            tempList[i - 9]['chosen'] = 'myself'
+                        } else {
+                            tempList[i - 9]['chosen'] = 'true'
+                        }
                     }
                 }
             })
@@ -118,7 +131,7 @@ class Order extends React.Component {
     dayListFormat() {
         let { day } = this.state
         let dayList = []
-        for (let i = 0; i <= 6; i++){
+        for (let i = -1; i <= 6; i++){
             dayList.push(
                {start_time: moment().add(i, 'days').format("YYYY-MM-DD 00:00:00"),
                 end_time: moment().add(i, 'day').format("YYYY-MM-DD 23:59:59"),
@@ -221,7 +234,7 @@ class Order extends React.Component {
                 })
             } else if (index > 0) {
                 // 如果名字相同，先判断是否是同一个meetingId
-                if (item.people === temp[temp.length - 1].people && item.people !== '') {
+                if (item.hostName === temp[temp.length - 1].hostName && item.hostName !== '') {
                     if (item.meetingId == temp[temp.length - 1].meetingId) {
                         temp[temp.length - 1].col++
                         temp[temp.length - 1].afterTime = parseInt(item.time) + 1    
@@ -309,10 +322,10 @@ class Order extends React.Component {
                 let flag = 'add'
                 for (let j = 0; j < baseList.length; j++) {
                     if (baseList[j]['time'] == time) {
-                        if (baseList[j]['chosen'] == 'myself') {
+                        if (baseList[j]['chosen'] == 'myselfTemp') {
                             flag = "delete"
                         }
-                    } else if (baseList[j]['chosen'] == 'myself') {
+                    } else if (baseList[j]['chosen'] == 'myselfTemp') {
                         nowChooseList.push(baseList[j]['time'])
                     }
                 }
@@ -337,15 +350,15 @@ class Order extends React.Component {
                 }
                 for (let j = 0; j < baseList.length; j++) {
                     if (baseList[j]['time'] == time) {
-                        if (baseList[j]['people'] == this.state.host) {
-                            baseList[j]['people'] = ''
+                        if (baseList[j]['hostName'] == this.state.hostName && baseList[j]['chosen'] != 'myself' && baseList[j]['chosen'] != 'true') {
+                            baseList[j]['hostName'] = ''
                             baseList[j]['chosen'] = 'false'    
                             baseList[j]['meetingId'] = ''
-                        } else if (baseList[j]['people'] != ''){
-                            message.error('选过了哦')
+                        } else if (baseList[j]['chosen'] == 'myself' || baseList[j]['chosen'] == 'true'){
+                            message.error('选过了哦,更多操作点击右键')
                         } else {
-                            baseList[j]['people'] = this.state.host
-                            baseList[j]['chosen'] = 'myself'    
+                            baseList[j]['hostName'] = this.state.hostName
+                            baseList[j]['chosen'] = 'myselfTemp'    
                         }
                     }
                 }
@@ -356,6 +369,7 @@ class Order extends React.Component {
             })
         })
     }
+
     //num传入的数字，n需要的字符长度
     //js 数字前面自动补零
     PrefixInteger = (num, n) => {
@@ -371,7 +385,7 @@ class Order extends React.Component {
             if (execArr[i]['room_id'] === room_id) {
                 let execMeetingList = execArr[i]['meetingList']
                 for (let j = 0; j < execMeetingList.length ; j++) {
-                    if(execMeetingList[j]['chosen'] == 'myself' && !execMeetingList[j]['afterSame']) {
+                    if(execMeetingList[j]['chosen'] == 'myselfTemp' && !execMeetingList[j]['afterSame']) {
                         start_time = `${nowDay} ${this.PrefixInteger(execMeetingList[j]['beforeTime'],2)}:00:00`
                         end_time = `${nowDay} ${this.PrefixInteger(execMeetingList[j]['afterTime'],2)}:00:00` 
                         canAdd = true
@@ -379,13 +393,13 @@ class Order extends React.Component {
                 }
                 if (canAdd) {
                     this.setState({
-                            userAddMeetingData: {room_id:room_id,
+                            userMeetingData: {room_id:room_id,
                             start_time:start_time,
                             end_time:end_time,
-                            host: this.state.host,
+                            hostName: this.state.hostName,
                             user_id:this.state.user_id}
                     },()=>{
-                        console.log(this.state.userAddMeetingData)
+                        console.log(this.state.userMeetingData)
                         this.setState({
                             modalAddVisible: true
                         })     
@@ -397,12 +411,48 @@ class Order extends React.Component {
             }
         }
     }
-    handleCancelAdd = () => {
-        this.setState({ modalAddVisible: false});
+    onClickMenu = ({ key }) => {
+        let { nowContextMenuMeetingId } = this.state
+        console.log('hai 哈哈哈哈')
+        setTimeout(()=> {
+            console.log(key)
+            if ( key == "delete" ) {
+
+            } else if ( key == "modify" ) {
+                meetingSearchCertain(JSON.stringify({meeting_id: nowContextMenuMeetingId})).then((res)=>{
+                    let userMeetingData = res
+                    this.setState(
+                        { userMeetingData },
+                        ()=>{
+                            this.setState(
+                                { modalModifyVisible : true }
+                            )
+                        }
+                    )
+                })
+            } else {
+    
+            }
+        },0)
+    }
+    //右键获得
+    getInfoMation = (list, e) => {
+        this.setState({nowContextMenuMeetingId: list.meetingId})
+    }
+    handleCancel = () => {
+        this.setState({ modalAddVisible: false,modalModifyVisible: false});
+        this.buildFloorDaySubmit()
     }
     render() {    
         let { isLogin } = this.props
-        let { execArr, cascaderChosen, dayList, modalAddVisible, userAddMeetingData } = this.state
+        let { execArr, cascaderChosen, dayList, modalAddVisible, modalModifyVisible, userMeetingData } = this.state
+        let menu =(
+            <Menu onClick={(e)=>this.onClickMenu(e)}>
+              <Menu.Item key="modify">修改</Menu.Item>
+              <Menu.Item key="delete">删除</Menu.Item>
+              <Menu.Item key="detail">详细</Menu.Item>
+            </Menu>
+          )    
         return (
             <div>
                 <Row style={{ padding: 20}}>
@@ -439,15 +489,20 @@ class Order extends React.Component {
                                         <tr style={{height:100}}>
                                             {item.meetingList.map((listItem)=>{
                                                 return(
-                                                    <td onClick={(e)=>this.chooseBlock(listItem,item.room_name,e)} className={`item__chosen--${listItem.chosen} item__aftersame--${listItem.afterSame}`} style={{verticalAlign: 'top', cursor: 'pointer'}}>
-                                                        {listItem.first === true &&  
-                                                        <div>
-                                                            <div style={{color: 'white',fontSize: 14}}>{`${listItem.beforeTime}:00 - ${listItem.afterTime}:00`}</div> 
-                                                            <div style={{color: 'white'}}>{`${listItem.meetingName}`}</div>
-                                                            <div style={{color: 'white'}}>{`${listItem.people}`}</div>
-                                                        </div>
-                                                        } 
-                                                    </td>
+                                                    <Dropdown overlay={ menu } trigger={['contextMenu']} disabled={ listItem.chosen != 'myself' && true }>
+                                                        <td onContextMenu={(e)=>this.getInfoMation(listItem,item.room_name,e)} 
+                                                        onClick={(e)=>this.chooseBlock(listItem,item.room_name,e)} 
+                                                        className={`item__chosen--${listItem.chosen} item__aftersame--${listItem.afterSame}`} 
+                                                        style={{verticalAlign: 'top', cursor: 'pointer'}}>
+                                                            {listItem.first === true &&  
+                                                            <div>
+                                                                <div style={{color: 'white',fontSize: 14}}>{`${listItem.beforeTime}:00 - ${listItem.afterTime}:00`}</div> 
+                                                                <div style={{color: 'white'}}>{`${listItem.meetingName}`}</div>
+                                                                <div style={{color: 'white'}}>{`${listItem.hostName}`}</div>
+                                                            </div>
+                                                            } 
+                                                        </td>
+                                                    </Dropdown>
                                                 )
                                             })}
                                         </tr>
@@ -462,21 +517,30 @@ class Order extends React.Component {
                                         </tr> */}
                                     </tbody>
                                 </table>
-                                <Modal
-                                    visible={modalAddVisible}
-                                    title="添加会议"
-                                    onCancel={this.handleCancelAdd}
-                                    footer={null}
-                                    destroyOnClose
-                                >
-                                <MeetingAdd type="userAdd" userAddMeetingData={userAddMeetingData}></MeetingAdd>
-                                </Modal>
                                 <Button name={item.room_name} style={{ marginTop: 20}} onClick={(e)=>this.addConference(item.room_id,e)}>添加会议</Button>
                             </div>
                         </Col>
                     </Row>)
                     })
                 }
+                <Modal
+                    visible={modalAddVisible}
+                    title="添加会议"
+                    onCancel={this.handleCancel}
+                    footer={null}
+                    destroyOnClose
+                >
+                <MeetingAdd type="userAdd" userMeetingData={userMeetingData}></MeetingAdd>
+                </Modal>
+                <Modal
+                    visible={modalModifyVisible}
+                    title="修改会议"
+                    onCancel={this.handleCancel}
+                    footer={null}
+                    destroyOnClose
+                >
+                <MeetingAdd type="userModify" userMeetingData={userMeetingData}></MeetingAdd>
+                </Modal>
             </div>
         );
     }

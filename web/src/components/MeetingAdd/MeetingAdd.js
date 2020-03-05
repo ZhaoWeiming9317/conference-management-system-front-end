@@ -19,13 +19,24 @@ class DeviceApp extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      meeting_name : '',
-      room_id:'',
-      user_id:'',// host_id
-      start_time:'',
-      end_time:'',
-      host:'',
-      recoder:'',
+      meetingName : '',
+      meetingId: '',
+      room:{
+        roomId: 1,
+        roomName: ''
+      },
+      startTime:'',
+      endTime:'',
+      host:{
+        name: '',
+        userId: 1,
+        username: ''
+      },
+      recoder:{
+        name: '',
+        userId: 1,
+        username: ''
+      },
       members:[],
       topic:'',
       meetingAbstract:'',
@@ -39,16 +50,18 @@ class DeviceApp extends React.Component {
     this.timeout = null
   }
   componentWillMount() {
-    let {data,userAddMeetingData} = this.props
-    if (this.props.type === 'modify') {
-        this.setState({...data,
-        })
-    } else if(this.props.type === 'userAdd'){
-        this.setState({...userAddMeetingData,
-        },()=>{
-          console.log(userAddMeetingData)
-        })
-    }
+    let {userMeetingData} = this.props
+    this.setState({...userMeetingData,
+    },()=>{
+      console.log(userMeetingData)
+    })
+  }
+  componentDidMount() {
+    let {userMeetingData} = this.props
+    let members = userMeetingData.members
+    members.map((item)=>{
+      this.add()
+    })
   }
   next() {
     const currentStep = this.state.currentStep + 1;
@@ -60,6 +73,26 @@ class DeviceApp extends React.Component {
     this.setState({ currentStep });
   }
 
+  compareMembers(oldMembers, newMembers) {
+    console.log('old',oldMembers)
+    console.log('new',newMembers)
+    let addList = []
+    let deleteList = []
+    oldMembers.map((oldItem)=>{
+      // 新的数组没有旧的值，说明是删掉的
+      if (newMembers.indexOf(oldItem) == -1) {
+        deleteList.push(oldItem)
+      }
+    })
+
+    newMembers.map((newItem)=>{
+      if (oldMembers.indexOf(newItem) == -1) {
+        addList.push(newItem)
+      }
+    })
+    return {addList,deleteList}
+  }
+
   handleSubmit = e => {
     e.preventDefault();
     let meetingInfo = this.props.form.getFieldsValue();
@@ -69,22 +102,22 @@ class DeviceApp extends React.Component {
     execMeetingInfo['room'] = {room_id : meetingInfo['room_id']}
     execMeetingInfo['start_time'] = meetingInfo['start_time'].format("YYYY-MM-DD HH:mm:ss")
     execMeetingInfo['end_time'] = meetingInfo['end_time'].format("YYYY-MM-DD HH:mm:ss")
-    execMeetingInfo['host'] = {user_id :meetingInfo['user_id'],name : meetingInfo['host']}
-    execMeetingInfo['recorder'] = {name : meetingInfo['recorder']}
+    execMeetingInfo['host'] = {user_id :meetingInfo['user_id']}
+    execMeetingInfo['recorder'] = {user_id : meetingInfo['recorder']['key']}
     execMeetingInfo['members'] = []
     meetingInfo['keys'].map((key) => {
-      execMeetingInfo['members'].push({name: meetingInfo['names'][key]})}
-        )
+      execMeetingInfo['members'].push({user_id: meetingInfo['names'][key]['key']})}
+    )
     execMeetingInfo['topic'] = meetingInfo['topic']
     execMeetingInfo['meetingAbstract'] = meetingInfo['meetingAbstract']
     execMeetingInfo['remark'] = meetingInfo['remark']
-
+    execMeetingInfo['meeting'] = meetingInfo['remark']
     console.log(execMeetingInfo)
     this.props.form.validateFields((err, values) => {
         if (!err) {
-          if(this.props.type === 'add') {
+          if(this.props.type === 'add' || this.props.type === 'userAdd') {
             meetingAdd(JSON.stringify(execMeetingInfo)).then((res)=>{
-              if (res.state == 2) {
+              if (res.state == 3) {
                 message.success("添加成功")
               } else if (res.state == 1){
                 message.error("成员中存在姓名不合法的情况")
@@ -97,16 +130,34 @@ class DeviceApp extends React.Component {
               message.error("系统错误")
             })
           } else {
-            meetingModify(JSON.stringify({...execMeetingInfo,
-            meetingId: this.props.data.meeting_id})).then((res)=>{
-              if (res.state == 1) {
-                message.success("修改成功")
-              } else {
-                message.error("修改失败")
-              }
-            }).catch((error)=>{
-              message.error("系统错误")
+            let modifyData = {
+              meeting_id: this.state.meetingId,
+              meeting_name: execMeetingInfo['meeting_name'],
+              start_time: execMeetingInfo['start_time'],
+              end_time: execMeetingInfo['end_time'],
+              room: execMeetingInfo['room'],
+              recorder: execMeetingInfo['recorder'],
+              topic: execMeetingInfo['topic'],
+              meetingAbstract: execMeetingInfo['meetingAbstract'],
+              remark: execMeetingInfo['remark']
+            }
+            let oldMembers = this.state.members.map((item) =>{
+              return item.userId
             })
+            let newMembers = execMeetingInfo['members'].map((item)=>{
+              return item.user_id
+            })
+            console.log(this.compareMembers(oldMembers,newMembers))
+            // meetingModify(JSON.stringify({...execMeetingInfo,
+            // meetingId: this.props.data.meeting_id})).then((res)=>{
+            //   if (res.state == 1) {
+            //     message.success("修改成功")
+            //   } else {
+            //     message.error("修改失败")
+            //   }
+            // }).catch((error)=>{
+            //   message.error("系统错误")
+            // })
           }
         }
       });
@@ -188,7 +239,7 @@ class DeviceApp extends React.Component {
         if (page == 1) {searchDown = []}
         res.list.map(r => {
           searchDown.push({
-            value: r['name'],
+            value: r['userId'],
             text: r['name'],
           });
         });
@@ -222,7 +273,7 @@ class DeviceApp extends React.Component {
         wrapperCol: { span: 14 },
         labelAlign: 'left'
       };
-    const options = this.state.searchDown.map(d => <Option key={d.value}>{d.text}</Option>);
+    const options = this.state.searchDown.map(d => <Option value={d.value}>{d.text}</Option>);
     const formItems = keys.map((k, index) => (
       <Form.Item
         {...formItemLayout}
@@ -231,9 +282,11 @@ class DeviceApp extends React.Component {
         key={k}
       >
         {getFieldDecorator(`names[${k}]`, {
+          initialValue: { key: this.state.members[k] ? this.state.members[k].userId : '', label:  this.state.members[k] ? this.state.members[k].name : ''},
           validateTrigger: ['onChange', 'onBlur'],
           rules: [
             {
+              type:'object',
               required: true,
               whitespace: true,
               message: "请输入参会人员名字",
@@ -241,7 +294,7 @@ class DeviceApp extends React.Component {
           ],
           preserve: true,
         })(<Select style={{height:"50px"}} placeholder="参会人员名字" 
-        value={this.state.tempValue}
+        labelInValue
         style={{ width: '80%', marginRight: 8 }} 
         onChange={(e)=>this.searchName(1,e)} 
         onFocus={(e)=>this.searchName(1,e)}
@@ -272,14 +325,14 @@ class DeviceApp extends React.Component {
         <Form style={{paddingTop: 20}} labelCol={{ span: 8 , offset: 2}} wrapperCol={{ span: 12 }} labelAlign='left' onSubmit={this.handleSubmit}>
         {currentStep === 0 && <Form.Item label="会议名称">
           {getFieldDecorator('meeting_name', {
-            initialValue: this.state.meeting_name, 
+            initialValue: this.state.meetingName, 
             rules: [{ required: true, message: '请输入会议名称' }],
             preserve: true,
           })(<Input placeholder="请输入会议名称" autoComplete="new-password"/>)}
         </Form.Item>}
         {currentStep === 0  && type === 'add' && <Form.Item label="会议室ID">
           {getFieldDecorator('room_id', {
-            initialValue: this.state.room_id, 
+            initialValue: this.state.room.roomId, 
             rules: [{ required: true, message: '请输入会议室ID' }],
             preserve: true,
           })(<Input placeholder="请输入会议室ID" autoComplete="new-password"/>)}
@@ -316,27 +369,27 @@ class DeviceApp extends React.Component {
                showToday={false}
          />)}
           </Form.Item>}
-          {currentStep === 0 && type === 'userAdd' && <Form.Item label="会议室ID">
+          {currentStep === 0 && (type === 'userAdd' || type === 'userModify') && <Form.Item label="会议室ID">
           {getFieldDecorator('room_id', {
-            initialValue: this.state.room_id, 
+            initialValue: this.state.room.roomId, 
             rules: [{ required: true, message: '请输入会议室ID' }],
             preserve: true,
           })(<Input placeholder="请输入会议室ID" disabled autoComplete="new-password"/>)}
         </Form.Item>}
-          {currentStep === 0 && type === 'userAdd' && <Form.Item label="开始时间">
+          {currentStep === 0 && (type === 'userAdd' || type === 'userModify') && <Form.Item label="开始时间">
             {getFieldDecorator('start_time', {
-              initialValue: moment(this.state.start_time), 
+              initialValue: moment(this.state.startTime), 
               rules: [
-                { required: true, message: '请填写开始时间' },
+                {  required: true, message: '请填写开始时间' },
               ],
               preserve: true, // 即便字段不再使用，也保留该字段的值（做分布表单的关键）
             })(<DatePicker locale={locale}
               disabled
             placeholder="请填写开始时间" style={{ width: '100%' }} format="YYYY-MM-DD HH:mm:ss" showTime={true}/>)}
           </Form.Item>}
-          {currentStep === 0 && type === 'userAdd' && <Form.Item label="结束时间">
+          {currentStep === 0 && (type === 'userAdd' || type === 'userModify') && <Form.Item label="结束时间">
             {getFieldDecorator('end_time', {
-              initialValue: moment(this.state.end_time), 
+              initialValue: moment(this.state.endTime), 
               rules: [
                 { required: true, message: '请填写结束时间' },
               ],
@@ -347,24 +400,25 @@ class DeviceApp extends React.Component {
           </Form.Item>}
           {currentStep === 1 && <Form.Item label="发起人Id">
             {getFieldDecorator('user_id', {
-                initialValue: this.state.user_id,
+                initialValue: this.state.host.userId,
                 rules: [{ required: true, message: '请输入发起人Id' }],
                 preserve: true,
-            })(<Input disabled={ type === 'userAdd' && true} autoComplete="new-password"/>)}
+            })(<Input disabled={ (type === 'userAdd' || type === 'userModify') && true} autoComplete="new-password"/>)}
           </Form.Item>}
         {currentStep === 1 && <Form.Item label="发起人">
-          {getFieldDecorator('host', {
-            initialValue: this.state.host,
+          {getFieldDecorator('hostName', {
+            initialValue: this.state.host.name,
             rules: [{ required: true, message: '请输入发起人名称' }],
             preserve: true,
-          })(<Input disabled={ type === 'userAdd' && true} autoComplete="new-password"/>)}
+          })(<Input disabled={ (type === 'userAdd' || type === 'userModify') && true} autoComplete="new-password"/>)}
         </Form.Item>}
         {currentStep === 1 && <Form.Item label="记录人员">
           {getFieldDecorator('recorder', {
-            initialValue: this.state.recorder,
+            initialValue: { key: this.state.recorder.userId, label:  this.state.recorder.name},
             rules: [{ required: true }],
             preserve: true,
           })(<Select placeholder="记录人员名字" 
+          labelInValue
           style={{ width: '80%', marginRight: 8 }} 
           onChange={(e)=>this.searchName(1,e)} 
           onFocus={(e)=>this.searchName(1,e)}
