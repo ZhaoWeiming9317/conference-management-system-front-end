@@ -1,11 +1,11 @@
 import React from 'react'
 import './Order.sass'
 import { userLoginVerification, userShowInfo } from '../../api/apiUser'
-import { meetingSearch3, meetingSearchCertain, meetingSearchAll } from '../../api/apiMeeting'
+import { meetingSearch3, meetingSearchCertain, meetingSearchAll, meetingDelete, } from '../../api/apiMeeting'
 import { roomBuildingSearch, roomFloorSearch } from '../../api/apiRoom'
 import { connect } from 'react-redux';
 import { logout } from '../../actions/index'
-import { Row, Col, Typography, Cascader, Button, message, Modal, Dropdown, Menu} from 'antd';
+import { Row, Col, Typography, Cascader, Button, message, Modal, Dropdown, Menu, Popconfirm,} from 'antd';
 import MeetingAdd from '../../components/MeetingAdd/MeetingAdd'
 
 const { Title } = Typography;
@@ -33,9 +33,11 @@ class Order extends React.Component {
             day: {start_time: '', end_time: ''} ,
             modalAddVisible: false,
             modalModifyVisible: false,
+            modalDeleteVisible: false,
             userMeetingData: [],
             nowContextMenuMeetingId: 1, // 会议右键的id
-            canChooseContextMenu: false
+            canChooseContextMenu: false,
+            modalLoading: false
         }
         this.cascaderLoadData = this.cascaderLoadData.bind(this)
         this.cascaderOnChange = this.cascaderOnChange.bind(this)
@@ -396,8 +398,7 @@ class Order extends React.Component {
                             userMeetingData: {room_id:room_id,
                             start_time:start_time,
                             end_time:end_time,
-                            hostName: this.state.hostName,
-                            user_id:this.state.user_id}
+                            host: { user_id:this.state.user_id, name : this.state.hostName }}
                     },()=>{
                         console.log(this.state.userMeetingData)
                         this.setState({
@@ -411,13 +412,29 @@ class Order extends React.Component {
             }
         }
     }
+    deleteConference() {
+        let { nowContextMenuMeetingId } = this.state
+        this.setState({ modalLoading : true})
+        setTimeout(()=> {
+        meetingDelete(JSON.stringify({meeting_id: nowContextMenuMeetingId})).then((res)=>{
+            this.setState({ modalLoading : false})
+            if (res.state == 1) {
+                message.success('删除成功')
+            } else {
+                message.error('删除失败')
+            }
+        })}, 0).catch((error)=>{
+            message.error('系统错误')
+        })
+    }
     onClickMenu = ({ key }) => {
         let { nowContextMenuMeetingId } = this.state
-        console.log('hai 哈哈哈哈')
         setTimeout(()=> {
             console.log(key)
             if ( key == "delete" ) {
-
+                this.setState(
+                    { modalDeleteVisible : true }
+                )
             } else if ( key == "modify" ) {
                 meetingSearchCertain(JSON.stringify({meeting_id: nowContextMenuMeetingId})).then((res)=>{
                     let userMeetingData = res
@@ -440,17 +457,19 @@ class Order extends React.Component {
         this.setState({nowContextMenuMeetingId: list.meetingId})
     }
     handleCancel = () => {
-        this.setState({ modalAddVisible: false,modalModifyVisible: false});
+        this.setState({ modalAddVisible: false,modalModifyVisible: false,modalDeleteVisible:false});
         this.buildFloorDaySubmit()
     }
     render() {    
         let { isLogin } = this.props
-        let { execArr, cascaderChosen, dayList, modalAddVisible, modalModifyVisible, userMeetingData } = this.state
+        let { execArr, cascaderChosen, dayList, modalAddVisible, modalModifyVisible, modalDeleteVisible,userMeetingData } = this.state
         let menu =(
             <Menu onClick={(e)=>this.onClickMenu(e)}>
-              <Menu.Item key="modify">修改</Menu.Item>
-              <Menu.Item key="delete">删除</Menu.Item>
-              <Menu.Item key="detail">详细</Menu.Item>
+                <Menu.Item key="modify">修改</Menu.Item>
+                <Menu.Item key="delete">
+                  删除
+                </Menu.Item>
+                <Menu.Item key="detail">详细</Menu.Item>
             </Menu>
           )    
         return (
@@ -540,6 +559,21 @@ class Order extends React.Component {
                     destroyOnClose
                 >
                 <MeetingAdd type="userModify" userMeetingData={userMeetingData}></MeetingAdd>
+                </Modal>
+                <Modal
+                    visible={modalDeleteVisible}
+                    title="删除会议"
+                    destroyOnClose
+                    footer={
+                      <Button key="back" onClick={this.handleCancel}>
+                        取消
+                      </Button>,
+                      <Button key="submit" type="primary" loading={this.state.modalLoading} onClick={(e)=>this.deleteConference(e)}>
+                        确认
+                      </Button>
+                    }
+                >
+                    <p>确认删除这个会议吗？</p>
                 </Modal>
             </div>
         );

@@ -73,3 +73,21 @@ export function meetingDelete(data){
         data: data || {}
     })
 }
+
+export function meetingMembersAdd(data){
+    return server({
+        url: url.meetingMembersAdd,
+        method: 'post',
+        dataType: "json",
+        data: data || {}
+    })
+}
+
+export function meetingMembersDelete(data){
+    return server({
+        url: url.meetingMembersDelete,
+        method: 'post',
+        dataType: "json",
+        data: data || {}
+    })
+}

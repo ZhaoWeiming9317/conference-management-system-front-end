@@ -6,7 +6,7 @@ import { Form, Input, Button, message, Steps, DatePicker, Icon , Select } from '
 const { Option } = Select;
 const { Step } = Steps;
 
-import {meetingAdd, meetingDelete} from '../../api/apiMeeting';
+import {meetingAdd, meetingModify,  meetingMembersAdd, meetingMembersDelete} from '../../api/apiMeeting';
 import {userNameSearch} from '../../api/apiUser';
 
 import moment from 'moment'
@@ -58,7 +58,7 @@ class DeviceApp extends React.Component {
   }
   componentDidMount() {
     let {userMeetingData} = this.props
-    let members = userMeetingData.members
+    let members = userMeetingData.members || []
     members.map((item)=>{
       this.add()
     })
@@ -131,7 +131,6 @@ class DeviceApp extends React.Component {
             })
           } else {
             let modifyData = {
-              meeting_id: this.state.meetingId,
               meeting_name: execMeetingInfo['meeting_name'],
               start_time: execMeetingInfo['start_time'],
               end_time: execMeetingInfo['end_time'],
@@ -147,17 +146,70 @@ class DeviceApp extends React.Component {
             let newMembers = execMeetingInfo['members'].map((item)=>{
               return item.user_id
             })
-            console.log(this.compareMembers(oldMembers,newMembers))
-            // meetingModify(JSON.stringify({...execMeetingInfo,
-            // meetingId: this.props.data.meeting_id})).then((res)=>{
-            //   if (res.state == 1) {
-            //     message.success("修改成功")
-            //   } else {
-            //     message.error("修改失败")
-            //   }
-            // }).catch((error)=>{
-            //   message.error("系统错误")
-            // })
+            let { addList,deleteList } = (this.compareMembers(oldMembers,newMembers))
+            let addData = {
+              meeting_id: this.props.userMeetingData.meetingId,
+              meeting_name: execMeetingInfo['meeting_name'],
+              start_time: execMeetingInfo['start_time'],
+              end_time: execMeetingInfo['end_time'],
+              members: addList.map((id)=> {return{user_id: id}})
+            }
+            let deleteData = {
+              meeting_id: this.props.userMeetingData.meetingId,
+              meeting_name: execMeetingInfo['meeting_name'],
+              start_time: execMeetingInfo['start_time'],
+              end_time: execMeetingInfo['end_time'],
+              members: deleteList.map((id)=> {return{user_id: id}})
+            }
+            let modifyConference = new Promise((resolve, reject) => {
+              meetingModify(JSON.stringify({...execMeetingInfo})).then((res)=>{
+                  if (res.state == 1) {
+                    resolve(res)
+                  } else {
+                    reject(res)
+                  }
+                }).catch((error)=>{
+                  message.error("系统错误")
+              })
+            })
+
+            let addMembers = modifyConference.then((res)=>{
+              return new Promise((resolve,reject)=>{
+                if (addData['members'].length == 0) {
+                  resolve(res)
+                } else {
+                  meetingMembersAdd(JSON.stringify({...addData})).then((res)=>{
+                      if(res.state == 1){
+                        resolve(res)
+                      } else {
+                        reject(res)
+                      }
+                    }).catch((error)=>{
+                      message.error("系统错误")
+                    })
+                }
+              }) 
+            },(error)=>{
+              message.error("会议修改失败")
+            })
+
+            addMembers.then((res)=>{
+              if (deleteData['members'].length == 0) {
+                message.success("会议修改成功") 
+              } else {
+                meetingMembersDelete(JSON.stringify({...deleteData})).then((res)=>{
+                    if(res.state == 1){
+                      message.success("会议修改成功") 
+                    } else {
+                      message.error("会议修改失败")
+                    }
+                  }).catch((error)=>{
+                    message.error("系统错误")
+                  })  
+              }
+            },(error)=>{
+              message.error("会议修改失败")
+            })
           }
         }
       });
@@ -378,7 +430,7 @@ class DeviceApp extends React.Component {
         </Form.Item>}
           {currentStep === 0 && (type === 'userAdd' || type === 'userModify') && <Form.Item label="开始时间">
             {getFieldDecorator('start_time', {
-              initialValue: moment(this.state.startTime), 
+              initialValue: moment(this.state.startTime || this.state.start_time), 
               rules: [
                 {  required: true, message: '请填写开始时间' },
               ],
@@ -389,7 +441,7 @@ class DeviceApp extends React.Component {
           </Form.Item>}
           {currentStep === 0 && (type === 'userAdd' || type === 'userModify') && <Form.Item label="结束时间">
             {getFieldDecorator('end_time', {
-              initialValue: moment(this.state.endTime), 
+              initialValue: moment(this.state.endTime || this.state.end_time), 
               rules: [
                 { required: true, message: '请填写结束时间' },
               ],
@@ -400,7 +452,7 @@ class DeviceApp extends React.Component {
           </Form.Item>}
           {currentStep === 1 && <Form.Item label="发起人Id">
             {getFieldDecorator('user_id', {
-                initialValue: this.state.host.userId,
+                initialValue: (this.state.host.user_id || this.state.host.userId),
                 rules: [{ required: true, message: '请输入发起人Id' }],
                 preserve: true,
             })(<Input disabled={ (type === 'userAdd' || type === 'userModify') && true} autoComplete="new-password"/>)}
@@ -414,7 +466,7 @@ class DeviceApp extends React.Component {
         </Form.Item>}
         {currentStep === 1 && <Form.Item label="记录人员">
           {getFieldDecorator('recorder', {
-            initialValue: { key: this.state.recorder.userId, label:  this.state.recorder.name},
+            initialValue: { key: this.state.recorder ? this.state.recorder.userId : '', label:  this.state.recorder ? this.state.recorder.name : ''},
             rules: [{ required: true }],
             preserve: true,
           })(<Select placeholder="记录人员名字" 
