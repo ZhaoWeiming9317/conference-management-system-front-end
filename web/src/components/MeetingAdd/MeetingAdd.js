@@ -44,7 +44,8 @@ class DeviceApp extends React.Component {
       currentStep: 0,
       searchDown: [],
       tempValue: '',
-      scrollPage: 1
+      scrollPage: 1,
+      modalLoading: false,
     }
     this.id = 0
     this.timeout = null
@@ -95,8 +96,9 @@ class DeviceApp extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
+    this.setState({modalLoading:true})
     let meetingInfo = this.props.form.getFieldsValue();
-
+    
     let execMeetingInfo = {}
     execMeetingInfo['meeting_name'] = meetingInfo['meeting_name']
     execMeetingInfo['room'] = {room_id : meetingInfo['room_id']}
@@ -117,6 +119,7 @@ class DeviceApp extends React.Component {
         if (!err) {
           if(this.props.type === 'add' || this.props.type === 'userAdd') {
             meetingAdd(JSON.stringify(execMeetingInfo)).then((res)=>{
+              this.setState({modalLoading:false})
               if (res.state == 3) {
                 message.success("添加成功")
               } else if (res.state == 1){
@@ -169,6 +172,7 @@ class DeviceApp extends React.Component {
                     reject(res)
                   }
                 }).catch((error)=>{
+                  this.setState({modalLoading:false})
                   message.error("系统错误")
               })
             })
@@ -185,11 +189,13 @@ class DeviceApp extends React.Component {
                         reject(res)
                       }
                     }).catch((error)=>{
+                      this.setState({modalLoading:false})
                       message.error("系统错误")
                     })
                 }
               }) 
             },(error)=>{
+              this.setState({modalLoading:false})
               message.error("会议修改失败")
             })
 
@@ -198,16 +204,19 @@ class DeviceApp extends React.Component {
                 message.success("会议修改成功") 
               } else {
                 meetingMembersDelete(JSON.stringify({...deleteData})).then((res)=>{
+                    this.setState({modalLoading:false})
                     if(res.state == 1){
                       message.success("会议修改成功") 
                     } else {
                       message.error("会议修改失败")
                     }
                   }).catch((error)=>{
+                    this.setState({modalLoading:false})
                     message.error("系统错误")
                   })  
               }
             },(error)=>{
+              this.setState({modalLoading:false})
               message.error("会议修改失败")
             })
           }
@@ -515,7 +524,7 @@ class DeviceApp extends React.Component {
             </Button>
           )}
           {currentStep === 2 && (
-            <Button type="primary" onClick={this.handleSubmit}>
+            <Button type="primary" onClick={this.handleSubmit} loading={this.state.modalLoading}>
               提交
             </Button>
           )}

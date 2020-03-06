@@ -395,7 +395,11 @@ class Order extends React.Component {
                 }
                 if (canAdd) {
                     this.setState({
-                            userMeetingData: {room_id:room_id,
+                            userMeetingData: { 
+                            room:{
+                                roomId: room_id,
+                                roomName: ''
+                              },
                             start_time:start_time,
                             end_time:end_time,
                             host: { user_id:this.state.user_id, name : this.state.hostName }}
@@ -423,9 +427,9 @@ class Order extends React.Component {
             } else {
                 message.error('删除失败')
             }
-        })}, 0).catch((error)=>{
+        }).catch((error)=>{
             message.error('系统错误')
-        })
+        })}, 0)
     }
     onClickMenu = ({ key }) => {
         let { nowContextMenuMeetingId } = this.state
@@ -563,14 +567,15 @@ class Order extends React.Component {
                 <Modal
                     visible={modalDeleteVisible}
                     title="删除会议"
+                    onCancel={this.handleCancel}
                     destroyOnClose
-                    footer={
+                    footer={[
                       <Button key="back" onClick={this.handleCancel}>
                         取消
                       </Button>,
                       <Button key="submit" type="primary" loading={this.state.modalLoading} onClick={(e)=>this.deleteConference(e)}>
                         确认
-                      </Button>
+                      </Button>]
                     }
                 >
                     <p>确认删除这个会议吗？</p>
