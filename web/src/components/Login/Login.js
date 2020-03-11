@@ -1,58 +1,39 @@
 import React from 'react'
 import './Login.sass'
 import { userLogin } from '../../api/apiUser'
-import InputUI from '../../UI/InputUI/InputUI'
-import DropDownUI from '../../UI/DropDownUI/DropDownUI'
-import ButtonUI from '../../UI/ButtonUI/ButtonUI'
 import { connect } from 'react-redux'
 import { gotoRegist, login } from '../../actions/index'
-import { loginDropDownList } from '../../constants/dropDownListConstants'
+import { Form, Input, Button, message, Select, Typography } from 'antd'
+const { Title, Text  } = Typography
 
-class Login extends React.Component {
+class LoginApp extends React.Component {
     constructor(props) {
       super(props);
       this.gotoRegist = this.gotoRegist.bind(this);
       this.submitLogin = this.submitLogin.bind(this);
-      this.state = {
-          username: '', 
-          password: '',
-          role: 2
-      };
       console.log(props)
     };
     componentDidMount() {
+
     }
-    handleChangeUser = res => {
-      this.setState({
-          username: res.value,
-      });
-    };
-
-    handleChangePass = res => {
-      this.setState({
-          password: res.value,
-      });
-    };
-
-    handleChangeRole = res => {
-      this.setState({
-        role: res.value,
-      });
-    };
-
     submitLogin = event => {
-      const data = {username: this.state.username,password: this.state.password, role: this.state.role}
-      userLogin(JSON.stringify(data)).then((res)=>{
-          // 成功
-          if (res.state == 1) {
-            localStorage.setItem("cookie", res.set_cookie)
-            localStorage.setItem("role", data.role)
-            this.props.login()
-          } else {
-            alert(res.message)
+      let userInfo = this.props.form.getFieldsValue();
+      this.props.form.validateFields((err, values) => {
+          if (!err) {
+            userLogin(JSON.stringify(userInfo)).then((res)=>{
+              // 成功
+              if (res.state == 1) {
+                localStorage.setItem("cookie", res.set_cookie)
+                localStorage.setItem("role", userInfo.role)
+                message.success('登录成功')
+                this.props.login()
+              } else {
+                message.error(res.message)
+              }
+            }
+            )          
           }
-        }
-      )      
+        })  
     }
 
     gotoRegist = event => {
@@ -60,35 +41,44 @@ class Login extends React.Component {
     }
 
     render() {    
+      const { getFieldDecorator } = this.props.form;
+
       return (
       <div>
         <div className="login__box">
-          <div className="login__label">登 &nbsp;录</div>
-          <form className="login__form" noValidate autoComplete="off">
-            <div className = "login__item login__item--input">
-              <InputUI getValue={this.handleChangeUser} type='text' label='用户名'></InputUI>
-            </div>
-            <div className = "login__item login__item--input">
-              <InputUI getValue={this.handleChangePass} type='password' label='密码'></InputUI>
-            </div>
-            <div className = "login__item login__item--input">
-              <DropDownUI getValue={this.handleChangeRole} list={loginDropDownList} label='权限'></DropDownUI>
-            </div>
-            <div className = "login__item login__item--forget">
-              <div className = "login__forget" onClick={this.gotoForget}> 忘记密码？请点击这里</div>
-            </div>
-            <div className = "login__item login__item--button">
-              <ButtonUI label="登录" buttonStyle="fill" onClick={this.submitLogin}></ButtonUI>
-            </div>
-            <div className = "login__item login__item--forget">
-              <div className = "login__forget" onClick={this.gotoRegist}> 点击这里注册</div>
-            </div>
-          </form>
+          <Title level={2}>登 &nbsp;录</Title>
+          <Form style={{paddingTop: 20}} labelCol={{ span: 8}} wrapperCol={{ span: 14 }} labelAlign='left' onSubmit={this.handleSubmit}>
+            <Form.Item label="用户名">
+              {getFieldDecorator('username', {
+                rules: [{ required: true, message: '请输入用户名' }],
+              })(<Input autoComplete="new-password"/>)}
+            </Form.Item>
+            <Form.Item label="密码">
+              {getFieldDecorator('password', {
+                rules: [{ required: true, message: '请输入密码' }],
+              })(<Input.Password autoComplete="new-password"/>)}
+            </Form.Item>
+            <Form.Item label="权限">
+              {getFieldDecorator('role', {
+                rules: [{ required: true, message: '请选择权限' }],
+              })(<Select>
+                  <Select.Option value={0}>部门经理</Select.Option>
+                  <Select.Option value={1}>系统管理员</Select.Option>
+                  <Select.Option value={2}>普通员工</Select.Option>
+                </Select>)}
+            </Form.Item>
+            <Button type="primary" onClick={this.submitLogin}>
+              提交
+            </Button>
+          </Form>
+          <div className="login_txt" type="secondary" onClick={this.gotoRegist}>点击这里注册</div>
         </div> 
       </div>
       );
     }
 }
+
+const Login = Form.create({})(LoginApp);
 
 const mapStateToProps = (state) => {
   return {

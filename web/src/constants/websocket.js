@@ -1,0 +1,3 @@
+global.socket = {
+    websocket: null
+}

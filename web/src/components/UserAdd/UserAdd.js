@@ -1,8 +1,12 @@
 import React from 'react'
-import { connect } from 'react-redux';
-import { Form, Input, Button, message, Select, Steps  } from 'antd';
-import {userRegist, userModifyInfo} from '../../api/apiUser';
+import './UserAdd.sass'
+import { connect } from 'react-redux'
+import { Form, Input, Button, message, Select, Steps, Typography } from 'antd'
+import {userRegist, userModifyInfo} from '../../api/apiUser'
+import { gotoLogin } from '../../actions/index'
+
 const { Step } = Steps
+const { Title, Text  } = Typography
 class UserApp extends React.Component {
   constructor(props) {
     super(props)
@@ -42,12 +46,21 @@ class UserApp extends React.Component {
     let userInfo = this.props.form.getFieldsValue();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        if(this.props.type === 'add') {
+        if(this.props.type === 'add' || this.props.type === 'regist') {
           userRegist(JSON.stringify(userInfo)).then((res)=>{
             if (res.state == 1) {
-              message.success("添加成功")
+              if (this.props.type === 'regist') {
+                this.gotoLogin()
+                message.success("注册成功")
+              } else {
+                message.success("添加成功")
+              }
             } else {
-              message.error("添加失败")
+              if (this.props.type === 'regist') {
+                message.error("注册失败")
+              } else {
+                message.error("添加失败")
+              }
             }
           }).catch((error)=>{
             message.error("系统错误")
@@ -74,18 +87,22 @@ class UserApp extends React.Component {
       callback();
     }
   };
-
+  gotoLogin = () => {
+    this.props.gotoLogin()
+  }
   render() {
     const { getFieldDecorator } = this.props.form;
     const { currentStep } = this.state;
+    const { type } = this.props
     return (
-      <div>
-        <Steps current={currentStep} onChange={current => this.setState({ currentStep: current })}>
+      <div> 
+        {type == 'regist' && <Title level={2}>注&nbsp;册</Title>}
+        <Steps size={type != 'regist' ? 'default' : 'small'} current={currentStep} onChange={current => this.setState({ currentStep: current })}>
           <Step title="用户基础" />
           <Step title="用户信息" />
           <Step title="职位信息" />
         </Steps>
-        <Form style={{paddingTop: 20}} labelCol={{ span: 8 , offset: 1}} wrapperCol={{ span: 13 }} labelAlign='left' onSubmit={this.handleSubmit}>
+        <Form style={{paddingTop: 20}} labelCol={{ span: 8}} wrapperCol={{ span: 14 }} labelAlign='left' onSubmit={this.handleSubmit}>
           {currentStep === 0 && <Form.Item label="用户名">
             {getFieldDecorator('username', {
               initialValue: this.state.username, 
@@ -187,6 +204,7 @@ class UserApp extends React.Component {
             </Button>
           )}
         </div>
+        {type == 'regist' && <div className="login_txt" type="secondary" onClick={this.gotoLogin}>点击这里登录</div>}
       </div>
     );
   }
@@ -200,4 +218,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(UserAdd)
+export default connect(mapStateToProps, { gotoLogin })(UserAdd)

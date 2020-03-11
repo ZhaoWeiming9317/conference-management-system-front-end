@@ -1,6 +1,6 @@
 import React from 'react'
 import './Home.css'
-import { userLoginVerification ,userLoginExit} from '../../api/apiUser'
+import { userLoginVerification ,userLoginExit, userShowInfo} from '../../api/apiUser'
 import { BrowserRouter, Switch, Route, Redirect, Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import Order from '../Order/Order'
@@ -11,11 +11,12 @@ import Device from '../Device/Device'
 import Main from '../Main/Main'
 import Form from '../Form/Form'
 import { logout } from '../../actions/index'
-import { Avatar, Badge, Layout, Menu, Icon, Typography, Row, Col,Popover,} from 'antd'
+import { Avatar, Badge, Layout, Menu, Icon, Typography, Row, Col, Popover, message} from 'antd'
 import { navList } from '../../constants/navListConstants' 
 const { Header, Sider, Content, } = Layout;
 const { Title } = Typography;
 
+import '../../constants/websocket'
 class Home extends React.Component {
     constructor(props) {
         super(props);
@@ -23,20 +24,86 @@ class Home extends React.Component {
         this.state = {
             collapsed :false,
             nav: 0,
-            title: '首页'
+            title: '首页',
+            id: '',
+            name: ''
         }
     }  
     componentDidMount() {
         let cookie = localStorage.getItem('cookie') || 0
         console.log(cookie)
         const data = {cookie : cookie}    
-        userLoginVerification(JSON.stringify(data)).then((res) => {
-            if (res.state == 0) {
-                this.props.logout()
-                console.log(this.props.isLogin)
-            } else {
-            }
-        })    
+        let getLoginVerification = new Promise((resolve, reject) => { 
+            userLoginVerification(JSON.stringify(data)).then((res) => {
+                if (res.state == 0) {
+                    this.props.logout()
+                    console.log(this.props.isLogin)
+                } else {
+                    this.setState({
+                        id: res.user_id
+                    })
+                    resolve(res)
+                }
+            }).catch((error)=>{
+                message.error("系统错误")
+            })
+        })
+        let getUserName = getLoginVerification.then((res)=>{
+            const data = { user_id: res.user_id}
+            return new Promise((resolve, reject)=>{
+                userShowInfo(JSON.stringify(data)).then((res)=>{
+                    console.log(res)
+                    this.setState({
+                        name: res.username
+                    })    
+                    resolve(res)
+                })
+            })
+        })
+
+        getUserName.then((res)=>{
+            console.log('带带嗲嗲哒哒哒哒哒哒',res)
+            this.openWebSocket()
+        })
+        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = function() {
+            this.closeWebSocket();
+        }
+
+    }
+    openWebSocket = () => {
+        var url = "ws://39.99.172.71:8080/" + this.state.id +  "/" + this.state.name;
+        console.log(url);
+        //判断当前浏览器是否支持WebSocket
+        if ('WebSocket' in window) {
+            global.socket.websocket = new WebSocket(url);
+        } else {
+            message.error('当前浏览器 Not support websocket')
+        }
+        //连接发生错误的回调方法
+        global.socket.websocket.onerror = function() {
+            message.error("WebSocket连接发生错误");
+        };
+        //连接成功建立的回调方法
+        global.socket.websocket.onopen = function() {
+            message.success("WebSocket连接成功");
+        }
+        //接收到消息的回调方法
+        global.socket.websocket.onmessage = function(event) {
+            message.success(event.data);
+        }
+        //连接关闭的回调方法
+        global.socket.websocket.onclose = function() {
+            message.success("WebSocket连接关闭");
+        }
+    }
+    //关闭WebSocket连接
+    closeWebSocket() {
+        global.socket.websocket.close();
+    }
+    //发送消息
+    send() {
+        global.socket.websocket.send(message);
     }
     quit() {
         console.log(localStorage.getItem('cookie'))
@@ -45,8 +112,11 @@ class Home extends React.Component {
                 localStorage.removeItem('cookie')
                 localStorage.removeItem('role')
                 this.props.logout()
+                this.closeWebSocket() 
+                message.success('退出成功')
             } else {
-                this.props.logout()
+                message.error('退出失败')
+                this.closeWebSocket() 
             }
         })
     }

@@ -55,10 +55,9 @@ class Order extends React.Component {
                     userShowInfo(JSON.stringify({username:res.username})).then((res)=>{
                         console.log(res)
                         this.setState({
-                            hostName: res.name
-                        })
+                            hostName: res.username
+                        })    
                     })
-
                 })
             }
         })
