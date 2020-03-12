@@ -7,7 +7,7 @@ axios.create({
 //开始请求设置，发起拦截处理
 axios.interceptors.request.use(config => {
     config.headers['Content-Type'] = 'application/json;charset=UTF-8';
-    let requestName = config.method === 'post'? config.data.requestName : config.data.requestName
+    let requestName = config.method === 'post'? config.data.requestName : null
     //判断，如果这里拿到上一次的requestName，就取消上一次的请求
     if(requestName) {
         if(axios[requestName] && axios[requestName].cancel){

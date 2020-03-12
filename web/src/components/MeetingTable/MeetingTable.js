@@ -4,7 +4,7 @@ import { Table, Popconfirm, Modal, Divider, Row, Col, Descriptions, Input,Button
 import { meetingSearch, meetingSearchCertain,meetingSearchAll} from '../../api/apiMeeting'
 import MeetingAdd from '../../components/MeetingAdd/MeetingAdd'
 import {execListWithNull, execListWithKey} from '../../util/util'
-class RoomTable extends React.Component {
+class MeetingTable extends React.Component {
     constructor(props) {
       super(props);
       this.handleSearch = this.handleSearch.bind(this)
@@ -26,7 +26,7 @@ class RoomTable extends React.Component {
         },
         {
           title: '会议室名称',
-          dataIndex: 'meetingName',
+          dataIndex: 'roomName',
           width: '130px',
           ellipsis: true
         },
@@ -94,9 +94,11 @@ class RoomTable extends React.Component {
         modalLoading: false,
         modalAddVisible: false,
         modalModifyVisible: false,
+        modalDetailVisible: false,
         selectedRowKeys: [],
         pagination: {},
         nowRowData:[],
+        nowMembers: ``,
         input:''
       };
     }
@@ -174,8 +176,14 @@ class RoomTable extends React.Component {
       const meetingId = dataSource.find(item => item.key === key).meetingId
       meetingSearchCertain({meeting_id : meetingId}).then((res)=>{ 
         console.log(res)
+        let nowMembers = ''
+        res.members.map((item)=>{
+          console.log(item)
+          nowMembers = `${nowMembers} ${item.name}`
+        })
         this.setState({
-          nowRowData:res
+          nowRowData:res,
+          nowMembers:nowMembers
         },()=>{
           this.setState({
             modalDetailVisible: true,
@@ -217,7 +225,7 @@ class RoomTable extends React.Component {
       this.tableFind(data)    
     };  
     render() {
-      const { dataSource,  selectedRowKeys, tableLoading, pagination, modalAddVisible,modalModifyVisible,  modalDetailVisible, nowRowData} = this.state;
+      const { dataSource,  selectedRowKeys, tableLoading, pagination, modalAddVisible,modalModifyVisible,  modalDetailVisible, nowRowData, nowMembers} = this.state;
       const columns = this.columns.map(col => {
         if (!col.editable) {
           return col;
@@ -286,7 +294,7 @@ class RoomTable extends React.Component {
               footer={null}
               destroyOnClose
             >
-              <MeetingAdd type="modify" data={nowRowData}></MeetingAdd>
+              <MeetingAdd type="modify" userMeetingData={nowRowData}></MeetingAdd>
             </Modal>
             <Modal
               visible={modalDetailVisible}
@@ -296,20 +304,20 @@ class RoomTable extends React.Component {
               width={850}
               destroyOnClose
             >
-              <Descriptions title="会议室信息" bordered >
-                <Descriptions.Item label="会议室名称">{nowRowData.meetingName}</Descriptions.Item>
-                <Descriptions.Item label="会议室编号">{nowRowData.meetingNumber}</Descriptions.Item>
-                <Descriptions.Item label="会议室ID">{nowRowData.meetingId}</Descriptions.Item>
-                <Descriptions.Item label="会议室容量">{nowRowData.meetingVolume}</Descriptions.Item>
-                <Descriptions.Item label="国家" >{nowRowData.country}</Descriptions.Item>
-                <Descriptions.Item label="省份/自治区"> {nowRowData.province}</Descriptions.Item>
-                <Descriptions.Item label="城市"> {nowRowData.city}</Descriptions.Item>
-                <Descriptions.Item label="街区">{nowRowData.block}</Descriptions.Item>
-                <Descriptions.Item label="大厦">{nowRowData.building}</Descriptions.Item>
-                <Descriptions.Item label="楼层">{nowRowData.floor}</Descriptions.Item>
-                <Descriptions.Item label="备注" span={3}>{nowRowData.mark}</Descriptions.Item>
-                <Descriptions.Item label="创建时间" span={3}>{nowRowData.createTime}</Descriptions.Item>
-                <Descriptions.Item label="修改时间" span={3}>{nowRowData.modifyTime}</Descriptions.Item>
+              <Descriptions title="会议信息" bordered >
+                <Descriptions.Item label="会议名称">{nowRowData.meetingName}</Descriptions.Item>
+                <Descriptions.Item label="会议ID">{nowRowData.meetingId}</Descriptions.Item>
+                <Descriptions.Item label="会议室名称">{nowRowData.room && nowRowData.room.roomName}</Descriptions.Item>
+                <Descriptions.Item label="会议室ID" >{nowRowData.room &&  nowRowData.room.roomId}</Descriptions.Item>
+                <Descriptions.Item label="开始时间"> {nowRowData.startTime}</Descriptions.Item>
+                <Descriptions.Item label="结束时间"> {nowRowData.endTime}</Descriptions.Item>
+                <Descriptions.Item label="发起人名称">{nowRowData.host && nowRowData.host.name}</Descriptions.Item>
+                <Descriptions.Item label="发起人用户名">{nowRowData.host && nowRowData.host.username}</Descriptions.Item>
+                <Descriptions.Item label="发起人ID">{nowRowData.host && nowRowData.host.userId}</Descriptions.Item>
+                <Descriptions.Item label="记录人名称">{nowRowData.recorder && nowRowData.recorder.name}</Descriptions.Item>
+                <Descriptions.Item label="记录人用户名">{nowRowData.recorder && nowRowData.recorder.username}</Descriptions.Item>
+                <Descriptions.Item label="记录人ID">{nowRowData.recorder && nowRowData.recorder.userId}</Descriptions.Item>
+                <Descriptions.Item label="参会人员">{nowMembers || '暂无'}</Descriptions.Item>
               </Descriptions>
             </Modal>
             </Card>
@@ -324,4 +332,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(RoomTable);
+export default connect(mapStateToProps)(MeetingTable);

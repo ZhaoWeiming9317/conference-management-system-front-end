@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import MeetingTable from '../MeetingTable/MeetingTable'
 import { logout } from '../../actions/index'
 
-class Room extends React.Component {
+class Meeting extends React.Component {
     constructor(props) {
         super(props);
     }  
@@ -36,4 +36,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, {logout})(Room);
+export default connect(mapStateToProps, {logout})(Meeting);

@@ -52,5 +52,9 @@ const URL ={
     meetingMembersDelete: HISTORY + '/meeting/meeting_members_delete ',
     meetingDelete: HISTORY + '/meeting/meeting_delete ',
 
+    watch: HISTORY + '/watch',
+    publish: HISTORY + '/publish',
+    informAll: HISTORY + '/inform/inform_all',
+    informFirst: HISTORY + '/inform/inform_first',
 }
 export default URL

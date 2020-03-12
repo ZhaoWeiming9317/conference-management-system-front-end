@@ -15,26 +15,26 @@ import 'moment/locale/zh-cn'
 moment.locale('zh-cn')
 
 
-class DeviceApp extends React.Component {
+class MeetingApp extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       meetingName : '',
       meetingId: '',
       room:{
-        roomId: 1,
+        roomId: '',
         roomName: ''
       },
       startTime:'',
       endTime:'',
       host:{
         name: '',
-        userId: 1,
+        userId: '',
         username: ''
       },
-      recoder:{
+      recorder:{
         name: '',
-        userId: 1,
+        userId: '',
         username: ''
       },
       members:[],
@@ -58,11 +58,13 @@ class DeviceApp extends React.Component {
     })
   }
   componentDidMount() {
-    let {userMeetingData} = this.props
-    let members = userMeetingData.members || []
-    members.map((item)=>{
-      this.add()
-    })
+    let {userMeetingData , type} = this.props
+    if ( type != 'add') {
+      let members = userMeetingData.members || []
+      members.map((item)=>{
+        this.add()
+      })  
+    }
   }
   next() {
     const currentStep = this.state.currentStep + 1;
@@ -430,14 +432,14 @@ class DeviceApp extends React.Component {
                showToday={false}
          />)}
           </Form.Item>}
-          {currentStep === 0 && (type === 'userAdd' || type === 'userModify') && <Form.Item label="会议室ID">
+          {currentStep === 0 && (type !== 'add') && <Form.Item label="会议室ID">
           {getFieldDecorator('room_id', {
             initialValue: this.state.room.roomId, 
             rules: [{ required: true, message: '请输入会议室ID' }],
             preserve: true,
           })(<Input placeholder="请输入会议室ID" disabled autoComplete="new-password"/>)}
         </Form.Item>}
-          {currentStep === 0 && (type === 'userAdd' || type === 'userModify') && <Form.Item label="开始时间">
+          {currentStep === 0 && (type !== 'add') && <Form.Item label="开始时间">
             {getFieldDecorator('start_time', {
               initialValue: moment(this.state.startTime || this.state.start_time), 
               rules: [
@@ -448,7 +450,7 @@ class DeviceApp extends React.Component {
               disabled
             placeholder="请填写开始时间" style={{ width: '100%' }} format="YYYY-MM-DD HH:mm:ss" showTime={true}/>)}
           </Form.Item>}
-          {currentStep === 0 && (type === 'userAdd' || type === 'userModify') && <Form.Item label="结束时间">
+          {currentStep === 0 && (type !== 'add') && <Form.Item label="结束时间">
             {getFieldDecorator('end_time', {
               initialValue: moment(this.state.endTime || this.state.end_time), 
               rules: [
@@ -464,14 +466,14 @@ class DeviceApp extends React.Component {
                 initialValue: (this.state.host.user_id || this.state.host.userId),
                 rules: [{ required: true, message: '请输入发起人Id' }],
                 preserve: true,
-            })(<Input disabled={ (type === 'userAdd' || type === 'userModify') && true} autoComplete="new-password"/>)}
+            })(<Input disabled={ (type !== 'add') && true} autoComplete="new-password"/>)}
           </Form.Item>}
         {currentStep === 1 && <Form.Item label="发起人">
           {getFieldDecorator('hostName', {
             initialValue: this.state.host.name,
             rules: [{ required: true, message: '请输入发起人名称' }],
             preserve: true,
-          })(<Input disabled={ (type === 'userAdd' || type === 'userModify') && true} autoComplete="new-password"/>)}
+          })(<Input disabled={ (type !== 'add') && true} autoComplete="new-password"/>)}
         </Form.Item>}
         {currentStep === 1 && <Form.Item label="记录人员">
           {getFieldDecorator('recorder', {
@@ -539,7 +541,7 @@ class DeviceApp extends React.Component {
   }
 }
 
-const DeviceAdd = Form.create({})(DeviceApp);
+const MeetingAdd = Form.create({})(MeetingApp);
 
 const mapStateToProps = (state) => {
     return {
@@ -547,4 +549,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(DeviceAdd)
+export default connect(mapStateToProps)(MeetingAdd)

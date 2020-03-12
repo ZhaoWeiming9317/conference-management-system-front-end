@@ -24,7 +24,6 @@ class Welcome extends React.Component {
         super(props);
     }  
     componentDidMount() {
-          
         anime({
             targets: '.welcome__begin--container',
             duration: 650,

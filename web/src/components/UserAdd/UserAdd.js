@@ -66,7 +66,7 @@ class UserApp extends React.Component {
             message.error("系统错误")
           })
         } else {
-          userModifyInfo(JSON.stringify(userInfo)).then((res)=>{
+          userModifyInfo(JSON.stringify({...userInfo, user_id: this.props.data.userId})).then((res)=>{
             if (res.state == 1) {
               message.success("修改成功")
             } else {
@@ -107,12 +107,14 @@ class UserApp extends React.Component {
             {getFieldDecorator('username', {
               initialValue: this.state.username, 
               rules: [{ required: true, message: '请输入用户名' }],
+              preserve: true,
             })(<Input autoComplete="new-password"/>)}
           </Form.Item>}
           {currentStep === 0 && <Form.Item label="密码">
             {getFieldDecorator('password', {
               initialValue: this.state.password, 
               rules: [{ required: true, message: '请输入密码' }],
+              preserve: true,
             })(<Input.Password autoComplete="new-password"/>)}
           </Form.Item>}
           {currentStep === 0 && <Form.Item label="再次密码">
@@ -125,18 +127,21 @@ class UserApp extends React.Component {
               {
                 validator: this.compareToFirstPassword,
               },],
+              preserve: true,
             })(<Input.Password autoComplete="new-password"/>)}
           </Form.Item>}
           {currentStep === 1 && <Form.Item label="姓名">
             {getFieldDecorator('name', {
               initialValue: this.state.name,
               rules: [{ required: true, message: '请输入姓名' }],
+              preserve: true,
             })(<Input autoComplete="new-password"/>)}
           </Form.Item>}
           {currentStep === 1 && <Form.Item label="性别">
             {getFieldDecorator('gender', {
               initialValue: this.state.gender,
               rules: [{ required: true, message: '请选择性别' }],
+              preserve: true,
             })(<Select>
               <Select.Option value="男">男</Select.Option>
               <Select.Option value="女">女</Select.Option>
@@ -146,6 +151,7 @@ class UserApp extends React.Component {
             {getFieldDecorator('phone', {
               initialValue: this.state.phone,
               rules: [{ required: true, message: '请输入电话' }],
+              preserve: true,
             })(<Input autoComplete="new-password"/>)}
           </Form.Item>}
           {currentStep === 1 && <Form.Item label="邮箱">
@@ -156,30 +162,35 @@ class UserApp extends React.Component {
                 type: 'email',
                 message: '请输入正确的邮箱格式',
               }],
+              preserve: true,
             })(<Input autoComplete="new-password"/>)}
           </Form.Item>}
           {currentStep === 2 && <Form.Item label="组织">
             {getFieldDecorator('organization', {
               initialValue: this.state.organization,
               rules: [{ required: true, message: '请输入组织' }],
+              preserve: true,
             })(<Input autoComplete="new-password"/>)}
           </Form.Item>}
           {currentStep === 2 && <Form.Item label="部门">
             {getFieldDecorator('department', {
               initialValue: this.state.department,
               rules: [{ required: true, message: '请输入部门' }],
+              preserve: true,
             })(<Input autoComplete="new-password"/>)}
           </Form.Item>}
           {currentStep === 2 && <Form.Item label="职位">
             {getFieldDecorator('position', {
               initialValue: this.state.position,
               rules: [{ required: true, message: '请输入职位' }],
+              preserve: true,
             })(<Input autoComplete="new-password"/>)}
           </Form.Item>}
           {currentStep === 2 && <Form.Item label="权限">
             {getFieldDecorator('role', {
               initialValue: this.state.role,
               rules: [{ required: true, message: '请选择权限' }],
+              preserve: true,
             })(<Select>
                 <Select.Option value={0}>部门经理</Select.Option>
                 <Select.Option value={1}>系统管理员</Select.Option>
