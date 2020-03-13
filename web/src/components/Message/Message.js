@@ -30,7 +30,7 @@ class Message extends React.Component {
         let { data } = this.state
         return (
             <div>    
-                <h3 style={{ marginBottom: 16 }}>Default Size</h3>
+                <h3 style={{ marginBottom: 16 }}>你的信息</h3>
                 <List
                     header={<div>信息通知</div>}
                     footer={<div>...</div>}
@@ -38,7 +38,7 @@ class Message extends React.Component {
                     dataSource={data}
                     renderItem={item => (
                         <List.Item>
-                        <Typography.Text mark>[ITEM]</Typography.Text> {item}
+                        {item}
                         </List.Item>
                     )}
                 />

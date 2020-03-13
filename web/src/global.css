@@ -1,13 +1,54 @@
-@charset "utf-8";
-/*全局样式*/
-html,body { margin:0 auto; color:#333; overflow:auto; background-color: #f4f4f4;}
-ul { list-style:none;margin:0;padding:0;}
-dl,dt,dd,h1,h2,h3,h4,h5,h6,p,form { margin:0;padding:0;}
-/* 字体设置 */
-a,span,em,li,dd,dt,h4,h5,h6 {font:normal normal normal 1em/150% Verdana;}
-h1,h2 { font:normal normal bold 1.2em/150% Verdana;}
-h3 { font:normal normal bold 1em/150% Verdana;}
-h4 { font:normal normal normal 1em/150% Verdana;}
+*{ 
+    margin:0;padding:0;  outline: 0;  vertical-align: baseline; 
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+html,body{ 
+    color:#000; 
+    background:#fff; 
+    font:12px/22px Verdana,Arial,sans-serif,"Times New Roman",思源宋体; 
+    width:100%;
+}
+input,select,button{ 
+     font-size:100%;
+     outline:0;
+     vertical-align:middle;
+     -webkit-appearance: none;
+ }
+button{
+    border: 0;
+    background-clip: padding-box;
+}
+table {
+    border-collapse:collapse;
+    border-spacing:0;
+}
+ol,ul,li { list-style:none;}
+/* 定义图片边框，当图片作为链接内容被填充时，会有默认边框出现，重定义掉 */
+img{ 
+     border:none;
+     vertical-align:baseline;
+}
+a, a:link, a:visited{
+     color:#000;
+     text-decoration:none;
+}
+a:hover{ 
+    color:#000; 
+    text-decoration:underline;
+}
+/* 标签属性，textarea,input 强制输入时内容超出时换行，打断 */
+textarea,input{ 
+    word-wrap:break-word; 
+    word-break:break-all; 
+} 
+span,p,div{ 
+    word-wrap:break-word;
+} 
+.lf{ float:left; }
+.rt{ float:right; }
+.clearfix{ content: ''; display: block; clear: both; }
 /* 其它 */
 .clearfloat {clear:both;height:0;font-size: 1px;line-height: 0px;}
 #root {height: 100%}

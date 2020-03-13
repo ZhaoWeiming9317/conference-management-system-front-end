@@ -64,8 +64,6 @@ class Order extends React.Component {
         this.initExec()
     };
     initExec() {
-        meetingSearchAll().then((initArr)=>{
-        })
         let cascaderChosen = []
         roomBuildingSearch().then((res)=>{
             res.map((item)=>{
@@ -486,7 +484,9 @@ class Order extends React.Component {
                         changeOnSelect
                         placeholder="选择大楼/楼层" />,
                     </Col>
-                    <Col span={12}>
+                    <Col span={1}>
+                    </Col>
+                    <Col span={15}>
                         {dayList.map((item)=>{
                             return (
                             <div onClick={(e)=>this.chooseDay(item,e)} className={`daylist--${item.chosen}`} style={{display: "inline-block",marginTop: 0, marginLeft: 20,marginRight: 20 ,cursor:"pointer",verticalAlign: 'top'}}> 
@@ -494,6 +494,8 @@ class Order extends React.Component {
                                 <div>{item.week_name}</div>
                             </div>)
                         })}
+                    </Col>
+                    <Col span={1}>
                     </Col>
                     <Col span={2}>
                         <Button onClick={(e)=>this.buildFloorDaySubmit(e)}>确定</Button>,

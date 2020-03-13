@@ -8,5 +8,6 @@ export const navList = [
     {'label': '设备管理', 'key': 6, 'linkTo': '/device', 'type': "desktop"   ,'role':1},
     {'label': '表单管理', 'key': 7, 'linkTo': '/form', 'type': "form"  ,'role':1 },
     {'label': '个人中心', 'key': 8},
-    {'label': '退出', 'key': 9}
+    {'label': '退出', 'key': 9},
+    {'label': '设备控制', 'key': 10, 'linkTo': '/formcontrol', 'type': "form"  ,'role':1 },
 ]

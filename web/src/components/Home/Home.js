@@ -13,6 +13,7 @@ import Device from '../Device/Device'
 import Main from '../Main/Main'
 import Form from '../Form/Form'
 import SelfInfo from '../SelfInfo/SelfInfo'
+import FormControl from '../FormControl/FormControl'
 import { logout } from '../../actions/index'
 import { Avatar, Badge, Layout, Menu, Icon, Typography, Row, Col, Popover, message, List} from 'antd'
 import { navList } from '../../constants/navListConstants' 
@@ -180,9 +181,9 @@ class Home extends React.Component {
                         )}
                     </Menu>
                 </Sider>
-                <Layout style={{ minHeight: '100vh' }}>
-                    <Header style={{ background: '#fff', padding: 5 }}>            
-                    <Row type="flex">
+                <Layout style={{ minHeight: '100vh', minWidth: 1109}}>
+                    <Header style={{ background: '#fff', padding: 5}}>            
+                    <Row>
                         <Col span={2}>
                             <Icon
                             className="trigger"
@@ -224,9 +225,10 @@ class Home extends React.Component {
                     </Header>
                     <Content
                         style={{
-                        margin: '24px 16px',
+                        margin: '24px auto',
                         padding: 24,
-                        background: '#fff'
+                        background: '#fff',
+                        width: 1109
                         }}
                     >
                         <Switch>
@@ -239,6 +241,7 @@ class Home extends React.Component {
                             <Route path="/device" component={Device}></Route>
                             <Route path="/form" component={Form}></Route>
                             <Route path="/selfinfo" component={() => <SelfInfo info={selfInfo}></SelfInfo>}></Route>
+                            <Route path="/formcontrol" component={FormControl}></Route>
                             <Redirect from={"*"} to={'/main'} />
                         </Switch>
                     </Content>

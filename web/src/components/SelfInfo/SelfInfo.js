@@ -35,7 +35,7 @@ class SelfInfo extends React.Component {
     }
     handleCancelModify = () => {
         this.setState({ modalModifyVisible: false })
-        const data = { user_id: this.props.userId}
+        const data = { user_id: this.props.info.userId}
         userShowInfo(JSON.stringify(data)).then((res)=>{
             this.setState({
                 info: res
