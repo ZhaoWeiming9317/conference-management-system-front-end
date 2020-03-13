@@ -28,7 +28,7 @@ class Home extends React.Component {
         this.state = {
             collapsed :false,
             nav: 0,
-            title: '首页',
+            title: '我的会议',
             id: '',
             name: '',
             selfInfo: []

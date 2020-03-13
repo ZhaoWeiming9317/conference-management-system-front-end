@@ -54,7 +54,7 @@ class SelfInfo extends React.Component {
             role = "普通用户"
         }
         return (
-            <div style={{ background: '#ECECEC', padding: '30px' }}>  
+            <div style={{ padding: '30px' }}>  
                 <Card title={role} bordered={false} style={{ width: "auto" }}>
                   <Typography>
                     <Title>{info.name}</Title>

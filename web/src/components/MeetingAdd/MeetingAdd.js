@@ -49,6 +49,7 @@ class MeetingApp extends React.Component {
     }
     this.id = 0
     this.timeout = null
+    this.searchScroll = this.searchScroll.bind(this)
   }
   componentWillMount() {
     let {userMeetingData} = this.props
@@ -103,14 +104,14 @@ class MeetingApp extends React.Component {
     
     let execMeetingInfo = {}
     execMeetingInfo['meeting_name'] = meetingInfo['meeting_name']
-    execMeetingInfo['room'] = {room_id : meetingInfo['room_id']}
+    execMeetingInfo['room'] = {room_id : meetingInfo['room_id'].toString()}
     execMeetingInfo['start_time'] = meetingInfo['start_time'].format("YYYY-MM-DD HH:mm:ss")
     execMeetingInfo['end_time'] = meetingInfo['end_time'].format("YYYY-MM-DD HH:mm:ss")
-    execMeetingInfo['host'] = {user_id :meetingInfo['user_id']}
-    execMeetingInfo['recorder'] = {user_id : meetingInfo['recorder']}
+    execMeetingInfo['host'] = {user_id : meetingInfo['user_id'] && meetingInfo['user_id'].toString()}
+    execMeetingInfo['recorder'] = {user_id : meetingInfo['recorder'] && meetingInfo['recorder']['key'].toString()}
     execMeetingInfo['members'] = []
     meetingInfo['keys'].map((key) => {
-      execMeetingInfo['members'].push({user_id: meetingInfo['names'][key]['key']})}
+      execMeetingInfo['members'].push({user_id: meetingInfo['names'][key]['key'] && meetingInfo['names'][key]['key'].toString()})}
     )
     execMeetingInfo['topic'] = meetingInfo['topic']
     execMeetingInfo['meetingAbstract'] = meetingInfo['meetingAbstract']

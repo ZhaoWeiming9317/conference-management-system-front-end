@@ -3,12 +3,12 @@ import './Order.sass'
 import { userLoginVerification, userShowInfo } from '../../api/apiUser'
 import { meetingSearch3, meetingSearchCertain, meetingSearchAll, meetingDelete, } from '../../api/apiMeeting'
 import { roomBuildingSearch, roomFloorSearch } from '../../api/apiRoom'
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
 import { logout } from '../../actions/index'
-import { Row, Col, Typography, Cascader, Button, message, Modal, Dropdown, Menu, Popconfirm,} from 'antd';
+import { Row, Col, Typography, Cascader, Button, message, Modal, Dropdown, Menu, Popconfirm,} from 'antd'
 import MeetingAdd from '../../components/MeetingAdd/MeetingAdd'
 
-const { Title } = Typography;
+const { Title } = Typography
 import moment from 'moment'
 
 class Order extends React.Component {
@@ -51,12 +51,13 @@ class Order extends React.Component {
                         console.log(res)
                         this.setState({
                             hostName: res.name
+                        },()=>{
+                            this.initExec()
                         })    
                     })
                 })
             }
         })
-        this.initExec()
     };
     initExec() {
         let cascaderChosen = []
@@ -145,7 +146,7 @@ class Order extends React.Component {
     dayListFormat() {
         let { day } = this.state
         let dayList = []
-        for (let i = -1; i <= 6; i++){
+        for (let i = 0; i <= 6; i++){
             dayList.push(
                {start_time: moment().add(i, 'days').format("YYYY-MM-DD 00:00:00"),
                 end_time: moment().add(i, 'day').format("YYYY-MM-DD 23:59:59"),
@@ -194,6 +195,8 @@ class Order extends React.Component {
         this.setState({
             day: day,
             dayList: dayList
+        },()=>{
+            this.buildFloorDaySubmit()
         })
     }
     buildFloorDaySubmit() {
@@ -548,15 +551,15 @@ class Order extends React.Component {
                                                 )
                                             })}
                                         </tr>
-                                        {/* <tr style={{height:20}}>
-                                            {item.map((item)=>{
+                                        <tr style={{height:20}}>
+                                            {item.meetingList.map((item)=>{
                                                 return(
                                                     <td>
                                                     <div style={{color: '#d9d9d9'}}>{`${item.time}:00`}</div>  
                                                     </td>
                                                 )
                                             })}
-                                        </tr> */}
+                                        </tr>
                                     </tbody>
                                 </table>
                                 <Button name={item.room_name} style={{ marginTop: 20}} onClick={(e)=>this.addConference(item.room_id,e)}>添加会议</Button>
