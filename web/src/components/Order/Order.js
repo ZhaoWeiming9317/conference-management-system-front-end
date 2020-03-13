@@ -11,11 +11,6 @@ import MeetingAdd from '../../components/MeetingAdd/MeetingAdd'
 const { Title } = Typography;
 import moment from 'moment'
 
-import '@fullcalendar/core/main.css'
-import '@fullcalendar/daygrid/main.css'
-import '@fullcalendar/timegrid/main.css'
-
-
 class Order extends React.Component {
     constructor(props) {
         super(props);
@@ -76,10 +71,30 @@ class Order extends React.Component {
                 )
             })
             this.setState({
-                cascaderChosen : cascaderChosen
+                cascaderChosen : cascaderChosen,
+                building : cascaderChosen[0].value
+            },()=>{
+                let { cascaderChosen } = this.state
+                const data = {building : cascaderChosen[0].value}
+                roomFloorSearch(JSON.stringify(data)).then((res)=>{
+                    cascaderChosen[0].children = []
+                    res.map((item)=>{
+                        cascaderChosen[0].children.push(
+                            {
+                                value: item,
+                                label: item
+                            }
+                        )    
+                    })
+                    this.setState({
+                        cascaderChosen : this.state.cascaderChosen,
+                        floor : cascaderChosen[0].children[0].value
+                    },()=>{
+                        this.dayListFormat()
+                    })
+                })        
             })
         })
-        this.dayListFormat()
     }
     execInitArr (initArr) {
         let baseArr = []
@@ -142,7 +157,9 @@ class Order extends React.Component {
         dayList[0]['chosen'] = true
         day['start_time'] = dayList[0]['start_time']
         day['end_time'] = dayList[0]['end_time']    
-        this.setState({dayList: dayList})
+        this.setState({dayList: dayList},()=>{
+            this.buildFloorDaySubmit()
+        })
     }
     onPanelChange(value, mode) {
     }
@@ -481,6 +498,7 @@ class Order extends React.Component {
                         options={cascaderChosen} 
                         onChange={this.cascaderOnChange} 
                         loadData={this.cascaderLoadData}
+                        value={[this.state.building, this.state.floor]}
                         changeOnSelect
                         placeholder="选择大楼/楼层" />,
                     </Col>

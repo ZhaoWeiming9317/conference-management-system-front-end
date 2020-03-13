@@ -107,7 +107,7 @@ class MeetingApp extends React.Component {
     execMeetingInfo['start_time'] = meetingInfo['start_time'].format("YYYY-MM-DD HH:mm:ss")
     execMeetingInfo['end_time'] = meetingInfo['end_time'].format("YYYY-MM-DD HH:mm:ss")
     execMeetingInfo['host'] = {user_id :meetingInfo['user_id']}
-    execMeetingInfo['recorder'] = {user_id : meetingInfo['recorder']['key']}
+    execMeetingInfo['recorder'] = {user_id : meetingInfo['recorder']}
     execMeetingInfo['members'] = []
     meetingInfo['keys'].map((key) => {
       execMeetingInfo['members'].push({user_id: meetingInfo['names'][key]['key']})}
@@ -295,7 +295,7 @@ class MeetingApp extends React.Component {
         start_time:this.state.start_time,
         end_time:this.state.end_times,
         page: page,
-        volume: 5
+        volume: 10
       }
       userNameSearch(JSON.stringify(data)).then((res)=>{
         console.log(res)

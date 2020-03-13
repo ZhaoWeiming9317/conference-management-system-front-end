@@ -2,10 +2,11 @@ import React from 'react'
 import { userLoginVerification } from '../../api/apiUser'
 import { connect } from 'react-redux';
 import { logout } from '../../actions/index'
-import { Row, Col, Typography, Cascader, Button, message, Modal, Dropdown, Menu, Popconfirm,} from 'antd';
+import { Row, Col, Typography, Cascader, Button, message, Modal, Dropdown, Menu, Popconfirm, Card, Icon} from 'antd';
 import moment from 'moment'
 import { roomBuildingSearch, roomFloorSearch } from '../../api/apiRoom'
 
+const { Title } = Typography;
 class FormControl extends React.Component {
     constructor(props) {
         super(props);
@@ -13,6 +14,63 @@ class FormControl extends React.Component {
             building: '',
             floor: '',
             cascaderChosen: [],
+            roomList: [{roomName: '会议室01',
+                        roomId: 1,
+                        deviceList: [
+                            {
+                                deviceId: 1,
+                                deviceName: '空调',
+                                deviceType: 'GSDF4',
+                                brand: '海尔'
+                            },
+                            {
+                                deviceId: 2,
+                                deviceName: '触摸板',
+                                deviceType: 'GSDF4',
+                                brand: '华为'
+                            },
+                            {
+                                deviceId: 3,
+                                deviceName: '灯',
+                                deviceType: 'GSDI4',
+                                brand: '飞利浦'
+                            },
+                            {
+                                deviceId: 4,
+                                deviceName: '灯',
+                                deviceType: 'GSDI4',
+                                brand: '飞利浦'
+                            },
+                        ]},{
+                            roomName: '会议室02',
+                            roomId: 2,
+                            deviceList: [
+                                {
+                                    deviceId: 5,
+                                    deviceName: '空调',
+                                    deviceType: 'GSDF4',
+                                    brand: '海尔'
+                                },
+                                {
+                                    deviceId: 6,
+                                    deviceName: '触摸板',
+                                    deviceType: 'GSDF4',
+                                    brand: '华为'
+                                },
+                                {
+                                    deviceId: 7,
+                                    deviceName: '灯',
+                                    deviceType: 'GSDI4',
+                                    brand: '飞利浦'
+                                },
+                                {
+                                    deviceId: 8,
+                                    deviceName: '灯',
+                                    deviceType: 'GSDI4',
+                                    brand: '飞利浦'
+                                },
+                            ]
+                        },]
         }
         this.cascaderLoadData = this.cascaderLoadData.bind(this)
         this.cascaderOnChange = this.cascaderOnChange.bind(this)
@@ -88,7 +146,7 @@ class FormControl extends React.Component {
 
     render() {    
         let { isLogin } = this.props
-        let { cascaderChosen , dayList} = this.state
+        let { cascaderChosen , dayList, roomList} = this.state
         return (
             <div className="user__container">
                 <div className="user__table">
@@ -106,11 +164,40 @@ class FormControl extends React.Component {
                         <Col span={2}>
                             <Button onClick={(e)=>this.buildFloorDaySubmit(e)}>确定</Button>,
                         </Col>
-                        <Col span={15}>
-                        </Col>
-                        <Col span={1}>
+                        <Col span={16}>
                         </Col>
                     </Row>
+                </div>
+                <div>
+                    {roomList.map((room)=>{
+                        return (
+                            <Row style={{ padding: 20}}>
+                                <Col span={24}>
+                                    <div style={{border: '1px solid #d9d9d9', padding: 20}}>
+                                        <Title level={4} style={{padding: 10,paddingLeft: 0}}>{room.roomName}</Title>
+                                        <div style={{ display: 'flex',flexDirection: 'row',flexWrap: 'wrap'}}>
+                                            {room.deviceList.map((device)=>{
+                                                return(
+                                                        <Card
+                                                        hoverable
+                                                        style={{ width: 240 }}
+                                                        actions={[
+                                                            <div><Icon type="check" />打开</div>,
+                                                            <div><Icon type="close" />关闭</div>,
+                                                            <div><Icon type="ellipsis"/></div>,
+                                                          ]}                                                      
+                                                        >
+                                                            <Card.Meta title={device.deviceName} description={device.deviceType} />
+                                                        </Card>    
+                                                )
+                                                })
+                                            }
+                                        </div>
+                                    </div>
+                                </Col>
+                            </Row>
+                        )
+                    })}
                 </div>
             </div>
         );
