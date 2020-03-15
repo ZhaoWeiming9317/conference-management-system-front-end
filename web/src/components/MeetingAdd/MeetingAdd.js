@@ -107,11 +107,11 @@ class MeetingApp extends React.Component {
     execMeetingInfo['room'] = {room_id : meetingInfo['room_id'].toString()}
     execMeetingInfo['start_time'] = meetingInfo['start_time'].format("YYYY-MM-DD HH:mm:ss")
     execMeetingInfo['end_time'] = meetingInfo['end_time'].format("YYYY-MM-DD HH:mm:ss")
-    execMeetingInfo['host'] = {user_id : meetingInfo['user_id'] && meetingInfo['user_id'].toString()}
-    execMeetingInfo['recorder'] = {user_id : meetingInfo['recorder'] && meetingInfo['recorder']['key'].toString()}
+    execMeetingInfo['host'] = {user_id : meetingInfo['user_id']}
+    execMeetingInfo['recorder'] = {user_id : meetingInfo['recorder']['key']}
     execMeetingInfo['members'] = []
     meetingInfo['keys'].map((key) => {
-      execMeetingInfo['members'].push({user_id: meetingInfo['names'][key]['key'] && meetingInfo['names'][key]['key'].toString()})}
+      execMeetingInfo['members'].push({user_id: meetingInfo['names'][key]['key']})}
     )
     execMeetingInfo['topic'] = meetingInfo['topic']
     execMeetingInfo['meetingAbstract'] = meetingInfo['meetingAbstract']

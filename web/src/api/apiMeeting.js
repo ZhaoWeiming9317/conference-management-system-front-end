@@ -91,3 +91,12 @@ export function meetingMembersDelete(data){
         data: data || {}
     })
 }
+
+export function meeting7Search(data){
+    return server({
+        url: url.meeting7Search,
+        method: 'post',
+        dataType: "json",
+        data: data || {}
+    })
+}

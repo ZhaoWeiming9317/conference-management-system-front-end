@@ -5,6 +5,7 @@ import { informAll , informFirst, watch, publish} from '../../api/apiMessage'
 import { BrowserRouter, Switch, Route, Redirect, Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import Order from '../Order/Order'
+import Conference from '../Conference/Conference'
 import User from '../User/User'
 import Message from '../Message/Message'
 import Meeting from '../Meeting/Meeting'
@@ -233,6 +234,7 @@ class Home extends React.Component {
                     >
                         <Switch>
                             <Route path="/main" component={Main}></Route>
+                            <Route path="/conference" component={Conference}></Route>
                             <Route path="/order" component={Order}></Route>
                             <Route path="/message" component={Message}></Route>
                             <Route path="/user" component={User}></Route>
@@ -242,7 +244,7 @@ class Home extends React.Component {
                             <Route path="/form" component={Form}></Route>
                             <Route path="/selfinfo" component={() => <SelfInfo info={selfInfo}></SelfInfo>}></Route>
                             <Route path="/formcontrol" component={FormControl}></Route>
-                            <Redirect from={"*"} to={'/main'} />
+                            <Redirect from={"*"} to={'/main/conferencelist'} />
                         </Switch>
                     </Content>
                 </Layout>

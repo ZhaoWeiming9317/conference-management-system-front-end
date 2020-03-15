@@ -83,7 +83,7 @@ class Order extends React.Component {
                         cascaderChosen[0].children.push(
                             {
                                 value: item,
-                                label: item
+                                label: `${item}楼`
                             }
                         )    
                     })
@@ -230,7 +230,7 @@ class Order extends React.Component {
                 targetOption.children.push(
                     {
                         value: item,
-                        label: item
+                        label: `${item}楼`
                     }
                 )    
             })
