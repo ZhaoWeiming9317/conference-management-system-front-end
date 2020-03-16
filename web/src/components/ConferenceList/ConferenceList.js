@@ -14,7 +14,9 @@ class ConferenceList extends React.Component {
         this.state = {
             day :  {start_time: '', end_time: ''} ,
             sortByDayConferenceList: [],
-            myConferenceList: [] 
+            myConferenceList: [] ,
+            minNextConference: {},
+            hasConference: true
         }
     }  
     componentDidMount() {
@@ -29,11 +31,33 @@ class ConferenceList extends React.Component {
                 meeting7Search(JSON.stringify(data)).then((res)=>{
                     this.setState({ myConferenceList : res.list },()=>{
                         this.dayListFormat()
+                        this.findClosedMeeting()
                     })
                 })
             }
         })
-    };
+    }
+    findClosedMeeting() {
+        let { myConferenceList } = this.state
+        let nowDate = new Date()
+        let now = nowDate.getTime()
+        let minNextConference={},minNext = 0
+        myConferenceList.map((conference,index)=>{
+            let endDate = new Date(conference.endTime)
+            let end = endDate.getTime()
+            if ( end - now < minNext || JSON.stringify(minNextConference) == '{}') {
+                if (end - now >= 0) {
+                    minNext = end - now
+                    minNextConference = conference    
+                }
+            }
+        })
+        if (JSON.stringify(minNextConference) == '{}') {
+            this.setState({ minNextConference, hasConference: false })
+        } else {
+            this.setState({ minNextConference })
+        }
+    }
     dayListFormat() {
         let { day } = this.state
         let sortByDayConferenceList = []
@@ -85,7 +109,7 @@ class ConferenceList extends React.Component {
     }      
     render() {    
         let { isLogin } = this.props
-        let { sortByDayConferenceList } = this.state
+        let { sortByDayConferenceList, minNextConference, hasConference } = this.state
         return (
             <div>
                 <Row style={{ padding: 20, paddingBottom: 0}}>
@@ -93,10 +117,10 @@ class ConferenceList extends React.Component {
                         <Title level={3} style={{padding: 10,paddingLeft: 0}}>会议列表</Title>
                     </Col>
                     <Col span={5} style={{height: 50, lineHeight: '50px'}}>
-                        <Link to={`/main/conference`}> 
-                            <Button type="primary" ghost>
+                        <Link to={{pathname:`/main/conference`,state: { conference: minNextConference, hasConference: hasConference}}}> 
+                            {JSON.stringify(minNextConference) != '{}' && <Button type="primary" ghost>
                                 会议面板
-                            </Button>
+                            </Button>}
                         </Link>
                     </Col>
                     <Col span={11}>
@@ -104,7 +128,7 @@ class ConferenceList extends React.Component {
                 </Row>
                 <Row style={{ padding: 20}}>
                     <Col span={24}>
-                        {sortByDayConferenceList.map((day)=>{
+                        { sortByDayConferenceList.map((day)=>{
                             return (
                                 <div style={{padding: 20, paddingLeft: 0}}>
                                     <Row>
@@ -125,31 +149,36 @@ class ConferenceList extends React.Component {
                                                     <Col span={2} style={{height: 20, lineHeight: '20px'}}>
                                                     
                                                     </Col>
-                                                    <Col span={4} style={{height: 20, lineHeight: '20px'}}>
+                                                    <Col span={3} style={{height: 20, lineHeight: '20px'}}>
                                                     会议室名称
                                                     </Col>
-                                                    <Col span={4} style={{height: 20, lineHeight: '20px'}}>
+                                                    <Col span={3} style={{height: 20, lineHeight: '20px'}}>
                                                     会议名称
                                                     </Col>
-                                                    <Col span={4} style={{height: 20, lineHeight: '20px'}}>
+                                                    <Col span={3} style={{height: 20, lineHeight: '20px'}}>
                                                     主持人
                                                     </Col>
-                                                    <Col span={10} style={{height: 20, lineHeight: '20px'}}>
+                                                    <Col span={3} style={{height: 20, lineHeight: '20px'}}>
+                                                    会议主题
+                                                    </Col>
+                                                    <Col span={11} style={{height: 20, lineHeight: '20px'}}>
                                                     </Col>
                                                 </Row>}
-                                                <Row style={{position:'relative', border: '1px solid #d9d9d9', paddingTop: 10,paddingBottom: 10, paddingLeft: 10, marginTop: 20, marginBottom: 20}}>
-                                                        
+                                                <Row style={{position:'relative', border: '1px solid #d9d9d9', paddingTop: 10 ,paddingBottom: 10, paddingLeft: 10, marginTop: index !== 0 ? 20 : 0 , marginBottom: 20}}>   
                                                         <Col span={2} style={{height: 50, lineHeight: '50px'}}>
                                                         {meeting.show_time}&nbsp;
                                                         </Col>
-                                                        <Col span={4} style={{height: 50, lineHeight: '50px'}}>
+                                                        <Col span={3} style={{height: 50, lineHeight: '50px'}}>
                                                          {meeting.roomName}&nbsp;
                                                         </Col>
-                                                        <Col span={4} style={{height: 50, lineHeight: '50px'}}>
+                                                        <Col span={3} style={{height: 50, lineHeight: '50px'}}>
                                                          {meeting.meetingName}
                                                         </Col>
-                                                        <Col span={4} style={{height: 50, lineHeight: '50px'}}>
+                                                        <Col span={3} style={{height: 50, lineHeight: '50px'}}>
                                                          {meeting.hostName}
+                                                        </Col>
+                                                        <Col span={3} style={{height: 50, lineHeight: '50px'}}>
+                                                         {meeting.topic}
                                                         </Col>
                                                         <Col span={7} style={{height: 50, lineHeight: '50px'}}>
                                                         </Col>

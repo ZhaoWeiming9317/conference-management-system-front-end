@@ -14,7 +14,7 @@ import locale from 'antd/lib/date-picker/locale/zh_CN'
 import 'moment/locale/zh-cn'
 moment.locale('zh-cn')
 
-
+import { deBounce } from '../../constants/tool'
 class MeetingApp extends React.Component {
   constructor(props) {
     super(props)
@@ -50,13 +50,7 @@ class MeetingApp extends React.Component {
     this.id = 0
     this.timeout = null
     this.searchScroll = this.searchScroll.bind(this)
-  }
-  componentWillMount() {
-    let {userMeetingData} = this.props
-    this.setState({...userMeetingData,
-    },()=>{
-      console.log(userMeetingData)
-    })
+    this.searchWhenSelectChange = deBounce(this.searchWhenSelectChange, 500)
   }
   componentDidMount() {
     let {userMeetingData , type} = this.props
@@ -78,8 +72,6 @@ class MeetingApp extends React.Component {
   }
 
   compareMembers(oldMembers, newMembers) {
-    console.log('old',oldMembers)
-    console.log('new',newMembers)
     let addList = []
     let deleteList = []
     oldMembers.map((oldItem)=>{
@@ -117,7 +109,6 @@ class MeetingApp extends React.Component {
     execMeetingInfo['meetingAbstract'] = meetingInfo['meetingAbstract']
     execMeetingInfo['remark'] = meetingInfo['remark']
     execMeetingInfo['meeting'] = meetingInfo['remark']
-    console.log(execMeetingInfo)
     this.props.form.validateFields((err, values) => {
         if (!err) {
           if(this.props.type === 'add' || this.props.type === 'userAdd') {
@@ -247,7 +238,6 @@ class MeetingApp extends React.Component {
   }
   
   disabledDateTime = () => {
-    console.log(this)
     return {
       disabledHours: () => this.range(0, 9).concat(this.range(19, 24)),
       disabledMinutes: () => this.range(1, 60),
@@ -290,7 +280,6 @@ class MeetingApp extends React.Component {
     setTimeout(() => {
       const { getFieldsValue } = this.props.form;
       let meetingInfo = getFieldsValue()
-      console.log(meetingInfo)
       let data = {
         name: tempValue || '',
         start_time:this.state.start_time,
@@ -299,15 +288,14 @@ class MeetingApp extends React.Component {
         volume: 10
       }
       userNameSearch(JSON.stringify(data)).then((res)=>{
-        console.log(res)
         if (page == 1) {searchDown = []}
         res.list.map(r => {
           searchDown.push({
             value: r['userId'],
             text: r['name'],
+            username: r['username']
           });
         });
-        console.log(searchDown)
         this.setState({
           searchDown
         })
@@ -318,14 +306,16 @@ class MeetingApp extends React.Component {
   searchScroll = e => {
       e.persist();
       const { target } = e;
-      if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
+      if (target.scrollTop + target.offsetHeight >= target.scrollHeight - 1) {
         const { scrollPage } = this.state;
         const nextScrollPage = scrollPage + 1;
         this.setState({ scrollPage: nextScrollPage });
         this.searchName(nextScrollPage); // 调用api方法
      }
- };
-    
+ }
+ searchWhenSelectChange = (e)=>{
+    console.log(e)
+ }
   render() {
     const { getFieldDecorator, getFieldValue } = this.props.form;
     const { type } = this.props;
@@ -337,7 +327,7 @@ class MeetingApp extends React.Component {
         wrapperCol: { span: 14 },
         labelAlign: 'left'
       };
-    const options = this.state.searchDown.map(d => <Option value={d.value}>{d.text}</Option>);
+    const options = this.state.searchDown.map(d => <Option value={d.value}><span>{d.text}</span><span style={{color: '#d9d9d9'}}>&nbsp;{d.username}</span></Option>);
     const formItems = keys.map((k, index) => (
       <Form.Item
         {...formItemLayout}
@@ -359,8 +349,9 @@ class MeetingApp extends React.Component {
           preserve: true,
         })(<Select style={{height:"50px"}} placeholder="参会人员名字" 
         labelInValue
+        value={this.state.tempValue}
         style={{ width: '80%', marginRight: 8 }} 
-        onChange={(e)=>this.searchName(1,e)} 
+        onSearch={this.searchWhenSelectChange}
         onFocus={(e)=>this.searchName(1,e)}
         notFoundContent={null}
         onPopupScroll={this.searchScroll}
@@ -484,8 +475,9 @@ class MeetingApp extends React.Component {
           })(<Select placeholder="记录人员名字" 
           labelInValue
           style={{ width: '80%', marginRight: 8 }} 
-          onChange={(e)=>this.searchName(1,e)} 
+          onSearch={this.searchWhenSelectChange}
           onFocus={(e)=>this.searchName(1,e)}
+          onPopupScroll={this.searchScroll}
           notFoundContent={null}
           showSearch
           allowClear>
@@ -498,7 +490,7 @@ class MeetingApp extends React.Component {
             <Icon type="plus" /> 增加参会人员
           </Button>
         </Form.Item>}
-        {currentStep === 2 && <Form.Item label="会议类型">
+        {currentStep === 2 && <Form.Item label="会议主题">
           {getFieldDecorator('topic', {
             initialValue: this.state.topic,
             rules: [{ required: true }],

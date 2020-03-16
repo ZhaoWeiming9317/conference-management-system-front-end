@@ -1,5 +1,6 @@
 import React from 'react'
 import { userLoginVerification } from '../../api/apiUser'
+import { meetingSearchCertain } from '../../api/apiMeeting'
 import { connect } from 'react-redux'
 import { logout } from '../../actions/index'
 import {  Row, Col, Typography, Divider, Button} from 'antd';
@@ -13,7 +14,10 @@ class Conference extends React.Component {
             d: 0,
             h: 0,
             m: 0,
-            s: 0
+            s: 0,
+            conference: props.location.state.conference,
+            certainConference : {},
+            memo: '距离会议结束'
         }
     }  
     componentDidMount() {
@@ -24,24 +28,42 @@ class Conference extends React.Component {
             if (res.state == 0) {
                 this.props.logout()
             } else {
+                this.getCertainConference()
                 this.countTime()
             }
         })
-    };
-    countTime = () => {  
+    }
+    getCertainConference = () => {
+        let conference = this.props.location.state.conference
+        let data = { meeting_id:conference.meetingId}
+        meetingSearchCertain(JSON.stringify(data)).then((res)=>{
+            this.setState( { certainConference : res } )
+        })
+    }
+    countTime = () => {
+        let conference = this.props.location.state.conference 
         //获取当前时间  
-        let date = new Date();  
-        let now = date.getTime();  
-        //设置截止时间  
-        let str="2020/5/17 00:00:00";
-        let endDate = new Date(str); 
-        let end = endDate.getTime();  
-        
-        //时间差  
-        let leftTime = end-now; 
+        let date = new Date()
+        let now = date.getTime()
+        //设置开始时间  
+        let startStr = conference.startTime
+        let endStr = conference.endTime
+        let startDate = new Date(startStr)
+        let endDate = new Date(endStr) 
+        let start = startDate.getTime() 
+        let end = endDate.getTime()
+        let leftTime = 0
+        //时间差,且已经开始会议
+        if ( now - start > 0) {
+            leftTime = end - now
+            this.setState({memo: '距离会议结束'})
+        } else {
+            leftTime = start - now
+            this.setState({memo: '距离会议开始'})
+        }
         //定义变量 d,h,m,s保存倒计时的时间  
-        let d,h,m,s;  
-        if (leftTime>=0) {  
+        let d,h,m,s
+        if (leftTime >= 0) {  
             d = this.PrefixInteger(Math.floor(leftTime/1000/60/60/24),2)  
             h = this.PrefixInteger(Math.floor(leftTime/1000/60/60%24),2)
             m = this.PrefixInteger(Math.floor(leftTime/1000/60%60),2)
@@ -61,26 +83,89 @@ class Conference extends React.Component {
        
     render() {    
         let { isLogin } = this.props
-        let { d, h, m, s } = this.state
+        let hasConference = this.props.location.state.hasConference
+        let { d, h, m, s, certainConference } = this.state
         return (
             <div>
-                <Row style={{ padding: 20, paddingBottom: 0}}>
-                    <Col span={5}>
-                        <Title level={3} style={{padding: 10,paddingLeft: 0}}>会议面板</Title>
-                    </Col>
-                    <Col span={5} style={{height: 50, lineHeight: '50px'}}>
-                        <Link to={`/main/conferencelist`}> 
-                            <Button type="primary" ghost>
-                                会议列表
-                            </Button>
-                        </Link>
-                    </Col>
-                    <Col span={11} style={{height: 50, lineHeight: '50px'}}>
-                        <div style={{height: 50, lineHeight: '50px'}}>{ `距离会议结束${d}天${h}时${m}分${s}秒`}</div>
-                    </Col>                    
-                </Row>
-                <Row style={{ padding: 20, paddingBottom: 0}}>
-                </Row>
+                { hasConference == false && <div>
+                    <Row style={{ padding: 20, paddingBottom: 0}}>
+                        <Col span={6}>
+                            <Title level={3} style={{padding: 10,paddingLeft: 0}}>会议面板</Title>
+                        </Col>
+                    </Row>
+                    <Row style={{ padding: 20, paddingBottom: 0}}>
+                        <Col span={6}>
+                            <div style={{height: 50, lineHeight: '50px',fontSize: 16}}>暂时没有会议</div>
+                        </Col>
+                    </Row>
+                </div>}
+                { hasConference == true && <div>
+                    <Row style={{ padding: 20, paddingBottom: 0}}>
+                        <Col span={6}>
+                            <Title level={3} style={{padding: 10,paddingLeft: 0}}>会议面板</Title>
+                        </Col>
+                        <Col span={6} style={{height: 50, lineHeight: '50px'}}>
+                            <Link to={`/main/conferencelist`}> 
+                                <Button type="primary" ghost>
+                                    会议列表
+                                </Button>
+                            </Link>
+                        </Col>
+                        <Col span={10} style={{height: 50, lineHeight: '50px'}}>
+                            <div style={{height: 50, lineHeight: '50px',fontSize: 22}}>{ `距离会议结束${d}天${h}时${m}分${s}秒`}</div>
+                        </Col>                    
+                    </Row>
+                    <Row style={{ padding: 20, paddingBottom: 0}}>
+                        <Col span={6}>
+                            <div style={{height: 50, lineHeight: '50px',fontSize: 16}}>会议名称:&nbsp; {certainConference.meetingName}</div>
+                        </Col>
+                        <Col span={6}>
+                            <div style={{height: 50, lineHeight: '50px',fontSize: 16}}>房间名称:&nbsp; {certainConference.room && certainConference.room.roomName}</div>
+                        </Col>
+                        <Col span={10}>
+                            <div style={{height: 50, lineHeight: '50px',fontSize: 16}}> {`${certainConference.startTime || ''} - ${certainConference.endTime || ''}`}</div>
+                        </Col>
+                    </Row>
+                    <Row style={{ padding: 20, paddingBottom: 0}}>
+                        <Col span={6}>
+                            <div style={{height: 50, lineHeight: '50px',fontSize: 16}}>
+                                <span>发起人:&nbsp;{certainConference.host && certainConference.host.name}</span>
+                                <span style={{ color: '#d9d9d9' }}>&nbsp;{certainConference.host && certainConference.host.username}</span>
+                            </div>
+                        </Col>
+                        <Col span={6}>
+                            <div style={{height: 50, lineHeight: '50px',fontSize: 16}}>
+                                <span>记录人:&nbsp; {certainConference.recorder && certainConference.recorder.name}</span>
+                                <span style={{ color: '#d9d9d9' }}>&nbsp;{certainConference.recorder && certainConference.recorder.username}</span>
+                            </div>
+                        </Col>
+                        <Col span={6}>
+                            <div style={{height: 50, lineHeight: '50px',fontSize: 16}}>
+                                <span>会议主题:&nbsp; {`${certainConference.topic}`}</span>
+                            </div>
+                        </Col>
+                        <Col span={6}>
+                            <div style={{height: 50, lineHeight: '50px',fontSize: 16}}>
+                                <span>会议摘要:&nbsp; {`${certainConference.meetingAbstract}`}</span>
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row style={{ padding: 20, paddingBottom: 0}}>
+                        <Col span={24}>
+                            <div style={{height: 50, lineHeight: '50px',fontSize: 16}}>
+                                <span style={{display: 'inline-block'}}>参会者:&nbsp;</span>
+                                {certainConference.members && certainConference.members.map((members)=>{
+                                    return(
+                                        <div style={{ display: 'inline-block' }}>
+                                            <span>{members && members.name}</span>
+                                            <span style={{ color: '#d9d9d9' }}></span>       
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </Col>
+                    </Row>
+                </div>}
             </div>
         );
     }
@@ -91,4 +176,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, {logout})(Conference);
+export default connect(mapStateToProps, {logout})(Conference)
