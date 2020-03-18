@@ -16,10 +16,7 @@ class Message extends React.Component {
         }
     }  
     componentDidMount() {
-        let cookie = localStorage.getItem('cookie') || 0
-        console.log(cookie)
-        const data = {cookie : cookie}    
-        userLoginVerification(JSON.stringify(data)).then((res) => {
+        userLoginVerification().then((res) => {
             if (res.state == 0) {
                 this.props.logout()
             }

@@ -21,10 +21,7 @@ class Conference extends React.Component {
         }
     }  
     componentDidMount() {
-        let cookie = localStorage.getItem('cookie') || 0
-        console.log(cookie)
-        const data = {cookie : cookie}    
-        userLoginVerification(JSON.stringify(data)).then((res) => {
+        userLoginVerification().then((res) => {
             if (res.state == 0) {
                 this.props.logout()
             } else {
@@ -92,6 +89,13 @@ class Conference extends React.Component {
                         <Col span={6}>
                             <Title level={3} style={{padding: 10,paddingLeft: 0}}>会议面板</Title>
                         </Col>
+                        <Col span={6} style={{height: 50, lineHeight: '50px'}}>
+                            <Link to={`/main/conferencelist`}> 
+                                <Button type="primary" ghost>
+                                    会议列表
+                                </Button>
+                            </Link>
+                        </Col>
                     </Row>
                     <Row style={{ padding: 20, paddingBottom: 0}}>
                         <Col span={6}>
@@ -158,7 +162,8 @@ class Conference extends React.Component {
                                     return(
                                         <div style={{ display: 'inline-block' }}>
                                             <span>{members && members.name}</span>
-                                            <span style={{ color: '#d9d9d9' }}></span>       
+                                            <span style={{ color: '#d9d9d9' }}></span>   
+                                            &nbsp;    
                                         </div>
                                     )
                                 })}

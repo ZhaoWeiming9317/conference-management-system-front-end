@@ -25,6 +25,7 @@ class Order extends React.Component {
             dayList: [],
             building: '',
             floor: '',
+            members: [],
             day: {start_time: '', end_time: ''} ,
             modalAddVisible: false,
             modalModifyVisible: false,
@@ -38,9 +39,7 @@ class Order extends React.Component {
         this.cascaderOnChange = this.cascaderOnChange.bind(this)
     }  
     componentDidMount() {
-        let cookie = localStorage.getItem('cookie') || 0
-        const data = {cookie : cookie}    
-        userLoginVerification(JSON.stringify(data)).then((res) => {
+        userLoginVerification().then((res) => {
             if (res.state == 0) {
                 this.props.logout()
             } else {
@@ -419,7 +418,9 @@ class Order extends React.Component {
                               },
                             start_time:start_time,
                             end_time:end_time,
-                            host: { user_id:this.state.user_id, name : this.state.hostName }}
+                            host: { user_id:this.state.user_id, name : this.state.hostName },
+                            members:[{userId: '',name: ''}]
+                        },
                     },()=>{
                         console.log(this.state.userMeetingData)
                         this.setState({
@@ -458,7 +459,7 @@ class Order extends React.Component {
                 )
             } else if ( key == "modify" ) {
                 meetingSearchCertain(JSON.stringify({meeting_id: nowContextMenuMeetingId})).then((res)=>{
-                    let userMeetingData = res
+                    let userMeetingData = { res }
                     this.setState(
                         { userMeetingData },
                         ()=>{

@@ -5,7 +5,7 @@ import url from './serverAPI.config';
 export function userLogin(data){
     return server({
         url: url.userLogin,
-        method: 'post',
+        method: 'POST',
         dataType: "json",
         data: data
     })
@@ -17,7 +17,7 @@ export function userLogin(data){
 export function userRegist(data){
     return server({
         url: url.userRegist,
-        method: 'post',
+        method: 'POST',
         dataType: "json",
         data: data
     })
@@ -30,7 +30,7 @@ export function userRegist(data){
 export function userAdminSearch(data){
     return server({
         url: url.userAdminSearch,
-        method: 'post',
+        method: 'POST',
         dataType: "json",
         data: data || {}
     })
@@ -42,7 +42,7 @@ export function userAdminSearch(data){
 export function userAdminSearchPage(data){
     return server({
         url: url.userAdminSearchPage,
-        method: 'post',
+        method: 'POST',
         dataType: "json",
         data: data || {}
     })
@@ -54,7 +54,7 @@ export function userAdminSearchPage(data){
 export function userAdminDelete(data){
     return server({
         url: url.userAdminDelete,
-        method: 'post',
+        method: 'POST',
         dataType: "json",
         data: data || {}
     })
@@ -69,7 +69,7 @@ export function userAdminDelete(data){
 export function userModifyInfo(data){
     return server({
         url: url.userModifyInfo,
-        method: 'post',
+        method: 'POST',
         dataType: "json",
         data: data || {}
     })
@@ -81,7 +81,7 @@ export function userModifyInfo(data){
 export function userShowInfo(data){
     return server({
         url: url.userShowInfo,
-        method: 'post',
+        method: 'POST',
         dataType: "json",
         data: data || {}
     })
@@ -94,7 +94,7 @@ export function userShowInfo(data){
 export function userAdminSearchCertain(data){
     return server({
         url: url.userAdminSearchCertain,
-        method: 'post',
+        method: 'POST',
         dataType: "json",
         data: data || {}
     })
@@ -104,7 +104,7 @@ export function userAdminSearchCertain(data){
 export function userLoginVerification(data) {
     return server({
         url: url.userLoginVerification,
-        method: 'post',
+        method: 'get',
         dataType: "json",
         data: data || {}
     })
@@ -113,7 +113,7 @@ export function userLoginVerification(data) {
 export function userLoginExit(data) {
     return server({
         url: url.userLoginExit,
-        method: 'post',
+        method: 'POST',
         dataType: "json",
         data: data || {}
     })
@@ -122,7 +122,7 @@ export function userLoginExit(data) {
 export function userNameSearch(data) {
     return server({
         url: url.userNameSearch,
-        method: 'post',
+        method: 'POST',
         dataType: "json",
         data: data || {}
     })

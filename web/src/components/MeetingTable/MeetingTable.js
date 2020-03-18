@@ -11,6 +11,30 @@ class MeetingTable extends React.Component {
       this.handleAdd = this.handleAdd.bind(this)
       this.volume = 10
       this.input = ''
+      this.meetingDataInit = {
+        meetingName : '',
+        meetingId: '',
+        room:{
+          roomId: '',
+          roomName: ''
+        },
+        startTime:'',
+        endTime:'',
+        host:{
+          name: '',
+          userId: '',
+          username: ''
+        },
+        recorder:{
+          name: '',
+          userId: '',
+          username: ''
+        },
+        members:[{userId: '',name: ''}],
+        topic:'',
+        meetingAbstract:'',
+        remark: '',
+      }
       this.columns = [
         {
           title: '会议ID',
@@ -285,7 +309,7 @@ class MeetingTable extends React.Component {
               footer={null}
               destroyOnClose
             >
-              <MeetingAdd type="add"></MeetingAdd>
+              <MeetingAdd type="add" userMeetingData={this.meetingDataInit}></MeetingAdd>
             </Modal>
             <Modal
               visible={modalModifyVisible}

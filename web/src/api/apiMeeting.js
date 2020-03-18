@@ -100,3 +100,30 @@ export function meeting7Search(data){
         data: data || {}
     })
 }
+
+export function meetingAccept(data){
+    return server({
+        url: url.meetingAccept,
+        method: 'post',
+        dataType: "json",
+        data: data || {}
+    })
+}
+
+export function meetingSignIn(data){
+    return server({
+        url: url.meetingSignIn,
+        method: 'post',
+        dataType: "json",
+        data: data || {}
+    })
+}
+
+export function meetingReject(data){
+    return server({
+        url: url.meetingReject,
+        method: 'post',
+        dataType: "json",
+        data: data || {}
+    })
+}

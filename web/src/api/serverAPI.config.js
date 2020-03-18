@@ -52,7 +52,10 @@ const URL ={
     meetingMembersDelete: HISTORY + '/meeting/meeting_members_delete ',
     meetingDelete: HISTORY + '/meeting/meeting_delete ',
     meeting7Search: HISTORY + '/meeting/user_meeting7_search',
-    
+    meetingSignIn: HISTORY + '/meeting/sign_in',
+    meetingAccept: HISTORY + '/meeting/accept',
+    meetingReject: HISTORY + '/meeting/reject ',
+
     watch: HISTORY + '/watch',
     publish: HISTORY + '/publish',
     informAll: HISTORY + '/inform/inform_all',

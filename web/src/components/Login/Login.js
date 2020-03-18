@@ -23,7 +23,9 @@ class LoginApp extends React.Component {
             userLogin(JSON.stringify(userInfo)).then((res)=>{
               // 成功
               if (res.state == 1) {
-                localStorage.setItem("cookie", res.set_cookie)
+                localStorage.setItem("token", res.token)
+                localStorage.setItem("user_id", res.user_id)
+                localStorage.setItem('username',res.username)
                 localStorage.setItem("role", userInfo.role)
                 message.success('登录成功')
                 this.props.login()

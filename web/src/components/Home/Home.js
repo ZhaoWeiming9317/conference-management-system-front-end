@@ -36,11 +36,8 @@ class Home extends React.Component {
         }
     }  
     componentDidMount() {
-        let cookie = localStorage.getItem('cookie') || 0
-        console.log(cookie)
-        const data = {cookie : cookie}    
         let getLoginVerification = new Promise((resolve, reject) => { 
-            userLoginVerification(JSON.stringify(data)).then((res) => {
+            userLoginVerification().then((res) => {
                 if (res.state == 0) {
                     this.props.logout()
                     console.log(this.props.isLogin)
@@ -119,11 +116,13 @@ class Home extends React.Component {
         global.socket.websocket.send(message);
     }
     quit() {
-        console.log(localStorage.getItem('cookie'))
-        userLoginExit({token : localStorage.getItem('cookie')}).then((res) => {
+        console.log(localStorage.getItem('token'))
+        userLoginExit({token : localStorage.getItem('token')}).then((res) => {
             if (res.state == 1) {
-                localStorage.removeItem('cookie')
+                localStorage.removeItem('token')
                 localStorage.removeItem('role')
+                localStorage.removeItem('user_id')
+                localStorage.removeItem('username')
                 this.props.logout()
                 this.closeWebSocket() 
                 message.success('退出成功')
@@ -131,6 +130,8 @@ class Home extends React.Component {
                 message.error('退出失败')
                 this.closeWebSocket() 
             }
+        }).catch((err)=>{
+            this.props.logout()
         })
     }
     toggle = () => {

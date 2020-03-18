@@ -1,4 +1,6 @@
-import axios from 'axios';
+import axios from 'axios'
+import { message } from 'antd'
+
 //取消请求
 let CancelToken = axios.CancelToken
 axios.create({
@@ -7,17 +9,7 @@ axios.create({
 //开始请求设置，发起拦截处理
 axios.interceptors.request.use(config => {
     config.headers['Content-Type'] = 'application/json;charset=UTF-8';
-    let requestName = config.method === 'post'? config.data.requestName : null
-    //判断，如果这里拿到上一次的requestName，就取消上一次的请求
-    if(requestName) {
-        if(axios[requestName] && axios[requestName].cancel){
-            axios[requestName].cancel()
-        }
-        config.cancelToken = new CancelToken(c => {
-            axios[requestName] = {}
-            axios[requestName].cancel = c
-        })
-    }
+    config.headers['Authorization'] = `user_id=${localStorage.getItem('user_id')};token=${localStorage.getItem('token')}`    
     return config
 }, error => {
     return Promise.reject(error)
@@ -25,18 +17,27 @@ axios.interceptors.request.use(config => {
 // respone拦截器
 axios.interceptors.response.use(
     response => {
-        const res = response.data;
- 
-        //这里根据后台返回来设置
-        if (res.state === 1) {
-            return res;
-        } else {
-            return res;
-        }
+        const res = response.data
+        const status = response.status
+        return res
     },
     error => {
+        console.log("error", error);
+        if (error.response) {
+            switch (error.response.status) {
+                case 407:
+
+                    error.config.metid
+                    message.error('token鉴权错误，请重新登录')
+                    break
+                case 500:
+                    message.error('系统错误')
+                    break
+            }
+        }
         return Promise.reject(error)
     }
+
 )
  
 export default axios

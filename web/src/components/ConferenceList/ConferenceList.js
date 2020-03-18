@@ -1,9 +1,9 @@
 import React from 'react'
 import { userLoginVerification } from '../../api/apiUser'
-import { meeting7Search } from '../../api/apiMeeting'
+import { meeting7Search,meetingSignIn, meetingAccept, meetingReject} from '../../api/apiMeeting'
 import { connect } from 'react-redux';
 import { logout } from '../../actions/index'
-import {  Row, Col, Typography, Divider, Button} from 'antd';
+import {  Row, Col, Typography, message, Button} from 'antd';
 import moment from 'moment'
 const { Title } = Typography;
 import { Link } from "react-router-dom";
@@ -16,25 +16,58 @@ class ConferenceList extends React.Component {
             sortByDayConferenceList: [],
             myConferenceList: [] ,
             minNextConference: {},
-            hasConference: true
+            hasConference: true,
+            user_id: ''
         }
     }  
     componentDidMount() {
-        let cookie = localStorage.getItem('cookie') || 0
-        console.log(cookie)
-        const data = {cookie : cookie}    
-        userLoginVerification(JSON.stringify(data)).then((res) => {
+        userLoginVerification().then((res) => {
             if (res.state == 0) {
                 this.props.logout()
             } else {
-                let data = { user_id: res.user_id}
-                meeting7Search(JSON.stringify(data)).then((res)=>{
-                    this.setState({ myConferenceList : res.list },()=>{
-                        this.dayListFormat()
-                        this.findClosedMeeting()
-                    })
-                })
+                this.findList()  
             }
+        })
+    }
+    signIn(meetingId) {
+        let data = { 
+            user_id: localStorage.getItem('user_id'),
+            meeting_id: meetingId
+        }
+        meetingSignIn(JSON.stringify(data)).then((res)=>{
+            message.success('签到成功')
+            this.findList()
+        })
+    }
+    accept(meetingId) {
+        let data = { 
+            user_id: localStorage.getItem('user_id'),
+            meeting_id: meetingId
+        }
+        meetingAccept(JSON.stringify(data)).then((res)=>{
+            message.success('接受成功')
+            this.findList()
+        })
+    }
+    reject(meetingId) {
+        let data = { 
+            user_id: localStorage.getItem('user_id'),
+            meeting_id: meetingId
+        }
+        meetingReject(JSON.stringify(data)).then((res)=>{
+            message.success('拒绝成功')
+            this.findList()
+        })
+    }
+    findList(){
+        let data = { 
+            user_id: localStorage.getItem('user_id'),
+        }  
+        meeting7Search(JSON.stringify(data)).then((res)=>{
+            this.setState({ myConferenceList : res.list, user_id: localStorage.getItem('user_id') },()=>{
+                this.dayListFormat()
+                this.findClosedMeeting()
+            })
         })
     }
     findClosedMeeting() {
@@ -118,9 +151,9 @@ class ConferenceList extends React.Component {
                     </Col>
                     <Col span={5} style={{height: 50, lineHeight: '50px'}}>
                         <Link to={{pathname:`/main/conference`,state: { conference: minNextConference, hasConference: hasConference}}}> 
-                            {JSON.stringify(minNextConference) != '{}' && <Button type="primary" ghost>
+                            <Button type="primary" ghost>
                                 会议面板
-                            </Button>}
+                            </Button>
                         </Link>
                     </Col>
                     <Col span={11}>
@@ -180,12 +213,30 @@ class ConferenceList extends React.Component {
                                                         <Col span={3} style={{height: 50, lineHeight: '50px'}}>
                                                          {meeting.topic}
                                                         </Col>
-                                                        <Col span={7} style={{height: 50, lineHeight: '50px'}}>
+                                                        <Col span={2} style={{height: 50, lineHeight: '50px'}}>
                                                         </Col>
                                                         <Col span={3} style={{height: 50, lineHeight: '50px'}}>
-                                                            <Button style={{ marginLeft: 30 }} type="primary" ghost>
+                                                           
+                                                        </Col>
+                                                        <Col span={5} style={{height: 50, lineHeight: '50px'}}>
+                                                            {meeting.userState < 2 && <Button style={{ marginLeft: 30 }} type="primary" ghost disabled>
+                                                                已接受
+                                                            </Button>}
+                                                            {meeting.userState == 3 && <Button style={{ marginLeft: 30 }} type="primary" ghost disabled>
+                                                                已拒绝
+                                                            </Button>}
+                                                            {meeting.userState == 2 && <Button style={{ marginLeft: 30 }} onClick={(e)=>this.accept(meeting.meetingId, e)} type="primary" ghost>
+                                                                接受
+                                                            </Button>}
+                                                            {meeting.userState == 2 && <Button style={{ marginLeft: 30 }} onClick={(e)=>this.reject(meeting.meetingId, e)} type="primary" ghost>
+                                                                拒绝
+                                                            </Button>}
+                                                            {meeting.userState == 0 && <Button style={{ marginLeft: 30 }} onClick={(e)=>this.signIn(meeting.meetingId, e)} type="primary" ghost>
                                                                 签到
-                                                            </Button>
+                                                            </Button>}
+                                                            {meeting.userState == 1 && <Button style={{ marginLeft: 30 }} type="primary" ghost disabled>
+                                                                已签到
+                                                            </Button>}
                                                         </Col>
                                                 </Row>
                                             </div>

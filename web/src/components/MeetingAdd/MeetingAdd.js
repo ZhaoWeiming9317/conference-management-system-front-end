@@ -19,28 +19,6 @@ class MeetingApp extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      meetingName : '',
-      meetingId: '',
-      room:{
-        roomId: '',
-        roomName: ''
-      },
-      startTime:'',
-      endTime:'',
-      host:{
-        name: '',
-        userId: '',
-        username: ''
-      },
-      recorder:{
-        name: '',
-        userId: '',
-        username: ''
-      },
-      members:[],
-      topic:'',
-      meetingAbstract:'',
-      remark: '',
       currentStep: 0,
       searchDown: [],
       tempValue: '',
@@ -54,7 +32,7 @@ class MeetingApp extends React.Component {
   }
   componentDidMount() {
     let {userMeetingData , type} = this.props
-    if ( type != 'add') {
+    if ( type != 'add' && type != 'userAdd') {
       let members = userMeetingData.members || []
       members.map((item)=>{
         this.add()
@@ -318,7 +296,7 @@ class MeetingApp extends React.Component {
  }
   render() {
     const { getFieldDecorator, getFieldValue } = this.props.form;
-    const { type } = this.props;
+    const { type , userMeetingData } = this.props;
     const { currentStep } = this.state;
     getFieldDecorator('keys', { initialValue: [] });
     const keys = getFieldValue('keys');
@@ -336,7 +314,7 @@ class MeetingApp extends React.Component {
         key={k}
       >
         {getFieldDecorator(`names[${k}]`, {
-          initialValue: { key: this.state.members[k] ? this.state.members[k].userId : '', label:  this.state.members[k] ? this.state.members[k].name : ''},
+          initialValue: { key: userMeetingData.members[k] && userMeetingData.members[k].userId,  label:  userMeetingData.members[k] && userMeetingData.members[k].name},
           validateTrigger: ['onChange', 'onBlur'],
           rules: [
             {
@@ -380,14 +358,14 @@ class MeetingApp extends React.Component {
         <Form style={{paddingTop: 20}} labelCol={{ span: 8 , offset: 2}} wrapperCol={{ span: 12 }} labelAlign='left' onSubmit={this.handleSubmit}>
         {currentStep === 0 && <Form.Item label="会议名称">
           {getFieldDecorator('meeting_name', {
-            initialValue: this.state.meetingName, 
+            initialValue: userMeetingData.meetingName, 
             rules: [{ required: true, message: '请输入会议名称' }],
             preserve: true,
           })(<Input placeholder="请输入会议名称" autoComplete="new-password"/>)}
         </Form.Item>}
         {currentStep === 0  && type === 'add' && <Form.Item label="会议室ID">
           {getFieldDecorator('room_id', {
-            initialValue: this.state.room.roomId, 
+            initialValue: userMeetingData.room.roomId, 
             rules: [{ required: true, message: '请输入会议室ID' }],
             preserve: true,
           })(<Input placeholder="请输入会议室ID" autoComplete="new-password"/>)}
@@ -426,14 +404,14 @@ class MeetingApp extends React.Component {
           </Form.Item>}
           {currentStep === 0 && (type !== 'add') && <Form.Item label="会议室ID">
           {getFieldDecorator('room_id', {
-            initialValue: this.state.room.roomId, 
+            initialValue: userMeetingData.room.roomId, 
             rules: [{ required: true, message: '请输入会议室ID' }],
             preserve: true,
           })(<Input placeholder="请输入会议室ID" disabled autoComplete="new-password"/>)}
         </Form.Item>}
           {currentStep === 0 && (type !== 'add') && <Form.Item label="开始时间">
             {getFieldDecorator('start_time', {
-              initialValue: moment(this.state.startTime || this.state.start_time), 
+              initialValue: moment(userMeetingData.startTime || userMeetingData.start_time), 
               rules: [
                 {  required: true, message: '请填写开始时间' },
               ],
@@ -444,7 +422,7 @@ class MeetingApp extends React.Component {
           </Form.Item>}
           {currentStep === 0 && (type !== 'add') && <Form.Item label="结束时间">
             {getFieldDecorator('end_time', {
-              initialValue: moment(this.state.endTime || this.state.end_time), 
+              initialValue: moment(userMeetingData.endTime || userMeetingData.end_time), 
               rules: [
                 { required: true, message: '请填写结束时间' },
               ],
@@ -455,21 +433,21 @@ class MeetingApp extends React.Component {
           </Form.Item>}
           {currentStep === 1 && <Form.Item label="发起人Id">
             {getFieldDecorator('user_id', {
-                initialValue: (this.state.host.user_id || this.state.host.userId),
+                initialValue: (userMeetingData.host.user_id || userMeetingData.host.userId),
                 rules: [{ required: true, message: '请输入发起人Id' }],
                 preserve: true,
             })(<Input disabled={ (type !== 'add') && true} autoComplete="new-password"/>)}
           </Form.Item>}
         {currentStep === 1 && <Form.Item label="发起人">
           {getFieldDecorator('hostName', {
-            initialValue: this.state.host.name,
+            initialValue: userMeetingData.host.name,
             rules: [{ required: true, message: '请输入发起人名称' }],
             preserve: true,
           })(<Input disabled={ (type !== 'add') && true} autoComplete="new-password"/>)}
         </Form.Item>}
         {currentStep === 1 && <Form.Item label="记录人员">
           {getFieldDecorator('recorder', {
-            initialValue: { key: this.state.recorder ? this.state.recorder.userId : '', label:  this.state.recorder ? this.state.recorder.name : ''},
+            initialValue: { key: userMeetingData.recorder ? userMeetingData.recorder.userId : '', label:  userMeetingData.recorder ? userMeetingData.recorder.name : ''},
             rules: [{ required: true }],
             preserve: true,
           })(<Select placeholder="记录人员名字" 
@@ -492,21 +470,21 @@ class MeetingApp extends React.Component {
         </Form.Item>}
         {currentStep === 2 && <Form.Item label="会议主题">
           {getFieldDecorator('topic', {
-            initialValue: this.state.topic,
+            initialValue: userMeetingData.topic,
             rules: [{ required: true }],
             preserve: true,
           })(<Input autoComplete="new-password"/>)}
         </Form.Item>}
         {currentStep === 2 && <Form.Item label="会议摘要">
           {getFieldDecorator('meetingAbstract', {
-            initialValue: this.state.meetingAbstract,
+            initialValue: userMeetingData.meetingAbstract,
             rules: [{ required: true }],
             preserve: true,
           })(<Input.TextArea rows={3} autoComplete="new-password"/>)}
         </Form.Item>}
         {currentStep === 2 && <Form.Item label="备注">
           {getFieldDecorator('remark', {
-            initialValue: this.state.remark,
+            initialValue: userMeetingData.remark,
             rules: [{ required: false }],
             preserve: true,
           })(<Input.TextArea rows={3} autoComplete="new-password"/>)}
