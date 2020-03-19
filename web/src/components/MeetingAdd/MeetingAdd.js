@@ -359,12 +359,19 @@ class MeetingApp extends React.Component {
           <Step title="其他信息" />
         </Steps>
         <Form style={{paddingTop: 20}} labelCol={{ span: 8 , offset: 2}} wrapperCol={{ span: 12 }} labelAlign='left' onSubmit={this.handleSubmit}>
-        {currentStep === 0 && <Form.Item label="会议名称">
+        {currentStep === 0   && type === 'add' && <Form.Item label="会议名称">
           {getFieldDecorator('meeting_name', {
             initialValue: userMeetingData.meetingName, 
             rules: [{ required: true, message: '请输入会议名称' }],
             preserve: true,
           })(<Input placeholder="请输入会议名称" autoComplete="new-password"/>)}
+        </Form.Item>}
+        {currentStep === 0   && ( type !== 'add' ) && <Form.Item label="会议名称">
+          {getFieldDecorator('meeting_name', {
+            initialValue: userMeetingData.meetingName, 
+            rules: [{ required: true, message: '请输入会议名称' }],
+            preserve: true,
+          })(<Input disabled placeholder="请输入会议名称" autoComplete="new-password"/>)}
         </Form.Item>}
         {currentStep === 0  && type === 'add' && <Form.Item label="会议室ID">
           {getFieldDecorator('room_id', {
