@@ -13,6 +13,10 @@ const userStateReducer = handleActions({
         }
     },
     [`${actions.logout}`](state, action){
+        localStorage.removeItem('token')
+        localStorage.removeItem('role')
+        localStorage.removeItem('user_id')
+        localStorage.removeItem('username')
         return {
             ...state,
             isLogin : false

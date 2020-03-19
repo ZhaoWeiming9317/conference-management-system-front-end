@@ -37,23 +37,51 @@ class RoomTable extends React.Component {
           width: '120px',
           ellipsis: true
         },
-        {
-          title: '设备平均维修时间',
-          dataIndex: 'mttr',
-          width: '120px',
-          ellipsis: true
-        },
-        {
-            title: '设备平均故障间隔时间',
-            dataIndex: 'mtbf',
-            width: '120px',
-            ellipsis: true
-        },
+        // {
+        //   title: '设备平均维修时间',
+        //   dataIndex: 'mttr',
+        //   width: '120px',
+        //   ellipsis: true
+        // },
+        // {
+        //     title: '设备平均故障间隔时间',
+        //     dataIndex: 'mtbf',
+        //     width: '120px',
+        //     ellipsis: true
+        // },
         {
             title: '设备所在会议室名称',
             dataIndex: 'roomName',
             width: '120px',
             ellipsis: true
+        },
+        {
+          title: '状态',
+          dataIndex: 'state',
+          width: '120px',
+          ellipsis: true,
+          render: (text, record) => {
+            let txt = '关闭'
+            switch(text) {
+              case 0:
+                txt = '已关闭'
+                break
+              case 1:
+                txt = '已开启'
+                break
+              case 2:
+                txt = '提醒状态'
+                break
+              case 3:
+                txt = '维修中'
+                break
+            }
+            return (            
+            <span>
+              {txt}
+            </span>
+            )
+          }
         },
         {
           title: '操作',
@@ -70,8 +98,8 @@ class RoomTable extends React.Component {
                 onConfirm={() => this.handleDelete(record.key)}>
                   <a>删除</a>
               </Popconfirm>              
-              <Divider type="vertical" />
-              <a onClick={() => this.handleDetail(record.key)}>详细</a>
+              {/* <Divider type="vertical" />
+              <a onClick={() => this.handleDetail(record.key)}>详细</a> */}
             </span>
           ):(
             <span>
@@ -288,7 +316,7 @@ class RoomTable extends React.Component {
               loading={tableLoading}
               onChange={this.handleTableChange}
               pagination={this.state.pagination}
-              scroll={{ x: 1200 }}
+              // scroll={{ x: 800 }}
             />
             <Modal
               visible={modalAddVisible}
@@ -324,10 +352,10 @@ class RoomTable extends React.Component {
                   <Descriptions.Item label="设备ID">{nowRowData.deviceId}</Descriptions.Item>
                   <Descriptions.Item label="设备型号">{nowRowData.deviceType}</Descriptions.Item>
                   <Descriptions.Item label="商标">{nowRowData.brand}</Descriptions.Item>
-                  <Descriptions.Item label="设备平均维修时间" span={2}>
+                  {/* <Descriptions.Item label="设备平均维修时间" span={2}>
                     {nowRowData.mttr}
                   </Descriptions.Item>
-                  <Descriptions.Item label="设备平均故障间隔时间" span={2}> {nowRowData.mtbf}</Descriptions.Item>
+                  <Descriptions.Item label="设备平均故障间隔时间" span={2}> {nowRowData.mtbf}</Descriptions.Item> */}
                   <Descriptions.Item label="设备所在会议室ID"> {nowRowData.roomId}</Descriptions.Item>
                   <Descriptions.Item label="设备所在会议室名称">{nowRowData.roomName}</Descriptions.Item>
                 </Descriptions>

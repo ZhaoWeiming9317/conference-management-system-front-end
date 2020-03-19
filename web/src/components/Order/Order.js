@@ -44,7 +44,7 @@ class Order extends React.Component {
                 this.props.logout()
             } else {
                 this.setState({
-                    user_id: res.user_id
+                    user_id: res.user_id,
                 },()=>{
                     userShowInfo(JSON.stringify({username:res.username})).then((res)=>{
                         console.log(res)
@@ -101,7 +101,7 @@ class Order extends React.Component {
         initArr.map((roomItem)=>{
             let roomMeetingList = roomItem['meeting_list']
             let tempList = []
-            for (let i = 9;i <= 18; i++) {
+            for (let i = 9;i <= 18 + 0.5; i = i + 0.5) {
                 tempList.push({
                     time: i,
                     hostName: '',
@@ -114,19 +114,26 @@ class Order extends React.Component {
             roomMeetingList.map((meetingItem)=>{
                 let start_time = meetingItem['startTime']
                 let end_time = meetingItem['endTime']
-                let beginTime = parseInt(moment(start_time,"YYYY/MM/DD HH:mm:ss").format("HH"))
-                let afterTime = parseInt(moment(end_time,"YYYY/MM/DD HH:mm:ss").format("HH"))
-                if (beginTime >= 9 && afterTime <= 18) {
-                    for (let i = beginTime; i < afterTime; i++) {
-                        tempList[i - 9]['time'] = i
-                        tempList[i - 9]['hostName'] = meetingItem['hostName']
-                        tempList[i - 9]['meetingId'] = meetingItem['meetingId']
-                        tempList[i - 9]['meetingState'] = meetingItem['meetingState']
-                        tempList[i - 9]['meetingName'] = meetingItem['meetingName']
-                        if (tempList[i - 9]['hostName'] == this.state.hostName) {
-                            tempList[i - 9]['chosen'] = 'myself'
+                let beginTime = 
+                moment(start_time,"YYYY/MM/DD HH:mm:ss").format("mm") == '00' ? 
+                parseInt(moment(start_time,"YYYY/MM/DD HH:mm:ss").format("HH")) :
+                parseInt(moment(start_time,"YYYY/MM/DD HH:mm:ss").format("HH")) + 0.5
+                let afterTime = 
+                moment(start_time,"YYYY/MM/DD HH:mm:ss").format("mm") == '00' ? 
+                parseInt(moment(end_time,"YYYY/MM/DD HH:mm:ss").format("HH")) : 
+                parseInt(moment(start_time,"YYYY/MM/DD HH:mm:ss").format("HH")) + 0.5
+                
+                if (beginTime >= 9 && afterTime <= 19) {
+                    for (let i = beginTime; i < afterTime; i = i + 0.5) {
+                        tempList[(i - 9)*2]['time'] = i
+                        tempList[(i - 9)*2]['hostName'] = meetingItem['hostName']
+                        tempList[(i - 9)*2]['meetingId'] = meetingItem['meetingId']
+                        tempList[(i - 9)*2]['meetingState'] = meetingItem['meetingState']
+                        tempList[(i - 9)*2]['meetingName'] = meetingItem['meetingName']
+                        if (tempList[(i - 9)*2]['hostName'] == this.state.hostName) {
+                            tempList[(i - 9)*2]['chosen'] = 'myself'
                         } else {
-                            tempList[i - 9]['chosen'] = 'true'
+                            tempList[(i - 9)*2]['chosen'] = 'true'
                         }
                     }
                 }
@@ -238,7 +245,7 @@ class Order extends React.Component {
             })
         })
     }
-    //合并单元格
+    //合并单元格并且显示
     execArrWithColSpan(arr) {
         let beforeTime = arr[0].time
         let temp = []
@@ -247,7 +254,7 @@ class Order extends React.Component {
                 temp.push({
                     ...item,
                     beforeTime: beforeTime,
-                    afterTime: parseInt(item.time) + 1,
+                    afterTime: parseFloat(item.time) + 0.5,
                     col: 1
                 })
             } else if (index > 0) {
@@ -255,20 +262,20 @@ class Order extends React.Component {
                 if (item.hostName === temp[temp.length - 1].hostName && item.hostName !== '') {
                     if (item.meetingId == temp[temp.length - 1].meetingId) {
                         temp[temp.length - 1].col++
-                        temp[temp.length - 1].afterTime = parseInt(item.time) + 1    
+                        temp[temp.length - 1].afterTime = parseFloat(item.time) + 0.5    
                     }else{
                         temp.push({
                             ...item,
-                            beforeTime: parseInt(item.time),
-                            afterTime: parseInt(item.time) + 1,
+                            beforeTime: parseFloat(item.time),
+                            afterTime: parseFloat(item.time) + 0.5,
                             col: 1
                         })    
                     }
                 } else {
                     temp.push({
                         ...item,
-                        beforeTime: parseInt(item.time),
-                        afterTime: parseInt(item.time) + 1,
+                        beforeTime: parseFloat(item.time),
+                        afterTime: parseFloat(item.time) + 0.5,
                         col: 1
                     })
                 }
@@ -297,14 +304,14 @@ class Order extends React.Component {
                             ...item,
                             afterSame: false,
                             first: false,
-                            time: parseInt(result[result.length - 1].time) + 1
+                            time: parseFloat(result[result.length - 1].time) + 0.5
                         })
                     } else {
                         result.push({
                             ...item,
                             afterSame: true,
                             first: false,
-                            time: parseInt(result[result.length - 1].time) + 1
+                            time: parseFloat(result[result.length - 1].time) + 0.5
                         })
                     }
                 }
@@ -332,7 +339,7 @@ class Order extends React.Component {
     }
     chooseBlock (list, room_name,e) {
         let { baseArr } = this.state
-        let time = parseInt(list.time)
+        let time = parseFloat(list.time)
         for (let i = 0; i < baseArr.length ; i++){
             if (baseArr[i]['room_name'] === room_name) {
                 let baseList = baseArr[i]['meetingList']
@@ -342,12 +349,13 @@ class Order extends React.Component {
                     if (baseList[j]['time'] == time) {
                         if (baseList[j]['chosen'] == 'myselfTemp') {
                             flag = "delete"
+                            nowChooseList.push(baseList[j]['time'])
                         }
                     } else if (baseList[j]['chosen'] == 'myselfTemp') {
                         nowChooseList.push(baseList[j]['time'])
                     }
                 }
-                if ((nowChooseList.length >= 2 && flag == 'add')) {
+                if ((nowChooseList.length >= 4 && flag == 'add')) {
                     message.error('不能预定超过两个小时')
                     break
                 } else {
@@ -356,10 +364,20 @@ class Order extends React.Component {
                         nowChooseList.sort(this.compare)
                         let canbreak = false
                         for (let m = 0; m < nowChooseList.length - 1; m++) {
-                            if (nowChooseList[m] + 1 != nowChooseList[m + 1]) {
+                            if (nowChooseList[m] + 0.5 != nowChooseList[m + 1]) {
                                 message.error('会议时间应该连续')
                                 canbreak = true
                             }
+                        }
+                        if (canbreak == true) {
+                            break
+                        }
+                    } else {
+                        let canbreak = false
+                        nowChooseList.sort(this.compare)
+                        if (nowChooseList[0] != time && nowChooseList[nowChooseList.length - 1] != time) {
+                            message.error('会议时间应该保持连续')
+                            canbreak = true
                         }
                         if (canbreak == true) {
                             break
@@ -369,12 +387,15 @@ class Order extends React.Component {
                 for (let j = 0; j < baseList.length; j++) {
                     if (baseList[j]['time'] == time) {
                         if (baseList[j]['hostName'] == this.state.hostName && baseList[j]['chosen'] != 'myself' && baseList[j]['chosen'] != 'true') {
+                            // 选过后取消
+
                             baseList[j]['hostName'] = ''
                             baseList[j]['chosen'] = 'false'    
                             baseList[j]['meetingId'] = ''
                         } else if (baseList[j]['chosen'] == 'myself' || baseList[j]['chosen'] == 'true'){
                             message.error('选过了哦,更多操作点击右键')
                         } else {
+                            // 首次选择
                             baseList[j]['hostName'] = this.state.hostName
                             baseList[j]['chosen'] = 'myselfTemp'    
                         }
@@ -404,8 +425,12 @@ class Order extends React.Component {
                 let execMeetingList = execArr[i]['meetingList']
                 for (let j = 0; j < execMeetingList.length ; j++) {
                     if(execMeetingList[j]['chosen'] == 'myselfTemp' && !execMeetingList[j]['afterSame']) {
-                        start_time = `${nowDay} ${this.PrefixInteger(execMeetingList[j]['beforeTime'],2)}:00:00`
-                        end_time = `${nowDay} ${this.PrefixInteger(execMeetingList[j]['afterTime'],2)}:00:00` 
+                        start_time = 
+                        this.isInteger(execMeetingList[j]['beforeTime']) ? `${nowDay} ${this.PrefixInteger(execMeetingList[j]['beforeTime'],2)}:00:00`
+                                                            :  `${nowDay} ${this.PrefixInteger(Math.floor(execMeetingList[j]['beforeTime']),2)}:30:00`
+                        end_time = 
+                        this.isInteger(execMeetingList[j]['afterTime']) ? `${nowDay} ${this.PrefixInteger(execMeetingList[j]['afterTime'],2)}:00:00` 
+                                                            :  `${nowDay} ${this.PrefixInteger(Math.floor(execMeetingList[j]['afterTime']),2)}:30:00`
                         canAdd = true
                     }
                 }
@@ -474,6 +499,10 @@ class Order extends React.Component {
             }
         },0)
     }
+    isInteger = (obj) => {
+        return obj%1 === 0
+    }
+       
     //右键获得
     getInfoMation = (list, e) => {
         this.setState({nowContextMenuMeetingId: list.meetingId})
@@ -542,7 +571,11 @@ class Order extends React.Component {
                                                         style={{verticalAlign: 'top', cursor: 'pointer'}}>
                                                             {listItem.first === true &&  
                                                             <div>
-                                                                <div style={{color: 'white',fontSize: 14}}>{`${listItem.beforeTime}:00 - ${listItem.afterTime}:00`}</div> 
+                                                                <div style={{color: 'white',fontSize: 14}}>
+                                                                    {this.isInteger(listItem.beforeTime) ? `${listItem.beforeTime}:00` : `${Math.floor(listItem.beforeTime)}:30`}
+                                                                    {` - `}
+                                                                    {this.isInteger(listItem.afterTime) ? `${listItem.afterTime}:00` : `${Math.floor(listItem.afterTime)}:30`}
+                                                                </div> 
                                                                 <div style={{color: 'white'}}>{`${listItem.meetingName}`}</div>
                                                                 <div style={{color: 'white'}}>{`${listItem.hostName}`}</div>
                                                             </div>
@@ -556,7 +589,7 @@ class Order extends React.Component {
                                             {item.meetingList.map((item)=>{
                                                 return(
                                                     <td>
-                                                    <div style={{color: '#d9d9d9'}}>{`${item.time}:00`}</div>  
+                                                    <div style={{color: '#d9d9d9'}}>{this.isInteger(item.time) ? `${item.time}:00` : `${Math.floor(item.time)}:30`}</div>  
                                                     </td>
                                                 )
                                             })}

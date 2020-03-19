@@ -85,7 +85,7 @@ class DeviceApp extends React.Component {
             rules: [{ required: true, message: '请输入维修次数' }],
           })(<Input autoComplete="new-password"/>)}
         </Form.Item>
-        <Form.Item label="设备平均维修时间">
+        {/* <Form.Item label="设备平均维修时间">
           {getFieldDecorator('mttr', {
             initialValue: this.state.mttr,
             rules: [{ required: true, message: '请输入平均维修时间' }],
@@ -96,7 +96,7 @@ class DeviceApp extends React.Component {
             initialValue: this.state.mtbf,
             rules: [{ required: true, message: '请输入设备平均故障间隔时间' }],
           })(<Input autoComplete="new-password"/>)}
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item label="设备所在会议室ID">
           {getFieldDecorator('room_id', {
             initialValue: this.state.room_id,

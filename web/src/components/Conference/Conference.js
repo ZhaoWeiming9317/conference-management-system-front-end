@@ -27,9 +27,11 @@ class Conference extends React.Component {
     getCertainConference = () => {
         let conference = this.props.location.state.conference
         let data = { meeting_id:conference.meetingId}
-        meetingSearchCertain(JSON.stringify(data)).then((res)=>{
-            this.setState( { certainConference : res } )
-        })
+        if (this.props.location.state.hasConference== true ) {
+            meetingSearchCertain(JSON.stringify(data)).then((res)=>{
+                this.setState( { certainConference : res } )
+            })    
+        }
     }
     countTime = () => {
         let conference = this.props.location.state.conference 

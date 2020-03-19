@@ -114,10 +114,6 @@ class Home extends React.Component {
         console.log(localStorage.getItem('token'))
         userLoginExit({token : localStorage.getItem('token')}).then((res) => {
             if (res.state == 1) {
-                localStorage.removeItem('token')
-                localStorage.removeItem('role')
-                localStorage.removeItem('user_id')
-                localStorage.removeItem('username')
                 this.props.logout()
                 this.closeWebSocket() 
                 message.success('退出成功')
