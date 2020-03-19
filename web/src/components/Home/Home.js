@@ -78,7 +78,7 @@ class Home extends React.Component {
         console.log(url);
         //判断当前浏览器是否支持WebSocket
         if ('WebSocket' in window) {
-            global.socket.websocket = new WebSocket(url);
+            global.socket.websocket = new WebSocket(url,[localStorage.getItem('user_id'),localStorage.getItem('token')]);
         } else {
             let data = { id: this.state.id, name: this.state.name}
             watch(data)
