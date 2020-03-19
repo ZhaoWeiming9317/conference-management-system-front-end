@@ -365,7 +365,7 @@ class MeetingApp extends React.Component {
         </Form.Item>}
         {currentStep === 0  && type === 'add' && <Form.Item label="会议室ID">
           {getFieldDecorator('room_id', {
-            initialValue: userMeetingData.room.roomId, 
+            initialValue: userMeetingData.room && userMeetingData.room.roomId, 
             rules: [{ required: true, message: '请输入会议室ID' }],
             preserve: true,
           })(<Input placeholder="请输入会议室ID" autoComplete="new-password"/>)}
@@ -404,7 +404,7 @@ class MeetingApp extends React.Component {
           </Form.Item>}
           {currentStep === 0 && (type !== 'add') && <Form.Item label="会议室ID">
           {getFieldDecorator('room_id', {
-            initialValue: userMeetingData.room.roomId, 
+            initialValue: userMeetingData.room && userMeetingData.room.roomId, 
             rules: [{ required: true, message: '请输入会议室ID' }],
             preserve: true,
           })(<Input placeholder="请输入会议室ID" disabled autoComplete="new-password"/>)}

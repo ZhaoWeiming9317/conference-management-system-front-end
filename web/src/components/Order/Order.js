@@ -119,10 +119,10 @@ class Order extends React.Component {
                 parseInt(moment(start_time,"YYYY/MM/DD HH:mm:ss").format("HH")) :
                 parseInt(moment(start_time,"YYYY/MM/DD HH:mm:ss").format("HH")) + 0.5
                 let afterTime = 
-                moment(start_time,"YYYY/MM/DD HH:mm:ss").format("mm") == '00' ? 
+                moment(end_time,"YYYY/MM/DD HH:mm:ss").format("mm") == '00' ? 
                 parseInt(moment(end_time,"YYYY/MM/DD HH:mm:ss").format("HH")) : 
-                parseInt(moment(start_time,"YYYY/MM/DD HH:mm:ss").format("HH")) + 0.5
-                
+                parseInt(moment(end_time,"YYYY/MM/DD HH:mm:ss").format("HH")) + 0.5
+
                 if (beginTime >= 9 && afterTime <= 19) {
                     for (let i = beginTime; i < afterTime; i = i + 0.5) {
                         tempList[(i - 9)*2]['time'] = i
@@ -486,7 +486,7 @@ class Order extends React.Component {
                 meetingSearchCertain(JSON.stringify({meeting_id: nowContextMenuMeetingId})).then((res)=>{
                     let userMeetingData = { res }
                     this.setState(
-                        { userMeetingData },
+                        { userMeetingData : userMeetingData.res },
                         ()=>{
                             this.setState(
                                 { modalModifyVisible : true }

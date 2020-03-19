@@ -3,7 +3,7 @@ import { userLoginVerification } from '../../api/apiUser'
 import { meeting7Search,meetingSignIn, meetingAccept, meetingReject} from '../../api/apiMeeting'
 import { connect } from 'react-redux';
 import { logout } from '../../actions/index'
-import {  Row, Col, Typography, messagejjjjjjjjjjjjjjjjjj, Button} from 'antd';
+import {  Row, Col, Typography, message, Button} from 'antd';
 import moment from 'moment'
 const { Title } = Typography;
 import { Link } from "react-router-dom";
@@ -103,12 +103,18 @@ class ConferenceList extends React.Component {
         })
     }
     compare = function (x, y) {//比较函数
-        if (x.tag < y.tag) {
-            return -1;
-        } else if (x.tag > y.tag) {
-            return 1;
+        if (x.end_hour < y.end_hour) {
+            return -1
+        } else if (x.end_hour > y.end_hour) {
+            return 1
         } else {
-            return 0;
+            if (x.end_minute < y.end_minute) {
+                return -1
+            } else if (x.end_minute > y.end_minute) {
+                return 1
+            } else {
+                return 0
+            }
         }
     }
     sortList() {
@@ -119,11 +125,12 @@ class ConferenceList extends React.Component {
             let begin_time = moment(conference.startTime,"YYYY-MM-DD HH:mm:ss").format("HH:mm")
             let end_time = moment(conference.endTime,"YYYY-MM-DD HH:mm:ss").format("HH:mm")
             let show_time = `${begin_time}-${end_time}`
-            let tag = moment(conference.end_time,"YYYY-MM-DD HH:mm:ss").format("HH")
+            let end_hour = moment(conference.endTime,"YYYY-MM-DD HH:mm:ss").format("HH")
+            let end_minute = moment(conference.endTime,"YYYY-MM-DD HH:mm:ss").format("mm")
             tempSortList.map((day)=>{
                 if ( day.month_day == month_day) {
                     begin_time = conference
-                    day.meeting_list.push({...conference,show_time:show_time,tag:tag})
+                    day.meeting_list.push({...conference,show_time:show_time,end_hour:end_hour,end_minute:end_minute})
                     day.meeting_list.sort(this.compare)
                 }
             })
