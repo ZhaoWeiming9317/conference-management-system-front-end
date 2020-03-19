@@ -17,7 +17,7 @@ class Conference extends React.Component {
             s: 0,
             conference: props.location.state.conference,
             certainConference : {},
-            memo: '距离会议结束'
+            memo: ''
         }
     }  
     componentDidMount() {
@@ -49,10 +49,10 @@ class Conference extends React.Component {
         //时间差,且已经开始会议
         if ( now - start > 0) {
             leftTime = end - now
-            this.setState({memo: '距离会议结束'})
+            this.setState({memo: '距离本次会议结束'})
         } else {
             leftTime = start - now
-            this.setState({memo: '距离会议开始'})
+            this.setState({memo: '距离下次会议开始'})
         }
         //定义变量 d,h,m,s保存倒计时的时间  
         let d,h,m,s
@@ -77,7 +77,7 @@ class Conference extends React.Component {
     render() {    
         let { isLogin } = this.props
         let hasConference = this.props.location.state.hasConference
-        let { d, h, m, s, certainConference } = this.state
+        let { d, h, m, s, certainConference, memo } = this.state
         return (
             <div>
                 { hasConference == false && <div>
@@ -112,7 +112,7 @@ class Conference extends React.Component {
                             </Link>
                         </Col>
                         <Col span={10} style={{height: 50, lineHeight: '50px'}}>
-                            <div style={{height: 50, lineHeight: '50px',fontSize: 22}}>{ `距离会议结束${d}天${h}时${m}分${s}秒`}</div>
+                            <div style={{height: 50, lineHeight: '50px',fontSize: 22}}>{ `${memo}${d}天${h}时${m}分${s}秒`}</div>
                         </Col>                    
                     </Row>
                     <Row style={{ padding: 20, paddingBottom: 0}}>

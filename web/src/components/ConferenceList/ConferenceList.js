@@ -1,12 +1,12 @@
 import React from 'react'
-import { userLoginVerification } from '../../api/apiUser'
-import { meeting7Search,meetingSignIn, meetingAccept, meetingReject} from '../../api/apiMeeting'
+import { meeting7Search,meetingSignIn, meetingAccept, meetingReject, meetingSearchCertain, meetingDelete} from '../../api/apiMeeting'
 import { connect } from 'react-redux';
 import { logout } from '../../actions/index'
-import {  Row, Col, Typography, message, Button} from 'antd';
+import {  Row, Col, Typography, message, Button, Divider, Popconfirm, Modal } from 'antd';
 import moment from 'moment'
 const { Title } = Typography;
 import { Link } from "react-router-dom";
+import MeetingAdd from '../../components/MeetingAdd/MeetingAdd'
 
 class ConferenceList extends React.Component {
     constructor(props) {
@@ -17,7 +17,9 @@ class ConferenceList extends React.Component {
             myConferenceList: [] ,
             minNextConference: {},
             hasConference: true,
-            user_id: ''
+            user_id: '',
+            modalModifyVisible: false,
+            modalDetailVisible: false,    
         }
     }  
     componentDidMount() {
@@ -25,40 +27,52 @@ class ConferenceList extends React.Component {
     }
     signIn(meetingId) {
         let data = { 
-            user_id: localStorage.getItem('user_id'),
+            user_id: parseInt(localStorage.getItem('user_id')),
             meeting_id: meetingId
         }
         meetingSignIn(JSON.stringify(data)).then((res)=>{
-            message.success('签到成功')
+            if (res.state == 0) {
+                message.error(res.message)
+            } else {
+                message.success(res.message)
+            }
             this.findList()
         })
     }
     accept(meetingId) {
         let data = { 
-            user_id: localStorage.getItem('user_id'),
+            user_id: parseInt(localStorage.getItem('user_id')),
             meeting_id: meetingId
         }
         meetingAccept(JSON.stringify(data)).then((res)=>{
-            message.success('接受成功')
+            if (res.state == 0) {
+                message.error(res.message)
+            } else {
+                message.success(res.message)
+            }
             this.findList()
         })
     }
     reject(meetingId) {
         let data = { 
-            user_id: localStorage.getItem('user_id'),
+            user_id: parseInt(localStorage.getItem('user_id')),
             meeting_id: meetingId
         }
         meetingReject(JSON.stringify(data)).then((res)=>{
-            message.success('拒绝成功')
+            if (res.state == 0) {
+                message.error(res.message)
+            } else {
+                message.success(res.message)
+            }
             this.findList()
         })
     }
     findList(){
         let data = { 
-            user_id: localStorage.getItem('user_id'),
+            user_id: parseInt(localStorage.getItem('user_id')),
         }  
         meeting7Search(JSON.stringify(data)).then((res)=>{
-            this.setState({ myConferenceList : res.list, user_id: localStorage.getItem('user_id') },()=>{
+            this.setState({ myConferenceList : res.list, user_id: parseInt(localStorage.getItem('user_id')) },()=>{
                 this.dayListFormat()
                 this.findClosedMeeting()
             })
@@ -120,6 +134,9 @@ class ConferenceList extends React.Component {
     sortList() {
         let { myConferenceList , sortByDayConferenceList } = this.state
         let tempSortList = sortByDayConferenceList
+        let date = new Date()
+        let now = date.getTime()
+        
         myConferenceList.map((conference)=>{
             let month_day = moment(conference.startTime,"YYYY-MM-DD HH:mm:ss").format("MM-DD")
             let begin_time = moment(conference.startTime,"YYYY-MM-DD HH:mm:ss").format("HH:mm")
@@ -127,23 +144,50 @@ class ConferenceList extends React.Component {
             let show_time = `${begin_time}-${end_time}`
             let end_hour = moment(conference.endTime,"YYYY-MM-DD HH:mm:ss").format("HH")
             let end_minute = moment(conference.endTime,"YYYY-MM-DD HH:mm:ss").format("mm")
-            tempSortList.map((day)=>{
-                if ( day.month_day == month_day) {
-                    begin_time = conference
-                    day.meeting_list.push({...conference,show_time:show_time,end_hour:end_hour,end_minute:end_minute})
-                    day.meeting_list.sort(this.compare)
-                }
-            })
+            let endDate = new Date(conference.endTime) 
+            let end = endDate.getTime()
+            if ( end - now > 0) {
+                tempSortList.map((day)=>{
+                    if ( day.month_day == month_day) {
+                        begin_time = conference
+                        day.meeting_list.push({...conference,show_time:show_time,end_hour:end_hour,end_minute:end_minute})
+                        day.meeting_list.sort(this.compare)
+                    }
+                })    
+            }
         })
         this.setState({sortByDayConferenceList: tempSortList},()=>{
         })
     }
     onPanelChange(value, mode) {
         console.log(value, mode);
-    }      
+    }     
+    handleModify = meetingId => {
+        meetingSearchCertain ({meeting_id : meetingId}).then((res)=>{ 
+          this.setState({
+            nowRowData:res
+          },()=>{
+            this.setState({
+              modalModifyVisible: true,
+            })
+          })
+        })  
+    }
+    handleDelete = meetingId => {
+        meetingDelete({ meeting_id : meetingId}).then((res)=>{
+            this.dayListFormat()
+            this.findClosedMeeting()
+        })
+    }
+    handleCancelModify = () => {
+        this.setState({  modalModifyVisible: false })
+        this.dayListFormat()
+        this.findClosedMeeting()
+    }
+  
+  
     render() {    
-        let { isLogin } = this.props
-        let { sortByDayConferenceList, minNextConference, hasConference } = this.state
+        let { sortByDayConferenceList, minNextConference, hasConference, modalModifyVisible, nowRowData } = this.state
         return (
             <div>
                 <Row style={{ padding: 20, paddingBottom: 0}}>
@@ -217,7 +261,21 @@ class ConferenceList extends React.Component {
                                                         <Col span={2} style={{height: 50, lineHeight: '50px'}}>
                                                         </Col>
                                                         <Col span={3} style={{height: 50, lineHeight: '50px'}}>
-                                                           
+                                                        <span>
+                                                            {meeting.hostId == localStorage.getItem('user_id')&&
+                                                            <span>
+                                                                <a onClick={() => this.handleModify(meeting.meetingId)}>修改</a>
+                                                                    <Divider type="vertical" />
+                                                                    <Popconfirm title="确定删除吗?" 
+                                                                        okText="确定" 
+                                                                        cancelText="取消"
+                                                                        onConfirm={() => this.handleDelete(meeting.meetingId)}>
+                                                                        <a>删除</a>
+                                                                    </Popconfirm>              
+                                                                    <Divider type="vertical" />
+                                                            </span>}
+                                                            <a onClick={() => this.handleDetail(meeting.meetingId)}>详细</a>
+                                                            </span>
                                                         </Col>
                                                         <Col span={5} style={{height: 50, lineHeight: '50px'}}>
                                                             {meeting.userState < 2 && <Button style={{ marginLeft: 30 }} type="primary" ghost disabled>
@@ -240,6 +298,7 @@ class ConferenceList extends React.Component {
                                                             </Button>}
                                                         </Col>
                                                 </Row>
+
                                             </div>
                                         )
                                     })}
@@ -248,6 +307,15 @@ class ConferenceList extends React.Component {
                         })}
                     </Col>
                 </Row>
+                <Modal
+                visible={modalModifyVisible}
+                title="修改会议室"
+                onCancel={this.handleCancelModify}
+                footer={null}
+                destroyOnClose
+                >
+                <MeetingAdd type="modify" userMeetingData={nowRowData}></MeetingAdd>
+                </Modal>
             </div>
         );
     }

@@ -68,6 +68,7 @@ class MeetingApp extends React.Component {
   }
 
   handleSubmit = e => {
+    let {userMeetingData} = this.props
     e.preventDefault();
     this.setState({modalLoading:true})
     let meetingInfo = this.props.form.getFieldsValue();
@@ -77,8 +78,8 @@ class MeetingApp extends React.Component {
     execMeetingInfo['room'] = {room_id : meetingInfo['room_id'].toString()}
     execMeetingInfo['start_time'] = meetingInfo['start_time'].format("YYYY-MM-DD HH:mm:ss")
     execMeetingInfo['end_time'] = meetingInfo['end_time'].format("YYYY-MM-DD HH:mm:ss")
-    execMeetingInfo['host'] = {user_id : meetingInfo['user_id']}
-    execMeetingInfo['recorder'] = {user_id : meetingInfo['recorder']['key']}
+    execMeetingInfo['host'] = {user_id : meetingInfo['user_id'] || userMeetingData.host.userId}
+    execMeetingInfo['recorder'] = {user_id : (meetingInfo['recorder'] && meetingInfo['recorder']['key']) || userMeetingData.recorder.userId}
     execMeetingInfo['members'] = []
     meetingInfo['keys'].map((key) => {
       execMeetingInfo['members'].push({user_id: meetingInfo['names'][key]['key']})}
@@ -115,7 +116,7 @@ class MeetingApp extends React.Component {
               meetingAbstract: execMeetingInfo['meetingAbstract'],
               remark: execMeetingInfo['remark']
             }
-            let oldMembers = this.state.members.map((item) =>{
+            let oldMembers = userMeetingData.members.map((item) =>{
               return item.userId
             })
             let newMembers = execMeetingInfo['members'].map((item)=>{
@@ -174,6 +175,7 @@ class MeetingApp extends React.Component {
             addMembers.then((res)=>{
               if (deleteData['members'].length == 0) {
                 message.success("会议修改成功") 
+                this.setState({modalLoading:false})
               } else {
                 meetingMembersDelete(JSON.stringify({...deleteData})).then((res)=>{
                     this.setState({modalLoading:false})
@@ -182,6 +184,7 @@ class MeetingApp extends React.Component {
                     } else {
                       message.error("会议修改失败")
                     }
+                    this.setState({modalLoading:false})
                   }).catch((error)=>{
                     this.setState({modalLoading:false})
                     message.error("系统错误")
