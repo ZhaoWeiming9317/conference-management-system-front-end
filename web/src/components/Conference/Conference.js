@@ -21,14 +21,8 @@ class Conference extends React.Component {
         }
     }  
     componentDidMount() {
-        userLoginVerification().then((res) => {
-            if (res.state == 0) {
-                this.props.logout()
-            } else {
-                this.getCertainConference()
-                this.countTime()
-            }
-        })
+        this.getCertainConference()
+        this.countTime()
     }
     getCertainConference = () => {
         let conference = this.props.location.state.conference

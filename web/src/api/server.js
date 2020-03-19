@@ -26,14 +26,14 @@ axios.interceptors.response.use(
         if (error.response) {
             switch (error.response.status) {
                 case 407:
-
-                    error.config.metid
                     message.error('token鉴权错误，请重新登录')
                     break
                 case 500:
                     message.error('系统错误')
                     break
             }
+        } else {
+            message.error('系统错误')
         }
         return Promise.reject(error)
     }

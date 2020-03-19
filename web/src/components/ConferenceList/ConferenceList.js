@@ -3,7 +3,7 @@ import { userLoginVerification } from '../../api/apiUser'
 import { meeting7Search,meetingSignIn, meetingAccept, meetingReject} from '../../api/apiMeeting'
 import { connect } from 'react-redux';
 import { logout } from '../../actions/index'
-import {  Row, Col, Typography, message, Button} from 'antd';
+import {  Row, Col, Typography, messagejjjjjjjjjjjjjjjjjj, Button} from 'antd';
 import moment from 'moment'
 const { Title } = Typography;
 import { Link } from "react-router-dom";
@@ -21,13 +21,7 @@ class ConferenceList extends React.Component {
         }
     }  
     componentDidMount() {
-        userLoginVerification().then((res) => {
-            if (res.state == 0) {
-                this.props.logout()
-            } else {
-                this.findList()  
-            }
-        })
+        this.findList()  
     }
     signIn(meetingId) {
         let data = { 

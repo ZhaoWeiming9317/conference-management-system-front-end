@@ -21,11 +21,9 @@ class Main extends React.Component {
     }  
     componentDidMount() {
         userLoginVerification().then((res) => {
-            if (res.state == 0) {
-                this.props.logout()
-            } else {
-
-            }
+            
+        }).catch((error)=>{
+            this.props.logout()
         })
     };
     onPanelChange(value, mode) {

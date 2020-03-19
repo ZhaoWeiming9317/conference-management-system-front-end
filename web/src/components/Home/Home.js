@@ -38,17 +38,12 @@ class Home extends React.Component {
     componentDidMount() {
         let getLoginVerification = new Promise((resolve, reject) => { 
             userLoginVerification().then((res) => {
-                if (res.state == 0) {
-                    this.props.logout()
-                    console.log(this.props.isLogin)
-                } else {
-                    this.setState({
-                        id: res.user_id
-                    })
-                    resolve(res)
-                }
+                this.setState({
+                    id: res.user_id
+                })
+                resolve(res)
             }).catch((error)=>{
-                message.error("系统错误")
+                this.props.logout()
             })
         })
         let getUserName = getLoginVerification.then((res)=>{
