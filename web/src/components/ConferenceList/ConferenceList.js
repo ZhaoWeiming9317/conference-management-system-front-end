@@ -272,7 +272,7 @@ class ConferenceList extends React.Component {
                                                         <Col span={3} style={{height: 50, lineHeight: '50px'}}>
                                                          {meeting.topic}
                                                         </Col>
-                                                        <Col span={2} style={{height: 50, lineHeight: '50px'}}>
+                                                        <Col span={1} style={{height: 50, lineHeight: '50px'}}>
                                                         </Col>
                                                         <Col span={3} style={{height: 50, lineHeight: '50px'}}>
                                                         <span>
@@ -291,7 +291,7 @@ class ConferenceList extends React.Component {
                                                             <a onClick={() => this.handleDetail(meeting.meetingId)}>详细</a>
                                                             </span>
                                                         </Col>
-                                                        <Col span={5} style={{height: 50, lineHeight: '50px'}}>
+                                                        <Col span={6} style={{height: 50, lineHeight: '50px'}}>
                                                             {meeting.userState < 2 && <Button style={{ marginLeft: 30 }} type="primary" ghost disabled>
                                                                 已接受
                                                             </Button>}
@@ -312,7 +312,6 @@ class ConferenceList extends React.Component {
                                                             </Button>}
                                                         </Col>
                                                 </Row>
-
                                             </div>
                                         )
                                     })}
