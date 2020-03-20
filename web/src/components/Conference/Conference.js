@@ -166,6 +166,39 @@ class Conference extends React.Component {
                             </div>
                         </Col>
                     </Row>
+                    <Row style={{ padding: 20, paddingBottom: 0}}>
+                        <Col span={24}>
+                            <div style={{height: 50, lineHeight: '50px',fontSize: 16}}>
+                                <span style={{display: 'inline-block'}}>签到人员:&nbsp;</span>
+                                {certainConference.members && certainConference.attendance.map((attendance)=>{
+                                    return(
+                                        <div style={{ display: 'inline-block' }}>
+                                            <span>{attendance && attendance.name}</span>
+                                            <span style={{ color: '#d9d9d9' }}></span>   
+                                            &nbsp;    
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </Col>
+                    </Row>
+
+                    <Row style={{ padding: 20, paddingBottom: 0}}>
+                        <Col span={24}>
+                            <div style={{height: 50, lineHeight: '50px',fontSize: 16}}>
+                                <span style={{display: 'inline-block'}}>缺席人员:&nbsp;</span>
+                                {certainConference.members && certainConference.absent.map((absent)=>{
+                                    return(
+                                        <div style={{ display: 'inline-block' }}>
+                                            <span>{absent && absent.name}</span>
+                                            <span style={{ color: '#d9d9d9' }}></span>   
+                                            &nbsp;    
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </Col>
+                    </Row>
                 </div>}
             </div>
         );

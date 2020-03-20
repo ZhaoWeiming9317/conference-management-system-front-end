@@ -2,7 +2,7 @@ import React from 'react'
 import { meeting7Search,meetingSignIn, meetingAccept, meetingReject, meetingSearchCertain, meetingDelete} from '../../api/apiMeeting'
 import { connect } from 'react-redux';
 import { logout } from '../../actions/index'
-import {  Row, Col, Typography, message, Button, Divider, Popconfirm, Modal } from 'antd';
+import {  Row, Col, Typography, message, Button, Divider, Popconfirm, Modal, Descriptions  } from 'antd';
 import moment from 'moment'
 const { Title } = Typography;
 import { Link } from "react-router-dom";
@@ -19,7 +19,8 @@ class ConferenceList extends React.Component {
             hasConference: true,
             user_id: '',
             modalModifyVisible: false,
-            modalDetailVisible: false,    
+            modalDetailVisible: false, 
+            nowRowData: {}   
         }
     }  
     componentDidMount() {
@@ -86,7 +87,7 @@ class ConferenceList extends React.Component {
         myConferenceList.map((conference,index)=>{
             let endDate = new Date(conference.endTime)
             let end = endDate.getTime()
-            if ( end - now < minNext || JSON.stringify(minNextConference) == '{}') {
+            if ( (end - now < minNext || JSON.stringify(minNextConference) == '{}') && conference.userState !== 3) {
                 if (end - now >= 0) {
                     minNext = end - now
                     minNextConference = conference    
@@ -179,15 +180,28 @@ class ConferenceList extends React.Component {
             this.findClosedMeeting()
         })
     }
+    handleDetail = meetingId => {
+        meetingSearchCertain ({meeting_id : meetingId}).then((res)=>{ 
+          this.setState({
+            nowRowData:res
+          },()=>{
+            this.setState({
+                modalDetailVisible: true,
+            })
+          })
+        })  
+    }
     handleCancelModify = () => {
-        this.setState({  modalModifyVisible: false })
+        this.setState({  modalModifyVisible: false, modalDetailVisible: false })
         this.dayListFormat()
         this.findClosedMeeting()
     }
-  
+    handleCancelDetail = () => {
+        this.setState({  modalModifyVisible: false, modalDetailVisible: false })
+    }
   
     render() {    
-        let { sortByDayConferenceList, minNextConference, hasConference, modalModifyVisible, nowRowData } = this.state
+        let { sortByDayConferenceList, minNextConference, hasConference, modalModifyVisible, modalDetailVisible, nowRowData } = this.state
         return (
             <div>
                 <Row style={{ padding: 20, paddingBottom: 0}}>
@@ -316,6 +330,60 @@ class ConferenceList extends React.Component {
                 >
                 <MeetingAdd type="modify" userMeetingData={nowRowData}></MeetingAdd>
                 </Modal>
+                <Modal
+                visible={modalModifyVisible}
+                title="修改会议室"
+                onCancel={this.handleCancelModify}
+                footer={null}
+                destroyOnClose
+                >
+                <MeetingAdd type="modify" userMeetingData={nowRowData}></MeetingAdd>
+                </Modal>
+                <Modal
+              visible={modalDetailVisible}
+              title="详细信息"
+              onCancel={this.handleCancelDetail}
+              footer={null}
+              width={850}
+              destroyOnClose
+            >
+              <Descriptions title="会议信息" bordered >
+                <Descriptions.Item label="会议名称">{nowRowData.meetingName}</Descriptions.Item>
+                <Descriptions.Item label="会议ID">{nowRowData.meetingId}</Descriptions.Item>
+                <Descriptions.Item label="会议室名称">{nowRowData.room && nowRowData.room.roomName}</Descriptions.Item>
+                <Descriptions.Item label="会议室ID" >{nowRowData.room &&  nowRowData.room.roomId}</Descriptions.Item>
+                <Descriptions.Item label="开始时间"> {nowRowData.startTime}</Descriptions.Item>
+                <Descriptions.Item label="结束时间"> {nowRowData.endTime}</Descriptions.Item>
+                <Descriptions.Item label="发起人名称">{nowRowData.host && nowRowData.host.name}</Descriptions.Item>
+                <Descriptions.Item label="发起人用户名">{nowRowData.host && nowRowData.host.username}</Descriptions.Item>
+                <Descriptions.Item label="发起人ID">{nowRowData.host && nowRowData.host.userId}</Descriptions.Item>
+                <Descriptions.Item label="记录人名称">{nowRowData.recorder && nowRowData.recorder.name}</Descriptions.Item>
+                <Descriptions.Item label="记录人用户名">{nowRowData.recorder && nowRowData.recorder.username}</Descriptions.Item>
+                <Descriptions.Item label="记录人ID">{nowRowData.recorder && nowRowData.recorder.userId}</Descriptions.Item>
+                <Descriptions.Item span={3} label="参会人员">{(()=>{ 
+                    let nowMembers = ``
+                    nowRowData.members && nowRowData.members.map((item)=>{
+                        nowMembers = `${nowMembers} ${item.name}`
+                    })
+                    return nowMembers || '暂无'
+                })()}</Descriptions.Item>
+                <Descriptions.Item span={3} label="签到人员">{(()=>{ 
+                    let nowMembers = ``
+                    nowRowData.attendance && nowRowData.attendance.map((item)=>{
+                        nowMembers = `${nowMembers} ${item.name}`
+                    })
+                    return nowMembers || '暂无'
+                })()}
+                </Descriptions.Item>
+                <Descriptions.Item span={3} label="未签到人员">{(()=>{ 
+                    let nowMembers = ``
+                    nowRowData.absent && nowRowData.absent.map((item)=>{
+                        nowMembers = `${nowMembers} ${item.name}`
+                    })
+                    return nowMembers || '暂无'
+                })()}</Descriptions.Item>
+              </Descriptions>
+            </Modal>
             </div>
         );
     }

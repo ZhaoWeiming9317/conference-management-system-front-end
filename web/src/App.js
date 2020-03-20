@@ -28,7 +28,7 @@ class App extends React.Component {
         this.state = {
             locale: zhCN,
         }
-        this.pathname = ( window.location.pathname == '/' || window.location.pathname == '/login' || window.location.pathname == '/selfinfo' ) ? '/main/conferencelist' : window.location.pathname
+        this.pathname = ( window.location.pathname == '/' || window.location.pathname == '/login' || window.location.pathname == '/selfinfo' || window.location.pathname == '/main/conference') ? '/main/conferencelist' : window.location.pathname
         navList.map((nav)=>{
             if ( nav.linkTo == this.pathname ) {
                 this.nav = nav.key

@@ -341,7 +341,29 @@ class MeetingTable extends React.Component {
                 <Descriptions.Item label="记录人名称">{nowRowData.recorder && nowRowData.recorder.name}</Descriptions.Item>
                 <Descriptions.Item label="记录人用户名">{nowRowData.recorder && nowRowData.recorder.username}</Descriptions.Item>
                 <Descriptions.Item label="记录人ID">{nowRowData.recorder && nowRowData.recorder.userId}</Descriptions.Item>
-                <Descriptions.Item label="参会人员">{nowMembers || '暂无'}</Descriptions.Item>
+                <Descriptions.Item span={3} label="参会人员">{(()=>{ 
+                    let nowMembers = ``
+                    nowRowData.members && nowRowData.members.map((item)=>{
+                        nowMembers = `${nowMembers} ${item.name}`
+                    })
+                    return nowMembers || '暂无'
+                })()}</Descriptions.Item>
+                <Descriptions.Item span={3} label="签到人员">{(()=>{ 
+                    let nowMembers = ``
+                    nowRowData.attendance && nowRowData.attendance.map((item)=>{
+                        nowMembers = `${nowMembers} ${item.name}`
+                    })
+                    return nowMembers || '暂无'
+                })()}
+                </Descriptions.Item>
+                <Descriptions.Item span={3} label="未签到人员">{(()=>{ 
+                    let nowMembers = ``
+                    nowRowData.absent && nowRowData.absent.map((item)=>{
+                        nowMembers = `${nowMembers} ${item.name}`
+                    })
+                    return nowMembers || '暂无'
+                })()}</Descriptions.Item>
+
               </Descriptions>
             </Modal>
             </Card>
