@@ -1,7 +1,7 @@
 import React from 'react'
 import './Home.css'
-import { userLoginVerification ,userLoginExit, userShowInfo} from '../../api/apiUser'
-import { informAll , informFirst, watch, publish} from '../../api/apiMessage'
+import { userLoginVerification ,userLoginExit} from '../../api/apiUser'
+import { informAll , watch, publish} from '../../api/apiMessage'
 import { BrowserRouter, Switch, Route, Redirect, Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import Order from '../Order/Order'
@@ -28,42 +28,21 @@ class Home extends React.Component {
         this.quit = this.quit.bind(this)
         this.state = {
             collapsed :false,
-            nav: 0,
-            title: '我的会议',
+            nav: props.nav,
+            title: props.title,
             id: '',
             name: '',
             selfInfo: []
         }
     }  
     componentDidMount() {
+        let { pathname } = this.props
         let getLoginVerification = new Promise((resolve, reject) => { 
             userLoginVerification().then((res) => {
-                this.setState({
-                    id: res.user_id
-                })
-                resolve(res)
+                this.openWebSocket()
             }).catch((error)=>{
                 this.props.logout()
             })
-        })
-        let getUserName = getLoginVerification.then((res)=>{
-            const data = { user_id: res.user_id}
-            return new Promise((resolve, reject)=>{
-                userShowInfo(JSON.stringify(data)).then((res)=>{
-                    console.log(res)
-                    this.setState({
-                        name: res.username,
-                        selfInfo: res
-                    },()=>{
-                        resolve(res)
-                    })
-                    this.setState()    
-                })
-            })
-        })
-
-        getUserName.then((res)=>{
-            this.openWebSocket()
         })
         //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
         window.onbeforeunload = function() {
@@ -71,14 +50,13 @@ class Home extends React.Component {
                 this.closeWebSocket();
             }
         }
-
     }
     openWebSocket = () => {
-        let url = "ws://39.99.172.71:8080/" + this.state.id +  "/" + this.state.name;
+        let url = "ws://39.99.172.71:8080/" + localStorage.getItem('user_id') +  "/" + localStorage.getItem('token') +  "/" + localStorage.getItem('username');
         console.log(url);
         //判断当前浏览器是否支持WebSocket
         if ('WebSocket' in window) {
-            global.socket.websocket = new WebSocket(url,[localStorage.getItem('user_id'),localStorage.getItem('token')]);
+            global.socket.websocket = new WebSocket(url);
         } else {
             let data = { id: this.state.id, name: this.state.name}
             watch(data)
@@ -111,8 +89,7 @@ class Home extends React.Component {
         global.socket.websocket.send(message);
     }
     quit() {
-        console.log(localStorage.getItem('token'))
-        userLoginExit({token : localStorage.getItem('token')}).then((res) => {
+        userLoginExit().then((res) => {
             if (res.state == 1) {
                 this.props.logout()
                 this.closeWebSocket() 
@@ -144,7 +121,8 @@ class Home extends React.Component {
         publish(data)
     }
     render() {    
-        let { nav , selfInfo} = this.state
+        let { selfInfo} = this.state
+        let { pathname , mynav , title} = this.props
         const text = <span>消息</span>;
         const content = (
         <div>
@@ -158,7 +136,7 @@ class Home extends React.Component {
                 <Layout>
                 <Sider trigger={null} collapsible collapsed={this.state.collapsed}>
                     <div className="logo" />
-                    <Menu onClick={this.handleNav} theme="dark" mode="inline" style={{ lineHeight: '40px' }} defaultSelectedKeys={['0']}>
+                    <Menu onClick={this.handleNav} theme="dark" mode="inline" style={{ lineHeight: '40px' }} defaultSelectedKeys={[mynav+'']}>
                         {navList.map((res) => 
                             {
                             let role = localStorage.getItem('role') || 2
@@ -236,7 +214,7 @@ class Home extends React.Component {
                             <Route path="/form" component={Form}></Route>
                             <Route path="/selfinfo" component={() => <SelfInfo info={selfInfo}></SelfInfo>}></Route>
                             <Route path="/formcontrol" component={FormControl}></Route>
-                            <Redirect from={"*"} to={'/main/conferencelist'} />
+                            <Redirect from={"*"} to={pathname} />
                         </Switch>
                     </Content>
                 </Layout>

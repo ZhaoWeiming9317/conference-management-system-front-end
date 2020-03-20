@@ -113,7 +113,7 @@ export function userLoginVerification(data) {
 export function userLoginExit(data) {
     return server({
         url: url.userLoginExit,
-        method: 'POST',
+        method: 'get',
         dataType: "json",
         data: data || {}
     })
