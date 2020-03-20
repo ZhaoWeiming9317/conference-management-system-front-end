@@ -143,10 +143,10 @@ class MeetingApp extends React.Component {
                     resolve(res)
                   } else {
                     reject(res)
+                    message.error(res.message)
                   }
                 }).catch((error)=>{
                   this.setState({modalLoading:false})
-                  message.error("系统错误")
               })
             })
 
@@ -160,17 +160,19 @@ class MeetingApp extends React.Component {
                         resolve(res)
                       } else {
                         reject(res)
+                        message.error(res.message)
                       }
                     }).catch((error)=>{
                       this.setState({modalLoading:false})
-                      message.error("系统错误")
                     })
                 }
               }) 
             },(error)=>{
-              this.setState({modalLoading:false})
-              message.error("会议修改失败")
+              return new Promise((resolve,reject)=>{
+                reject(error)
+                this.setState({modalLoading:false})
             })
+          })
 
             addMembers.then((res)=>{
               if (deleteData['members'].length == 0) {
@@ -187,12 +189,10 @@ class MeetingApp extends React.Component {
                     this.setState({modalLoading:false})
                   }).catch((error)=>{
                     this.setState({modalLoading:false})
-                    message.error("系统错误")
                   })  
               }
             },(error)=>{
               this.setState({modalLoading:false})
-              message.error("会议修改失败")
             })
           }
         }
@@ -359,14 +359,14 @@ class MeetingApp extends React.Component {
           <Step title="其他信息" />
         </Steps>
         <Form style={{paddingTop: 20}} labelCol={{ span: 8 , offset: 2}} wrapperCol={{ span: 12 }} labelAlign='left' onSubmit={this.handleSubmit}>
-        {currentStep === 0   && type === 'add' && <Form.Item label="会议名称">
+        {currentStep === 0   && ( type == 'add' || type == 'userAdd' ) && <Form.Item label="会议名称">
           {getFieldDecorator('meeting_name', {
             initialValue: userMeetingData.meetingName, 
             rules: [{ required: true, message: '请输入会议名称' }],
             preserve: true,
           })(<Input placeholder="请输入会议名称" autoComplete="new-password"/>)}
         </Form.Item>}
-        {currentStep === 0   && ( type !== 'add' ) && <Form.Item label="会议名称">
+        {currentStep === 0   &&  ( type !== 'add' && type !== 'userAdd' ) && <Form.Item label="会议名称">
           {getFieldDecorator('meeting_name', {
             initialValue: userMeetingData.meetingName, 
             rules: [{ required: true, message: '请输入会议名称' }],
