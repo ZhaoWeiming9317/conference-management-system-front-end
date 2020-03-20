@@ -37,6 +37,15 @@ export function deviceSearch(data){
     })
 }
 
+export function deviceFloorSearch(data){
+    return server({
+        url: url.deviceFloorSearch,
+        method: 'post',
+        dataType: "json",
+        data: data || {}
+    })
+}
+
 export function deviceSearchPage(data){
     return server({
         url: url.deviceSearchPage,

@@ -14,7 +14,7 @@ import Device from '../Device/Device'
 import Main from '../Main/Main'
 import Form from '../Form/Form'
 import SelfInfo from '../SelfInfo/SelfInfo'
-import FormControl from '../FormControl/FormControl'
+import DeviceControl from '../DeviceControl/DeviceControl'
 import { logout } from '../../actions/index'
 import { Avatar, Badge, Layout, Menu, Icon, Typography, Row, Col, Popover, message, List} from 'antd'
 import { navList } from '../../constants/navListConstants' 
@@ -218,7 +218,7 @@ class Home extends React.Component {
                             <Route path="/device" component={Device}></Route>
                             <Route path="/form" component={Form}></Route>
                             <Route path="/selfinfo" component={() => <SelfInfo info={selfInfo}></SelfInfo>}></Route>
-                            <Route path="/formcontrol" component={FormControl}></Route>
+                            <Route path="/devicecontrol" component={DeviceControl}></Route>
                             <Redirect from={"*"} to={pathname} />
                         </Switch>
                     </Content>

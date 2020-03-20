@@ -171,10 +171,15 @@ class Order extends React.Component {
     onPanelChange(value, mode) {
     }
     cascaderOnChange(value) {
+        let { day } = this.state
         if (value.length == 2) {
             this.setState({
                 building: value[0],
                 floor: value[1]
+            },()=>{
+                if (day['start_time'] != '') {
+                    this.buildFloorDaySubmit()    
+                } 
             })
         }
     }
@@ -513,6 +518,7 @@ class Order extends React.Component {
     }
     render() {    
         let { isLogin } = this.props
+        let { day, building, floor } = this.state
         let { execArr, cascaderChosen, dayList, modalAddVisible, modalModifyVisible, modalDeleteVisible,userMeetingData } = this.state
         let menu =(
             <Menu onClick={(e)=>this.onClickMenu(e)}>
@@ -549,7 +555,7 @@ class Order extends React.Component {
                     <Col span={1}>
                     </Col>
                     <Col span={2}>
-                        <Button onClick={(e)=>this.buildFloorDaySubmit(e)}>确定</Button>,
+                        {/* <Button onClick={(e)=>this.buildFloorDaySubmit(e)}>确定</Button>, */}
                     </Col>
                 </Row>
                 {execArr.map((item)=>{
@@ -558,7 +564,7 @@ class Order extends React.Component {
                         <Col span={24}>
                             <div style={{border: '1px solid #d9d9d9', padding: 20}}>
                                 <Title level={4} style={{padding: 10,paddingLeft: 0}}>{item.room_name}</Title>
-                                <div style={{color: '#d9d9d9', padding: 10,paddingLeft: 0}}> {}</div>
+                                <div style={{color: '#d9d9d9', padding: 10,paddingLeft: 0}}>{ `${moment(day['start_time'],"YYYY/MM/DD HH:mm:ss").format("MM-DD")}  ${building}  ${floor}楼`}</div>
                                 <table style={{ width: '100%',tableLayout:'fixed'}}>
                                     <tbody >
                                         <tr style={{height:100}}>

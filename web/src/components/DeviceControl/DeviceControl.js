@@ -5,72 +5,18 @@ import { logout } from '../../actions/index'
 import { Row, Col, Typography, Cascader, Button, message, Modal, Dropdown, Menu, Popconfirm, Card, Icon} from 'antd';
 import moment from 'moment'
 import { roomBuildingSearch, roomFloorSearch } from '../../api/apiRoom'
+import { deviceFloorSearch } from '../../api/apiDevice'
+
 
 const { Title } = Typography;
-class FormControl extends React.Component {
+class DeviceControl extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             building: '',
             floor: '',
             cascaderChosen: [],
-            roomList: [{roomName: '会议室01',
-                        roomId: 1,
-                        deviceList: [
-                            {
-                                deviceId: 1,
-                                deviceName: '空调',
-                                deviceType: 'GSDF4',
-                                brand: '海尔'
-                            },
-                            {
-                                deviceId: 2,
-                                deviceName: '触摸板',
-                                deviceType: 'GSDF4',
-                                brand: '华为'
-                            },
-                            {
-                                deviceId: 3,
-                                deviceName: '灯',
-                                deviceType: 'GSDI4',
-                                brand: '飞利浦'
-                            },
-                            {
-                                deviceId: 4,
-                                deviceName: '灯',
-                                deviceType: 'GSDI4',
-                                brand: '飞利浦'
-                            },
-                        ]},{
-                            roomName: '会议室02',
-                            roomId: 2,
-                            deviceList: [
-                                {
-                                    deviceId: 5,
-                                    deviceName: '空调',
-                                    deviceType: 'GSDF4',
-                                    brand: '海尔'
-                                },
-                                {
-                                    deviceId: 6,
-                                    deviceName: '触摸板',
-                                    deviceType: 'GSDF4',
-                                    brand: '华为'
-                                },
-                                {
-                                    deviceId: 7,
-                                    deviceName: '灯',
-                                    deviceType: 'GSDI4',
-                                    brand: '飞利浦'
-                                },
-                                {
-                                    deviceId: 8,
-                                    deviceName: '灯',
-                                    deviceType: 'GSDI4',
-                                    brand: '飞利浦'
-                                },
-                            ]
-                        },]
+            roomList: []
         }
         this.cascaderLoadData = this.cascaderLoadData.bind(this)
         this.cascaderOnChange = this.cascaderOnChange.bind(this)
@@ -99,7 +45,28 @@ class FormControl extends React.Component {
                 )
             })
             this.setState({
-                cascaderChosen : cascaderChosen
+                cascaderChosen : cascaderChosen,
+                building : cascaderChosen[0].value
+            },()=>{
+                let { cascaderChosen } = this.state
+                const data = {building : cascaderChosen[0].value}
+                roomFloorSearch(JSON.stringify(data)).then((res)=>{
+                    cascaderChosen[0].children = []
+                    res.map((item)=>{
+                        cascaderChosen[0].children.push(
+                            {
+                                value: item,
+                                label: `${item}楼`
+                            }
+                        )    
+                    })
+                    this.setState({
+                        cascaderChosen : this.state.cascaderChosen,
+                        floor : cascaderChosen[0].children[0].value
+                    },()=>{
+                        this.buildFloorSubmit()
+                    })
+                })        
             })
         })
     }
@@ -108,10 +75,12 @@ class FormControl extends React.Component {
             this.setState({
                 building: value[0],
                 floor: value[1]
+            },()=>{
+                this.buildFloorSubmit()
             })
         }
     }
-    buildFloorDaySubmit() {
+    buildFloorSubmit() {
         let {building, floor} = this.state
         let data = {
             building: building,
@@ -120,7 +89,10 @@ class FormControl extends React.Component {
         if (data['building'] == '' || data['floor'] == '') {
             message.error('大楼或楼层没有选择哦')
         } else {
-        }
+            deviceFloorSearch(JSON.stringify(data)).then((res)=>{
+                this.setState({roomList: res})
+            })
+        } 
     }
     cascaderLoadData(selectedOptions) {
         const targetOption = selectedOptions[selectedOptions.length - 1];
@@ -148,21 +120,19 @@ class FormControl extends React.Component {
         let { isLogin } = this.props
         let { cascaderChosen , dayList, roomList} = this.state
         return (
-            <div className="user__container">
-                <div className="user__table">
+            <div>
+                <div>
                     <Row style={{ padding: 20}}>
                         <Col span={5}>
                             <Cascader 
                             options={cascaderChosen} 
                             onChange={this.cascaderOnChange} 
                             loadData={this.cascaderLoadData}
+                            value={[this.state.building, this.state.floor]}
                             changeOnSelect
                             placeholder="选择大楼/楼层" />,
                         </Col>
                         <Col span={1}>
-                        </Col>
-                        <Col span={2}>
-                            <Button onClick={(e)=>this.buildFloorDaySubmit(e)}>确定</Button>,
                         </Col>
                         <Col span={16}>
                         </Col>
@@ -175,8 +145,11 @@ class FormControl extends React.Component {
                                 <Col span={24}>
                                     <div style={{border: '1px solid #d9d9d9', padding: 20}}>
                                         <Title level={4} style={{padding: 10,paddingLeft: 0}}>{room.roomName}</Title>
+                                        <Row style={{ padding: 20, color: '#d9d9d9'}}>
+                                            {`${room.country} ${room.province} ${room.city} ${room.building} ${room.floor}楼`}
+                                        </Row>
                                         <div style={{ display: 'flex',flexDirection: 'row',flexWrap: 'wrap'}}>
-                                            {room.deviceList.map((device)=>{
+                                            {room.devices && room.devices.map((device)=>{
                                                 return(
                                                         <Card
                                                         hoverable
@@ -191,6 +164,9 @@ class FormControl extends React.Component {
                                                         </Card>    
                                                 )
                                                 })
+                                            }
+                                            {room.devices.length == 0 && <div style={{ padding: 20 }}>暂时没有设备</div>
+
                                             }
                                         </div>
                                     </div>
@@ -209,5 +185,5 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, {logout})(FormControl);
+export default connect(mapStateToProps, {logout})(DeviceControl);
   

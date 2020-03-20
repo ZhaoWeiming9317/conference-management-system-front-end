@@ -111,6 +111,7 @@ class MeetingApp extends React.Component {
               start_time: execMeetingInfo['start_time'],
               end_time: execMeetingInfo['end_time'],
               room: execMeetingInfo['room'],
+              meeting_id: this.props.userMeetingData.meetingId,
               recorder: execMeetingInfo['recorder'],
               topic: execMeetingInfo['topic'],
               meetingAbstract: execMeetingInfo['meetingAbstract'],
@@ -138,7 +139,7 @@ class MeetingApp extends React.Component {
               members: deleteList.map((id)=> {return{user_id: id}})
             }
             let modifyConference = new Promise((resolve, reject) => {
-              meetingModify(JSON.stringify({...execMeetingInfo})).then((res)=>{
+              meetingModify(JSON.stringify({...modifyData})).then((res)=>{
                   if (res.state == 1) {
                     resolve(res)
                   } else {

@@ -158,7 +158,7 @@ class Conference extends React.Component {
                                     return(
                                         <div style={{ display: 'inline-block' }}>
                                             <span>{members && members.name}</span>
-                                            <span style={{ color: '#d9d9d9' }}></span>   
+                                            <span style={{ color: '#d9d9d9' }}>&nbsp;{members && members.username}&nbsp;&nbsp;</span>   
                                             &nbsp;    
                                         </div>
                                     )
@@ -174,7 +174,7 @@ class Conference extends React.Component {
                                     return(
                                         <div style={{ display: 'inline-block' }}>
                                             <span>{attendance && attendance.name}</span>
-                                            <span style={{ color: '#d9d9d9' }}></span>   
+                                            <span style={{ color: '#d9d9d9' }}>&nbsp;{attendance && attendance.username}&nbsp;&nbsp;</span>   
                                             &nbsp;    
                                         </div>
                                     )
@@ -191,7 +191,7 @@ class Conference extends React.Component {
                                     return(
                                         <div style={{ display: 'inline-block' }}>
                                             <span>{absent && absent.name}</span>
-                                            <span style={{ color: '#d9d9d9' }}></span>   
+                                            <span style={{ color: '#d9d9d9' }}>&nbsp;{absent && absent.username}&nbsp;&nbsp;</span>   
                                             &nbsp;    
                                         </div>
                                     )
