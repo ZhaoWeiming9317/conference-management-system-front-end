@@ -1,6 +1,6 @@
 import React from 'react'
 import './Home.css'
-import { userLoginVerification ,userLoginExit} from '../../api/apiUser'
+import { userLoginVerification ,userLoginExit, userShowInfo} from '../../api/apiUser'
 import { informAll , watch, publish} from '../../api/apiMessage'
 import { BrowserRouter, Switch, Route, Redirect, Link } from "react-router-dom";
 import { connect } from 'react-redux';
@@ -32,7 +32,8 @@ class Home extends React.Component {
             title: props.title,
             id: '',
             name: '',
-            selfInfo: []
+            selfInfo: [],
+            pathname: ''
         }
     }  
     componentDidMount() {
@@ -43,6 +44,10 @@ class Home extends React.Component {
             }).catch((error)=>{
                 this.props.logout()
             })
+        })
+        let username = localStorage.getItem('username')
+        userShowInfo(JSON.stringify({username: username})).then((res)=>{
+            this.setState({selfInfo:res})
         })
         //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
         window.onbeforeunload = function() {

@@ -1,5 +1,8 @@
 import axios from 'axios'
 import { message } from 'antd'
+import { deBounce } from '../constants/tool'
+
+
 
 //取消请求
 let CancelToken = axios.CancelToken
@@ -23,18 +26,20 @@ axios.interceptors.response.use(
     },
     error => {
         console.log("error", error);
-        if (error.response) {
-            switch (error.response.status) {
-                case 407:
-                    message.error('token鉴权错误，请重新登录')
-                    break
-                case 500:
-                    message.error('系统错误')
-                    break
-            }
-        } else {
-            message.error('系统错误')
-        }
+        deBounce(()=>{
+            if (error.response) {
+                switch (error.response.status) {
+                    case 407:
+                        message.error('token鉴权错误，请重新登录')
+                        break
+                    case 500:
+                        message.error('系统错误')
+                        break
+                }
+            } else {
+                message.error('系统错误')
+            }    
+        })
         return Promise.reject(error)
     }
 
