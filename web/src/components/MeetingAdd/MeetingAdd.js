@@ -147,6 +147,7 @@ class MeetingApp extends React.Component {
                   }
                 }).catch((error)=>{
                   this.setState({modalLoading:false})
+                  reject(error)
               })
             })
 
@@ -193,6 +194,7 @@ class MeetingApp extends React.Component {
               }
             },(error)=>{
               this.setState({modalLoading:false})
+              message.error("系统错误")
             })
           }
         }
@@ -232,15 +234,15 @@ class MeetingApp extends React.Component {
     // can use data-binding to get
     const keys = form.getFieldValue('keys');
     // We need at least one passenger
-    if (keys.length === 1) {
+    if (keys.length === 0) {
       return;
     }
 
     // can use data-binding to set
     form.setFieldsValue({
       keys: keys.filter(key => key !== k),
-    });
-  };
+    })
+  }
 
   add = () => {
     const { form } = this.props;

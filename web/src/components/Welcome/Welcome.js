@@ -35,7 +35,7 @@ class Welcome extends React.Component {
         this.props.gotoRegist()
     }
     render() {    
-        let { loginView ,gotoLogin,gotoRegist} = this.props
+        let { loginView } = this.props
         return (
             <div id="welcome__background">
                 <div className="welcome_title">

@@ -45,7 +45,7 @@ class App extends React.Component {
                         <Route path="/home" component={() => <Home pathname={this.pathname} mynav={this.nav} title={this.title}></Home>}></Route>
                         <Route path="/welcome" component={Welcome}></Route>
                     </Switch>
-                    <Change isLogin={isLogin}></Change>
+                    { isLogin ? <Redirect to={{ pathname: '/home'}}/> : <Redirect to={{ pathname: '/welcome'}}/>}
                 </BrowserRouter>
             </ConfigProvider>
         )  
