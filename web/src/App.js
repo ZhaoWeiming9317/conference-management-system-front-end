@@ -9,6 +9,8 @@ import { ConfigProvider } from 'antd';
 import enUS from 'antd/es/locale/en_US';
 import zhCN from 'antd/es/locale/zh_CN';
 import { navList } from './constants/navListConstants' 
+import { userLoginVerification } from './api/apiUser'
+import { logout, login } from './actions/index'
 
 function Change(props) {
     let isLogin = props.isLogin;
@@ -40,6 +42,15 @@ class App extends React.Component {
             }
         })
     }  
+    componentDidMount() {
+        userLoginVerification().then((res) => {
+            if (res.message == '验证失败') {
+                this.props.logout()
+            } else {
+                this.props.login()
+            }
+        })
+    }
     render () {
         const { isLogin } = this.props
         return (
@@ -64,5 +75,5 @@ const mapStateToProps = (state) => {
 };
   
   
-export default connect(mapStateToProps)(App);
+export default connect(mapStateToProps, {logout, login})(App);
 

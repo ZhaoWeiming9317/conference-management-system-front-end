@@ -169,8 +169,42 @@ class Conference extends React.Component {
                     <Row style={{ padding: 20, paddingBottom: 0}}>
                         <Col span={24}>
                             <div style={{height: 50, lineHeight: '50px',fontSize: 16}}>
+                                <span style={{display: 'inline-block'}}>尚未接受人员:&nbsp;</span>
+                                {certainConference.noAccept && certainConference.noAccept.length != 0 && certainConference.noAccept.map((noAccept)=>{
+                                    return(
+                                        <div style={{ display: 'inline-block' }}>
+                                            <span>{noAccept && noAccept.name}</span>
+                                            <span style={{ color: '#d9d9d9' }}>&nbsp;{noAccept && noAccept.username}&nbsp;&nbsp;</span>   
+                                            &nbsp;    
+                                        </div>
+                                    )
+                                })}
+                                {certainConference.noAccept && certainConference.noAccept.length == 0 && <span>暂无</span>}
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row style={{ padding: 20, paddingBottom: 0}}>
+                        <Col span={24}>
+                            <div style={{height: 50, lineHeight: '50px',fontSize: 16}}>
+                                <span style={{display: 'inline-block'}}>拒绝人员:&nbsp;</span>
+                                {certainConference.reject && certainConference.reject.length != 0 && certainConference.reject.map((reject)=>{
+                                    return(
+                                        <div style={{ display: 'inline-block' }}>
+                                            <span>{reject && reject.name}</span>
+                                            <span style={{ color: '#d9d9d9' }}>&nbsp;{reject && reject.username}&nbsp;&nbsp;</span>   
+                                            &nbsp;    
+                                        </div>
+                                    )
+                                })}
+                                {certainConference.reject && certainConference.reject.length == 0 && <span>暂无</span>}
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row style={{ padding: 20, paddingBottom: 0}}>
+                        <Col span={24}>
+                            <div style={{height: 50, lineHeight: '50px',fontSize: 16}}>
                                 <span style={{display: 'inline-block'}}>签到人员:&nbsp;</span>
-                                {certainConference.members && certainConference.attendance.map((attendance)=>{
+                                {certainConference.attendance  && certainConference.attendance.length != 0 && certainConference.attendance.map((attendance)=>{
                                     return(
                                         <div style={{ display: 'inline-block' }}>
                                             <span>{attendance && attendance.name}</span>
@@ -179,23 +213,24 @@ class Conference extends React.Component {
                                         </div>
                                     )
                                 })}
+                                {certainConference.attendance && certainConference.attendance.length == 0 && <span>暂无</span>}
                             </div>
                         </Col>
                     </Row>
-
                     <Row style={{ padding: 20, paddingBottom: 0}}>
                         <Col span={24}>
                             <div style={{height: 50, lineHeight: '50px',fontSize: 16}}>
-                                <span style={{display: 'inline-block'}}>缺席人员:&nbsp;</span>
-                                {certainConference.members && certainConference.absent.map((absent)=>{
+                                <span style={{display: 'inline-block'}}>未签到人员:&nbsp;</span>
+                                {certainConference.unSign && certainConference.unSign.length != 0 && certainConference.unSign.map((unSign)=>{
                                     return(
                                         <div style={{ display: 'inline-block' }}>
-                                            <span>{absent && absent.name}</span>
-                                            <span style={{ color: '#d9d9d9' }}>&nbsp;{absent && absent.username}&nbsp;&nbsp;</span>   
+                                            <span>{unSign && unSign.name}</span>
+                                            <span style={{ color: '#d9d9d9' }}>&nbsp;{unSign && unSign.username}&nbsp;&nbsp;</span>   
                                             &nbsp;    
                                         </div>
                                     )
                                 })}
+                                {certainConference.unSign && certainConference.unSign.length == 0 && <span>暂无</span>}
                             </div>
                         </Col>
                     </Row>

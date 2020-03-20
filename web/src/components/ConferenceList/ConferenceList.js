@@ -176,8 +176,7 @@ class ConferenceList extends React.Component {
     }
     handleDelete = meetingId => {
         meetingDelete({ meeting_id : meetingId}).then((res)=>{
-            this.dayListFormat()
-            this.findClosedMeeting()
+            this.findList()
         })
     }
     handleDetail = meetingId => {

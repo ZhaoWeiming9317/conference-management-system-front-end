@@ -40,7 +40,9 @@ class Home extends React.Component {
         let { pathname } = this.props
         let getLoginVerification = new Promise((resolve, reject) => { 
             userLoginVerification().then((res) => {
-                this.openWebSocket()
+                if (res.message != '验证失败') {
+                    this.openWebSocket()
+                }
             }).catch((error)=>{
                 this.props.logout()
             })
@@ -87,7 +89,7 @@ class Home extends React.Component {
     }
     //关闭WebSocket连接
     closeWebSocket() {
-        global.socket.websocket.close();
+        global.socket.websocket.close()
     }
     //发送消息
     send() {
@@ -101,7 +103,6 @@ class Home extends React.Component {
                 message.success('退出成功')
             } else {
                 message.error('退出失败')
-                this.closeWebSocket() 
             }
         }).catch((err)=>{
             this.props.logout()
@@ -209,7 +210,6 @@ class Home extends React.Component {
                     >
                         <Switch>
                             <Route path="/main" component={Main}></Route>
-                            <Route path="/conference" component={Conference}></Route>
                             <Route path="/order" component={Order}></Route>
                             <Route path="/message" component={Message}></Route>
                             <Route path="/user" component={User}></Route>

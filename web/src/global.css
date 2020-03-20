@@ -5,9 +5,10 @@
     -webkit-tap-highlight-color: transparent;
 }
 html,body{ 
-    color:#000; 
+    color:rgba(0,0,0,.65); 
     background:#fff; 
-    font:12px/22px Verdana,Arial,sans-serif,"Times New Roman",思源宋体; 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    font-size: 14px;
     width:100%;
 }
 input,select,button{ 
@@ -30,14 +31,7 @@ img{
      border:none;
      vertical-align:baseline;
 }
-a, a:link, a:visited{
-     color:#000;
-     text-decoration:none;
-}
-a:hover{ 
-    color:#000; 
-    text-decoration:underline;
-}
+
 /* 标签属性，textarea,input 强制输入时内容超出时换行，打断 */
 textarea,input{ 
     word-wrap:break-word; 
