@@ -43,11 +43,19 @@ class App extends React.Component {
         })
     }  
     componentDidMount() {
+        if (!localStorage.getItem('token')) {
+            this.props.logout()
+        }
         userLoginVerification().then((res) => {
             if (res.message == '验证失败') {
                 this.props.logout()
             } else {
-                this.props.login()
+                this.props.login({
+                    user_id : localStorage.getItem('user_id'),
+                    username: localStorage.getItem('username'),
+                    role: localStorage.getItem('role'),
+                    token: localStorage.getItem('token')
+                })
             }
         })
     }

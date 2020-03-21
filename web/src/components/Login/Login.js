@@ -3,15 +3,14 @@ import './Login.sass'
 import { userLogin } from '../../api/apiUser'
 import { connect } from 'react-redux'
 import { gotoRegist, login } from '../../actions/index'
-import { Form, Input, Button, message, Select, Typography } from 'antd'
-const { Title, Text  } = Typography
+import { Form, Input, Button, message, Select, Typography, Radio } from 'antd'
+const { Title, Text } = Typography
 
 class LoginApp extends React.Component {
     constructor(props) {
       super(props);
       this.gotoRegist = this.gotoRegist.bind(this);
       this.submitLogin = this.submitLogin.bind(this);
-      console.log(props)
     };
     componentDidMount() {
 
@@ -23,17 +22,26 @@ class LoginApp extends React.Component {
             userLogin(JSON.stringify(userInfo)).then((res)=>{
               // 成功
               if (res.state == 1) {
-                localStorage.setItem("token", res.token)
-                localStorage.setItem("user_id", res.user_id)
-                localStorage.setItem('username',res.username)
-                localStorage.setItem("role", userInfo.role)
+                if (userInfo.ifAutoLogin == 'yes') {
+                  localStorage.setItem("token", res.token)
+                  localStorage.setItem("user_id", res.user_id)
+                  localStorage.setItem('username',res.username)
+                  localStorage.setItem("role", userInfo.role)  
+                } else if (userInfo.ifAutoLogin == 'no') {
+                  sessionStorage.setItem("token", res.token)
+                  sessionStorage.setItem("user_id", res.user_id)
+                }
                 message.success('登录成功')
-                this.props.login()
+                this.props.login({
+                  user_id : res.user_id,
+                  username: res.username,
+                  token: res.token,
+                  role: userInfo.role
+                })
               } else {
                 message.error(res.message)
               }
-            }
-            )          
+            })          
           }
         })  
     }
@@ -68,6 +76,15 @@ class LoginApp extends React.Component {
                   <Select.Option value={1}>系统管理员</Select.Option>
                   <Select.Option value={2}>普通员工</Select.Option>
                 </Select>)}
+            </Form.Item>
+            <Form.Item label="自动登录">
+            {getFieldDecorator('ifAutoLogin', {
+                initialValue: "no", 
+                rules: [{ required: true, message: '请选择' }],
+              })(<Radio.Group name="radiogroup">
+                <Radio value="yes">是</Radio>
+                <Radio value="no">否</Radio>
+              </Radio.Group>)}
             </Form.Item>
             <Button type="primary" onClick={this.submitLogin}>
               提交

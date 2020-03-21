@@ -9,7 +9,11 @@ axios.create({
 //开始请求设置，发起拦截处理
 axios.interceptors.request.use(config => {
     config.headers['Content-Type'] = 'application/json;charset=UTF-8';
-    config.headers['Authorization'] = `user_id=${localStorage.getItem('user_id')};token=${localStorage.getItem('token')}`    
+    if (localStorage.getItem('token')) {
+        config.headers['Authorization'] = `user_id=${localStorage.getItem('user_id')};token=${localStorage.getItem('token')}`    
+    } else {
+        config.headers['Authorization'] = `user_id=${sessionStorage.getItem('user_id')};token=${sessionStorage.getItem('token')}`    
+    }
     return config
 }, error => {
     return Promise.reject(error)
@@ -29,6 +33,7 @@ axios.interceptors.response.use(
                         message.error('token鉴权错误，请重新登录')
                         break
                     case 500:
+                        message.error('系统错误')
                         break
                 }
             }   
@@ -36,5 +41,5 @@ axios.interceptors.response.use(
     }
 
 )
- 
+
 export default axios

@@ -26,6 +26,7 @@ import '../../constants/websocket'
 class Home extends React.Component {
     constructor(props) {
         super(props);
+        console.log(props)
         this.quit = this.quit.bind(this)
         this.state = {
             collapsed :false,
@@ -48,7 +49,7 @@ class Home extends React.Component {
                 this.props.logout()
             })
         })
-        let username = localStorage.getItem('username')
+        let username = this.props.username
         userShowInfo(JSON.stringify({username: username})).then((res)=>{
             this.setState({selfInfo:res})
         })
@@ -60,7 +61,7 @@ class Home extends React.Component {
         }
     }
     openWebSocket = () => {
-        let url = "ws://39.99.172.71:8080/" + localStorage.getItem('user_id') +  "/" + localStorage.getItem('token') +  "/" + localStorage.getItem('username');
+        let url = "ws://39.99.172.71:8080/" + this.props.user_id +  "/" + this.props.token +  "/" + this.props.username;
         console.log(url);
         //判断当前浏览器是否支持WebSocket
         if ('WebSocket' in window) {
@@ -146,7 +147,7 @@ class Home extends React.Component {
                     <Menu onClick={this.handleNav} theme="dark" mode="inline" style={{ lineHeight: '40px' }} defaultSelectedKeys={[mynav+'']}>
                         {navList.map((res) => 
                             {
-                            let role = localStorage.getItem('role') || 2
+                            let role = this.props.role || 2
                             if (res.role >= role) {
                                 return(
                                     <Menu.Item key={res.key}>
@@ -235,7 +236,11 @@ class Home extends React.Component {
 const mapStateToProps = (state) => {
     return {
       isLogin: state.userState.isLogin,
-      nav: state.nav.nav
+      nav: state.nav.nav,
+      user_id: state.userState.user_id,
+      username: state.userState.username,
+      role: state.userState.role,
+      token: state.userState.token,
     };
 };
 

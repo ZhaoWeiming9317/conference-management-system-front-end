@@ -28,7 +28,7 @@ class ConferenceList extends React.Component {
     }
     signIn(meetingId) {
         let data = { 
-            user_id: parseInt(localStorage.getItem('user_id')),
+            user_id: parseInt(this.props.user_id),
             meeting_id: meetingId
         }
         meetingSignIn(JSON.stringify(data)).then((res)=>{
@@ -42,7 +42,7 @@ class ConferenceList extends React.Component {
     }
     accept(meetingId) {
         let data = { 
-            user_id: parseInt(localStorage.getItem('user_id')),
+            user_id: parseInt(this.props.user_id),
             meeting_id: meetingId
         }
         meetingAccept(JSON.stringify(data)).then((res)=>{
@@ -56,7 +56,7 @@ class ConferenceList extends React.Component {
     }
     reject(meetingId) {
         let data = { 
-            user_id: parseInt(localStorage.getItem('user_id')),
+            user_id: parseInt(this.props.user_id),
             meeting_id: meetingId
         }
         meetingReject(JSON.stringify(data)).then((res)=>{
@@ -70,10 +70,10 @@ class ConferenceList extends React.Component {
     }
     findList(){
         let data = { 
-            user_id: parseInt(localStorage.getItem('user_id')),
+            user_id: parseInt(this.props.user_id),
         }  
         meeting7Search(JSON.stringify(data)).then((res)=>{
-            this.setState({ myConferenceList : res.list, user_id: parseInt(localStorage.getItem('user_id')) },()=>{
+            this.setState({ myConferenceList : res.list, user_id: parseInt(this.props.user_id) },()=>{
                 this.dayListFormat()
                 this.findClosedMeeting()
             })
@@ -275,7 +275,7 @@ class ConferenceList extends React.Component {
                                                         </Col>
                                                         <Col span={3} style={{height: 50, lineHeight: '50px'}}>
                                                         <span>
-                                                            {meeting.hostId == localStorage.getItem('user_id')&&
+                                                            {meeting.hostId == this.props.user_id &&
                                                             <span>
                                                                 <a onClick={() => this.handleModify(meeting.meetingId)}>修改</a>
                                                                     <Divider type="vertical" />
@@ -311,9 +311,9 @@ class ConferenceList extends React.Component {
                                                             </Button>}
                                                         </Col>
                                                 </Row>
-                                                {meeting.room && <Row style={{ padding: 20, color: '#bfbfbf'}}>
+                                                {/* {meeting.room && <Row style={{ padding: 20, color: '#bfbfbf'}}>
                                                     {`${meeting.room.country} ${meeting.room.province} ${meeting.room.city} ${meeting.room.building} ${meeting.room.floor}楼`}
-                                                </Row>}
+                                                </Row>} */}
                                             </div>
                                         )
                                     })}
@@ -391,7 +391,8 @@ class ConferenceList extends React.Component {
 }
 const mapStateToProps = (state) => {
     return {
-      isLogin: state.userState.isLogin
+      isLogin: state.userState.isLogin,
+      user_id: state.userState.user_id
     };
 };
 
