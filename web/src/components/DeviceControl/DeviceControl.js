@@ -56,7 +56,7 @@ class DeviceControl extends React.Component {
                         cascaderChosen[0].children.push(
                             {
                                 value: item,
-                                label: `${item}楼`
+                                label: item
                             }
                         )    
                     })
@@ -106,7 +106,7 @@ class DeviceControl extends React.Component {
                 targetOption.children.push(
                     {
                         value: item,
-                        label: item
+                        label: `${item}楼`
                     }
                 )    
             })
@@ -145,7 +145,7 @@ class DeviceControl extends React.Component {
                                 <Col span={24}>
                                     <div style={{border: '1px solid #d9d9d9', padding: 20}}>
                                         <Title level={4} style={{padding: 10,paddingLeft: 0}}>{room.roomName}</Title>
-                                        <Row style={{ padding: 20, color: '#d9d9d9'}}>
+                                        <Row style={{ padding: 20, color: '#bfbfbf'}}>
                                             {`${room.country} ${room.province} ${room.city} ${room.building} ${room.floor}楼`}
                                         </Row>
                                         <div style={{ display: 'flex',flexDirection: 'row',flexWrap: 'wrap'}}>
@@ -161,6 +161,29 @@ class DeviceControl extends React.Component {
                                                           ]}                                                      
                                                         >
                                                             <Card.Meta title={device.deviceName} description={device.deviceType} />
+                                                            {(()=>{
+                                                                let txt = '已关闭'
+                                                                let color = '#ff4d4f'
+                                                                switch(device.state) {
+                                                                    case 0:
+                                                                    txt = '已关闭'
+                                                                    color = '#ff4d4f'
+                                                                    break
+                                                                    case 1:
+                                                                    txt = '已开启'
+                                                                    color = '#ffa39e'
+                                                                    break
+                                                                    case 2:
+                                                                    txt = '提醒状态'
+                                                                    color = '#faad14'
+                                                                    break
+                                                                    case 3:
+                                                                    txt = '维修中'
+                                                                    color = '#eb2f96'
+                                                                    break
+                                                                }
+                                                                return <div style={{ paddingTop: 20, color: color }}>{txt}</div>
+                                                            })()}
                                                         </Card>    
                                                 )
                                                 })

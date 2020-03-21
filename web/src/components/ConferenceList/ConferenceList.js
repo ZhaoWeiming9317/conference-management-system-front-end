@@ -201,6 +201,7 @@ class ConferenceList extends React.Component {
   
     render() {    
         let { sortByDayConferenceList, minNextConference, hasConference, modalModifyVisible, modalDetailVisible, nowRowData } = this.state
+        console.log(sortByDayConferenceList)
         return (
             <div>
                 <Row style={{ padding: 20, paddingBottom: 0}}>
@@ -238,7 +239,6 @@ class ConferenceList extends React.Component {
                                             <div>
                                                 {   index === 0 && <Row style={{position:'relative', paddingTop: 10, paddingLeft: 10, marginTop: 20}}>
                                                     <Col span={2} style={{height: 20, lineHeight: '20px'}}>
-                                                    
                                                     </Col>
                                                     <Col span={3} style={{height: 20, lineHeight: '20px'}}>
                                                     会议室名称
@@ -311,6 +311,9 @@ class ConferenceList extends React.Component {
                                                             </Button>}
                                                         </Col>
                                                 </Row>
+                                                {meeting.room && <Row style={{ padding: 20, color: '#bfbfbf'}}>
+                                                    {`${meeting.room.country} ${meeting.room.province} ${meeting.room.city} ${meeting.room.building} ${meeting.room.floor}楼`}
+                                                </Row>}
                                             </div>
                                         )
                                     })}

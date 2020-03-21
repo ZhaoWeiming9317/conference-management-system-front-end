@@ -86,7 +86,7 @@ class Conference extends React.Component {
                             <Title level={3} style={{padding: 10,paddingLeft: 0}}>会议面板</Title>
                         </Col>
                         <Col span={6} style={{height: 50, lineHeight: '50px'}}>
-                            <Link to={`/main/conferencelist`}> 
+                            <Link to={`/conferencelist`}> 
                                 <Button type="primary" ghost>
                                     会议列表
                                 </Button>

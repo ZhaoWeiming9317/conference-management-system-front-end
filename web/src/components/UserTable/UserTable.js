@@ -52,12 +52,12 @@ class UserTable extends React.Component {
           width: '150px',
           ellipsis: true
         },
-        {
-          title: '邮箱',
-          dataIndex: 'email',
-          width: '200px',
-          ellipsis: true
-        },
+        // {
+        //   title: '邮箱',
+        //   dataIndex: 'email',
+        //   width: '200px',
+        //   ellipsis: true
+        // },
         {
           title: '操作',
           dataIndex: 'operation',
@@ -278,7 +278,7 @@ class UserTable extends React.Component {
               loading={tableLoading}
               onChange={this.handleTableChange}
               pagination={this.state.pagination}
-              scroll={{ x: 1100 }}
+              // scroll={{ x: 1100 }}
             />
             <Modal
               visible={modalAddVisible}
@@ -306,13 +306,12 @@ class UserTable extends React.Component {
               onOk={this.handleOk}
               onCancel={this.handleCancelDetail}
               footer={null}
-              width={850}
+              width={999}
               destroyOnClose
             >
               <Descriptions title="用户信息" bordered >
                 <Descriptions.Item label="用户ID">{nowRowData.userId}</Descriptions.Item>
                 <Descriptions.Item label="用户名">{nowRowData.username}</Descriptions.Item>
-                <Descriptions.Item label="密码">{nowRowData.password}</Descriptions.Item>
                 <Descriptions.Item label="性别">{nowRowData.gender}</Descriptions.Item>
                 <Descriptions.Item label="权限" >{nowRowData.role}</Descriptions.Item>
                 <Descriptions.Item label="部门"> {nowRowData.department}</Descriptions.Item>

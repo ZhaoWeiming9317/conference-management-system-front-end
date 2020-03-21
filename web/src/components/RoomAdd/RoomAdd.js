@@ -20,6 +20,7 @@ class DeviceApp extends React.Component {
       building:'',
       block:'',
       currentStep: 0,
+      stepStatus: ['process','wait','wait']
     }
   }
   componentWillMount() {
@@ -28,15 +29,6 @@ class DeviceApp extends React.Component {
         this.setState({...data,
         })
     }
-  }
-  next() {
-    const currentStep = this.state.currentStep + 1;
-    this.setState({ currentStep });
-  }
-
-  prev() {
-    const currentStep = this.state.currentStep - 1;
-    this.setState({ currentStep });
   }
 
   handleSubmit = e => {
@@ -76,17 +68,59 @@ class DeviceApp extends React.Component {
       note: `Hi, ${value === 'male' ? 'man' : 'lady'}!`,
     });
   };
+  onChangeStep = (next) => {
+    let { stepStatus } = this.state
+    this.props.form.validateFields((err, values) => {
+      if(!err) {
+        if (next == this.state.currentStep + 2) {
+          stepStatus[this.state.currentStep] = 'finish'
+          stepStatus[this.state.currentStep + 1] = 'process'
+          this.setState({ currentStep: this.state.currentStep + 1 }) 
+        } else {
+          stepStatus[this.state.currentStep] = 'finish'
+          stepStatus[next] = 'process'
+          this.setState({ currentStep: next })  
+        }
+      } else {
+        stepStatus[this.state.currentStep] = 'error'
+      }
+    })
+  }
+  next() {
+    let { stepStatus } = this.state
+    this.props.form.validateFields((err, values) => {
+      if(!err) {
+          stepStatus[this.state.currentStep] = 'finish'
+          stepStatus[this.state.currentStep + 1] = 'process'
+          this.setState({ currentStep: this.state.currentStep + 1 })  
+      } else {
+        stepStatus[this.state.currentStep] = 'error'
+      }
+    })
+  }
 
+  prev() {
+    let { stepStatus } = this.state
+    this.props.form.validateFields((err, values) => {
+      if(!err) {
+          stepStatus[this.state.currentStep] = 'finish'
+          stepStatus[this.state.currentStep - 1] = 'process'
+          this.setState({ currentStep: this.state.currentStep - 1 })  
+      } else {
+        stepStatus[this.state.currentStep] = 'error'
+      }
+    })
+  }
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { currentStep } = this.state;
+    const { currentStep , stepStatus} = this.state;
 
     return (
       <div>
-        <Steps current={currentStep} onChange={current => this.setState({ currentStep: current })}>
-          <Step title="会议室基础" />
-          <Step title="位置信息" />
-          <Step title="其他信息" />
+        <Steps current={currentStep} onChange={(current) => this.onChangeStep(current)}>
+          <Step title="会议室基础" status= {stepStatus[0]}/>
+          <Step title="位置信息" status= {stepStatus[1]}/>
+          <Step title="其他信息" status= {stepStatus[2]}/>
         </Steps>
         <Form style={{paddingTop: 20}} labelCol={{ span: 8 , offset: 2}} wrapperCol={{ span: 12 }} labelAlign='left' onSubmit={this.handleSubmit}>
         {currentStep === 0 && <Form.Item label="会议室容量">

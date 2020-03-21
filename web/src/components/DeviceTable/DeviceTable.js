@@ -32,7 +32,7 @@ class RoomTable extends React.Component {
           ellipsis: true
         },
         {
-          title: '设备型号',
+          title: '设备类型',
           dataIndex: 'deviceType',
           width: '120px',
           ellipsis: true
@@ -62,22 +62,27 @@ class RoomTable extends React.Component {
           ellipsis: true,
           render: (text, record) => {
             let txt = '关闭'
+            let color = '#ff4d4f'
             switch(text) {
               case 0:
                 txt = '已关闭'
+                color = '#ff4d4f'
                 break
               case 1:
                 txt = '已开启'
+                color = '#ffa39e'
                 break
               case 2:
                 txt = '提醒状态'
+                color = '#faad14'
                 break
               case 3:
                 txt = '维修中'
+                color = '#eb2f96'
                 break
             }
             return (            
-            <span>
+            <span style={{color:color}}>
               {txt}
             </span>
             )
@@ -345,7 +350,7 @@ class RoomTable extends React.Component {
               onCancel={this.handleCancelDetail}
               footer={null}
               destroyOnClose
-              width= {850}
+              width= {999}
             >
                 <Descriptions title="设备信息" bordered >
                   <Descriptions.Item label="设备名称">{nowRowData.deviceName}</Descriptions.Item>

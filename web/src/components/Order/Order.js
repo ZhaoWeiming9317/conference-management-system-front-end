@@ -521,7 +521,7 @@ class Order extends React.Component {
         let { day, building, floor } = this.state
         let { execArr, cascaderChosen, dayList, modalAddVisible, modalModifyVisible, modalDeleteVisible,userMeetingData } = this.state
         let menu =(
-            <Menu onClick={(e)=>this.onClickMenu(e)}>
+            <Menu onClick={(e)=>this.onClickMenu(e)} style={{width: 80}}>
                 <Menu.Item key="modify">修改</Menu.Item>
                 <Menu.Item key="delete">
                   删除
@@ -564,9 +564,19 @@ class Order extends React.Component {
                         <Col span={24}>
                             <div style={{border: '1px solid #d9d9d9', padding: 20}}>
                                 <Title level={4} style={{padding: 10,paddingLeft: 0}}>{item.room_name}</Title>
-                                <div style={{color: '#d9d9d9', padding: 10,paddingLeft: 0}}>{ `${moment(day['start_time'],"YYYY/MM/DD HH:mm:ss").format("MM-DD")}  ${building}  ${floor}楼`}</div>
+                                <div style={{color: '#bfbfbf', padding: 10,paddingLeft: 0}}>{ `${moment(day['start_time'],"YYYY/MM/DD HH:mm:ss").format("MM-DD")}  ${building}  ${floor}楼`}</div>
                                 <table style={{ width: '100%',tableLayout:'fixed'}}>
                                     <tbody >
+                                        <tr style={{height:20}}>
+                                            {item.meetingList.map((listItem)=>{
+                                                return(
+                                                    listItem.first == true &&
+                                                    <td style={{color: "#bfbfbf"}} colspan={listItem.col}>
+                                                        {listItem.meetingName}
+                                                    </td>
+                                                )
+                                            })}
+                                        </tr>
                                         <tr style={{height:100}}>
                                             {item.meetingList.map((listItem)=>{
                                                 return(
@@ -582,7 +592,6 @@ class Order extends React.Component {
                                                                     {` - `}
                                                                     {this.isInteger(listItem.afterTime) ? `${listItem.afterTime}:00` : `${Math.floor(listItem.afterTime)}:30`}
                                                                 </div> 
-                                                                <div style={{color: 'white'}}>{`${listItem.meetingName}`}</div>
                                                                 <div style={{color: 'white'}}>{`${listItem.hostName}`}</div>
                                                             </div>
                                                             } 
@@ -595,7 +604,7 @@ class Order extends React.Component {
                                             {item.meetingList.map((item)=>{
                                                 return(
                                                     <td>
-                                                    <div style={{color: '#d9d9d9'}}>{this.isInteger(item.time) ? `${item.time}:00` : `${Math.floor(item.time)}:30`}</div>  
+                                                    <div style={{color: "#bfbfbf"}}>{this.isInteger(item.time) ? `${item.time}:00` : `${Math.floor(item.time)}:30`}</div>  
                                                     </td>
                                                 )
                                             })}

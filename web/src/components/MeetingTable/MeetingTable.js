@@ -60,29 +60,51 @@ class MeetingTable extends React.Component {
           width: '130px',
           ellipsis: true
         },
-        {
-          title: '结束时间',
-          dataIndex: 'endTime',
-          width: '120px',
-          ellipsis: true
-        },
+        // {
+        //   title: '结束时间',
+        //   dataIndex: 'endTime',
+        //   width: '120px',
+        //   ellipsis: true
+        // },
         {
           title: '主持人',
           dataIndex: 'hostName',
           width: '130px',
           ellipsis: true
         },
+        // {
+        //   title: '类型',
+        //   dataIndex: 'topic',
+        //   width: '120px',
+        //   ellipsis: true
+        // },
         {
-          title: '类型',
-          dataIndex: 'topic',
-          width: '120px',
-          ellipsis: true
-        },
-        {
-            title: '类型',
+            title: '状态',
             dataIndex: 'meetingState',
             width: '120px',
-            ellipsis: true
+            ellipsis: true,render: (text, record) => {
+              let txt = '关闭'
+              let color = '#ff4d4f'
+              switch(text) {
+                case 0:
+                  txt = '已预约'
+                  color = '#ff4d4f'
+                  break
+                case 1:
+                  txt = '进行中'
+                  color = '#ffa39e'
+                  break
+                case 2:
+                  txt = '空闲'
+                  color = '#faad14'
+                  break
+              }
+              return (            
+              <span style={{color:color}}>
+                {txt}
+              </span>
+              )
+            }
           },
         {
           title: '操作',
@@ -300,7 +322,7 @@ class MeetingTable extends React.Component {
               loading={tableLoading}
               onChange={this.handleTableChange}
               pagination={this.state.pagination}
-              scroll={{ x: 1100 }}
+              // scroll={{ x: 1100 }}
             />
             <Modal
               visible={modalAddVisible}
@@ -325,7 +347,7 @@ class MeetingTable extends React.Component {
               title="详细信息"
               onCancel={this.handleCancelDetail}
               footer={null}
-              width={850}
+              width={999}
               destroyOnClose
             >
               <Descriptions title="会议信息" bordered >

@@ -24,6 +24,7 @@ class MeetingApp extends React.Component {
       tempValue: '',
       scrollPage: 1,
       modalLoading: false,
+      stepStatus: ['process','wait','wait']
     }
     this.id = 0
     this.timeout = null
@@ -38,15 +39,6 @@ class MeetingApp extends React.Component {
         this.add()
       })  
     }
-  }
-  next() {
-    const currentStep = this.state.currentStep + 1;
-    this.setState({ currentStep });
-  }
-
-  prev() {
-    const currentStep = this.state.currentStep - 1;
-    this.setState({ currentStep });
   }
 
   compareMembers(oldMembers, newMembers) {
@@ -106,23 +98,26 @@ class MeetingApp extends React.Component {
               message.error("系统错误")
             })
           } else {
-            let modifyData = {
-              meeting_name: execMeetingInfo['meeting_name'],
-              start_time: execMeetingInfo['start_time'],
-              end_time: execMeetingInfo['end_time'],
-              room: execMeetingInfo['room'],
-              meeting_id: this.props.userMeetingData.meetingId,
-              recorder: execMeetingInfo['recorder'],
-              topic: execMeetingInfo['topic'],
-              meetingAbstract: execMeetingInfo['meetingAbstract'],
-              remark: execMeetingInfo['remark']
-            }
             let oldMembers = userMeetingData.members.map((item) =>{
               return item.userId
             })
             let newMembers = execMeetingInfo['members'].map((item)=>{
               return item.user_id
             })
+
+            let modifyData = {
+              meeting_name: execMeetingInfo['meeting_name'],
+              members: execMeetingInfo['members'],
+              start_time: execMeetingInfo['start_time'],
+              end_time: execMeetingInfo['end_time'],
+              room: execMeetingInfo['room'],
+              meeting_id: this.props.userMeetingData.meetingId,
+              host: execMeetingInfo['host'],
+              recorder: execMeetingInfo['recorder'],
+              topic: execMeetingInfo['topic'],
+              meetingAbstract: execMeetingInfo['meetingAbstract'],
+              remark: execMeetingInfo['remark']
+            }
             let { addList,deleteList } = (this.compareMembers(oldMembers,newMembers))
             let addData = {
               meeting_id: this.props.userMeetingData.meetingId,
@@ -171,8 +166,8 @@ class MeetingApp extends React.Component {
               }) 
             },(error)=>{
               return new Promise((resolve,reject)=>{
-                reject(error)
                 this.setState({modalLoading:false})
+                reject(error)
             })
           })
 
@@ -195,7 +190,7 @@ class MeetingApp extends React.Component {
               }
             },(error)=>{
               this.setState({modalLoading:false})
-              message.error("系统错误")
+              message.error("会议修改失败")
             })
           }
         }
@@ -300,10 +295,54 @@ class MeetingApp extends React.Component {
  searchWhenSelectChange = (e)=>{
     console.log(e)
  }
+
+ onChangeStep = (next) => {
+  let { stepStatus } = this.state
+  this.props.form.validateFields((err, values) => {
+    if(!err) {
+      if (next == this.state.currentStep + 2) {
+        stepStatus[this.state.currentStep] = 'finish'
+        stepStatus[this.state.currentStep + 1] = 'process'
+        this.setState({ currentStep: this.state.currentStep + 1 }) 
+      } else {
+        stepStatus[this.state.currentStep] = 'finish'
+        stepStatus[next] = 'process'
+        this.setState({ currentStep: next })  
+      }
+    } else {
+      stepStatus[this.state.currentStep] = 'error'
+    }
+  })
+}
+next() {
+  let { stepStatus } = this.state
+  this.props.form.validateFields((err, values) => {
+    if(!err) {
+        stepStatus[this.state.currentStep] = 'finish'
+        stepStatus[this.state.currentStep + 1] = 'process'
+        this.setState({ currentStep: this.state.currentStep + 1 })  
+    } else {
+      stepStatus[this.state.currentStep] = 'error'
+    }
+  })
+}
+
+prev() {
+  let { stepStatus } = this.state
+  this.props.form.validateFields((err, values) => {
+    if(!err) {
+        stepStatus[this.state.currentStep] = 'finish'
+        stepStatus[this.state.currentStep - 1] = 'process'
+        this.setState({ currentStep: this.state.currentStep - 1 })  
+    } else {
+      stepStatus[this.state.currentStep] = 'error'
+    }
+  })
+}
   render() {
     const { getFieldDecorator, getFieldValue } = this.props.form;
     const { type , userMeetingData } = this.props;
-    const { currentStep } = this.state;
+    const { currentStep , stepStatus} = this.state;
     getFieldDecorator('keys', { initialValue: [] });
     const keys = getFieldValue('keys');
     const formItemLayout = {
@@ -356,10 +395,10 @@ class MeetingApp extends React.Component {
  
     return (
       <div>
-        <Steps current={currentStep} onChange={current => this.setState({ currentStep: current })}>
-          <Step title="会议信息" />
-          <Step title="人员信息" />
-          <Step title="其他信息" />
+        <Steps current={currentStep} onChange={(current) => this.onChangeStep(current)}>
+          <Step title="会议信息" status= {stepStatus[0]}/>
+          <Step title="人员信息" status= {stepStatus[1]}/>
+          <Step title="其他信息" status= {stepStatus[2]}/>
         </Steps>
         <Form style={{paddingTop: 20}} labelCol={{ span: 8 , offset: 2}} wrapperCol={{ span: 12 }} labelAlign='left' onSubmit={this.handleSubmit}>
         {currentStep === 0   && ( type == 'add' || type == 'userAdd' ) && <Form.Item label="会议名称">
@@ -444,24 +483,24 @@ class MeetingApp extends React.Component {
                disabled
                placeholder="请填写结束时间" style={{ width: '100%' }} format="YYYY-MM-DD HH:mm:ss" showTime={true}/>)}
           </Form.Item>}
-          {currentStep === 1 && <Form.Item label="发起人Id">
+          {currentStep === 1 && <Form.Item label="发起人ID">
             {getFieldDecorator('user_id', {
                 initialValue: (userMeetingData.host.user_id || userMeetingData.host.userId),
-                rules: [{ required: true, message: '请输入发起人Id' }],
+                rules: [{ required: true, message: '请输入发起人ID' }],
                 preserve: true,
-            })(<Input disabled={ (type !== 'add') && true} autoComplete="new-password"/>)}
+            })(<Input placeholder="请输入发起人ID" disabled={ (type !== 'add') && true} autoComplete="new-password"/>)}
           </Form.Item>}
         {currentStep === 1 && <Form.Item label="发起人">
           {getFieldDecorator('hostName', {
             initialValue: userMeetingData.host.name,
             rules: [{ required: true, message: '请输入发起人名称' }],
             preserve: true,
-          })(<Input disabled={ (type !== 'add') && true} autoComplete="new-password"/>)}
+          })(<Input placeholder="请输入发起人名称" disabled={ (type !== 'add') && true} autoComplete="new-password"/>)}
         </Form.Item>}
         {currentStep === 1 && <Form.Item label="记录人员">
           {getFieldDecorator('recorder', {
             initialValue: { key: userMeetingData.recorder ? userMeetingData.recorder.userId : '', label:  userMeetingData.recorder ? userMeetingData.recorder.name : ''},
-            rules: [{ required: true }],
+            rules: [{ required: true, message: '请选择记录人员名称'  }],
             preserve: true,
           })(<Select placeholder="记录人员名字" 
           labelInValue
@@ -484,23 +523,23 @@ class MeetingApp extends React.Component {
         {currentStep === 2 && <Form.Item label="会议主题">
           {getFieldDecorator('topic', {
             initialValue: userMeetingData.topic,
-            rules: [{ required: true }],
+            rules: [{ required: true, message: '请输入会议主题' }],
             preserve: true,
-          })(<Input autoComplete="new-password"/>)}
+          })(<Input placeholder="请输入会议主题" autoComplete="new-password"/>)}
         </Form.Item>}
         {currentStep === 2 && <Form.Item label="会议摘要">
           {getFieldDecorator('meetingAbstract', {
             initialValue: userMeetingData.meetingAbstract,
-            rules: [{ required: true }],
+            rules: [{ required: true , message: '请输入会议摘要'}],
             preserve: true,
-          })(<Input.TextArea rows={3} autoComplete="new-password"/>)}
+          })(<Input.TextArea placeholder="请输入会议摘要" rows={3} autoComplete="new-password"/>)}
         </Form.Item>}
         {currentStep === 2 && <Form.Item label="备注">
           {getFieldDecorator('remark', {
             initialValue: userMeetingData.remark,
-            rules: [{ required: false }],
+            rules: [{ required: false}],
             preserve: true,
-          })(<Input.TextArea rows={3} autoComplete="new-password"/>)}
+          })(<Input.TextArea rows={3} placeholder="请备注" autoComplete="new-password"/>)}
         </Form.Item>}
       </Form>
       <div className="steps-action">
@@ -510,7 +549,7 @@ class MeetingApp extends React.Component {
             </Button>
           )}
           {currentStep === 2 && (
-            <Button type="primary" onClick={this.handleSubmit} loading={this.state.modalLoading}>
+            <Button type="primary" onClick={this.handleSubmit}>
               提交
             </Button>
           )}

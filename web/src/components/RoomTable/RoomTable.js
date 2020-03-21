@@ -37,12 +37,12 @@ class RoomTable extends React.Component {
           width: '130px',
           ellipsis: true
         },
-        {
-          title: '城市',
-          dataIndex: 'city',
-          width: '120px',
-          ellipsis: true
-        },
+        // {
+        //   title: '城市',
+        //   dataIndex: 'city',
+        //   width: '120px',
+        //   ellipsis: true
+        // },
         {
           title: '大厦',
           dataIndex: 'building',
@@ -263,7 +263,7 @@ class RoomTable extends React.Component {
               loading={tableLoading}
               onChange={this.handleTableChange}
               pagination={this.state.pagination}
-              scroll={{ x: 1100 }}
+              // scroll={{ x: 1100 }}
             />
             <Modal
               visible={modalAddVisible}
@@ -291,7 +291,7 @@ class RoomTable extends React.Component {
               onOk={this.handleOk}
               onCancel={this.handleCancelDetail}
               footer={null}
-              width={850}
+              width={999}
               destroyOnClose
             >
               <Descriptions title="会议室信息" bordered >
