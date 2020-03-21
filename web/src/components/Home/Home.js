@@ -6,6 +6,7 @@ import { BrowserRouter, Switch, Route, Redirect, Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import Order from '../Order/Order'
 import Conference from '../Conference/Conference'
+import ConferenceList from '../ConferenceList/ConferenceList'
 import User from '../User/User'
 import Message from '../Message/Message'
 import Meeting from '../Meeting/Meeting'
@@ -210,6 +211,8 @@ class Home extends React.Component {
                     >
                         <Switch>
                             <Route path="/main" component={Main}></Route>
+                            <Route path="/main/conferencelist" component={ConferenceList}></Route>
+                            <Route path="/main/conference" component={Conference}></Route>
                             <Route path="/order" component={Order}></Route>
                             <Route path="/message" component={Message}></Route>
                             <Route path="/user" component={User}></Route>
