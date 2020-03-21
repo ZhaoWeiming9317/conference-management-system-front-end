@@ -212,7 +212,7 @@ class Home extends React.Component {
                         <Switch>
                             <Route path="/main" component={Main}></Route>
                             <Route path="/conferencelist" component={ConferenceList}></Route>
-                            <Route path="/conference" component={ConferenceList}></Route>
+                            <Route path="/conference" component={Conference}></Route>
                             <Route path="/order" component={Order}></Route>
                             <Route path="/message" component={Message}></Route>
                             <Route path="/user" component={User}></Route>
