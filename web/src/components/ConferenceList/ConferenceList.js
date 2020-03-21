@@ -208,7 +208,7 @@ class ConferenceList extends React.Component {
                         <Title level={3} style={{padding: 10,paddingLeft: 0}}>会议列表</Title>
                     </Col>
                     <Col span={5} style={{height: 50, lineHeight: '50px'}}>
-                        <Link to={{pathname:`/main/conference`,state: { conference: minNextConference, hasConference: hasConference}}}> 
+                        <Link to={{pathname:`/conference`,state: { conference: minNextConference, hasConference: hasConference}}}> 
                             <Button type="primary" ghost>
                                 会议面板
                             </Button>

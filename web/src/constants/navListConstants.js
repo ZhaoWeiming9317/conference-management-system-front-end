@@ -1,5 +1,5 @@
 export const navList = [
-    {'label': '我的会议', 'key': 0, 'linkTo': '/main/conferencelist', 'type': "calendar" ,'role':2},
+    {'label': '我的会议', 'key': 0, 'linkTo': '/conferencelist', 'type': "calendar" ,'role':2},
     {'label': '会议预定', 'key': 1, 'linkTo': '/order', 'type': "contacts" ,'role':2},
     // {'label': '信息通知', 'key': 2, 'linkTo': '/message', 'type': "message" ,'role':2},
     {'label': '会议管理', 'key': 2, 'linkTo': '/meeting', 'type': "team", 'role':1},

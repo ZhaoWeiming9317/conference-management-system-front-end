@@ -33,10 +33,12 @@ class Main extends React.Component {
         let { isLogin } = this.props
         return (
             <div>
-                <Switch>
-                    <Route path="/main/conferencelist" component={ConferenceList}></Route>
-                    <Route path="/main/conference" component={Conference}></Route>
-                </Switch>
+                <BrowserRouter>
+                    <Switch>
+                        <Route path="/conferencelist" component={ConferenceList}></Route>
+                        <Route path="/conference" component={Conference}></Route>
+                    </Switch>
+                </BrowserRouter>
             </div>
         );
     }

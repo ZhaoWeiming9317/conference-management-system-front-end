@@ -33,8 +33,8 @@ class App extends React.Component {
         this.pathname = ( window.location.pathname == '/' 
         || window.location.pathname == '/login' 
         || window.location.pathname == '/selfinfo' 
-        || window.location.pathname == '/main/conference'
-        || window.location.pathname == '/main') ? '/main/conferencelist' : window.location.pathname
+        || window.location.pathname == '/conference') ? '/conferencelist' : window.location.pathname
+
         navList.map((nav)=>{
             if ( nav.linkTo == this.pathname ) {
                 this.nav = nav.key
