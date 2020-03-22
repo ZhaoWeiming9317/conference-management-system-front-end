@@ -70,7 +70,7 @@ class RoomTable extends React.Component {
                 break
               case 1:
                 txt = '已开启'
-                color = '#ffa39e'
+                color = '#bae637'
                 break
               case 2:
                 txt = '提醒状态'

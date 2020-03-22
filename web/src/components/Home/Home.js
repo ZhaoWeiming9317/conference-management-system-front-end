@@ -16,7 +16,7 @@ import Main from '../Main/Main'
 import Form from '../Form/Form'
 import SelfInfo from '../SelfInfo/SelfInfo'
 import DeviceControl from '../DeviceControl/DeviceControl'
-import { logout } from '../../actions/index'
+import { logout, deviceControl } from '../../actions/index'
 import { Button, Badge, Layout, Menu, Icon, Typography, Row, Col, Popover, message, List, notification } from 'antd'
 import { navList } from '../../constants/navListConstants' 
 const { Header, Sider, Content, } = Layout;
@@ -72,29 +72,68 @@ class Home extends React.Component {
             message.error('当前浏览器 Not support websocket')
         }
         //连接发生错误的回调方法
-        global.socket.websocket.onerror = function() {
+        global.socket.websocket.onerror = () => {
             message.error("WebSocket连接发生错误");
         }
         //连接成功建立的回调方法
-        global.socket.websocket.onopen = function() {
+        global.socket.websocket.onopen = () => {
             message.success("WebSocket连接成功");
         }
         //接收到消息的回调方法
-        global.socket.websocket.onmessage = function(event) {
-            const key = `open${Date.now()}`
-            const btn = (
-              <Button type="primary" size="small" onClick={() => notification.close(key)}>
-                确认
-              </Button>
-            )
-            notification.open({
-              message: '邮件通知',
-              description:event.data,
-              btn,
-              key,
-              onClose: close,
-              duration: null
-            })
+        global.socket.websocket.onmessage = (event) => {
+            let messageBody = JSON.parse(JSON.parse(event.data).messageBody)
+            if (messageBody && messageBody.deviceId) {
+                this.props.deviceControl({
+                    deviceId : messageBody.deviceId,
+                    deviceState: messageBody.state
+                })
+                const key = `open${Date.now()}`
+                const btn = (
+                <Button type="primary" size="small" onClick={() => notification.close(key)}>
+                    确认
+                </Button>
+                )
+                notification.open({
+                message: '设备现状',
+                description: (()=>{
+                    let txt = '已关闭'
+                    switch(messageBody.state) {
+                        case 0:
+                          txt = '已关闭'
+                          break
+                        case 1:
+                          txt = '已开启'
+                          break
+                        case 2:
+                          txt = '提醒状态'
+                          break
+                        case 3:
+                          txt = '维修中'
+                          break
+                      }          
+                    return `设备Id ${messageBody.deviceId} 现状态为${txt}`
+                })(),
+                btn,
+                key,
+                onClose: close,
+                duration: 5
+                })    
+            } else {
+                const key = `open${Date.now()}`
+                const btn = (
+                  <Button type="primary" size="small" onClick={() => notification.close(key)}>
+                    确认
+                  </Button>
+                )
+                notification.open({
+                  message: '邮件通知',
+                  description: messageBody,
+                  btn,
+                  key,
+                  onClose: close,
+                  duration: null
+                })    
+            }
         }
         //连接关闭的回调方法
         global.socket.websocket.onclose = function() {
@@ -256,5 +295,5 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps , { logout })(Home);
+export default connect(mapStateToProps , { logout, deviceControl })(Home);
   

@@ -39,7 +39,8 @@ export function messageSearch (data){
     return server({
         url: `${url.messageSearch}`,
         method: 'post',
-        dataType: "json"
+        dataType: "json",
+        data: data || {}
     })
 }
 

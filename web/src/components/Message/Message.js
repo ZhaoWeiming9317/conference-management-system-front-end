@@ -20,9 +20,21 @@ class Message extends React.Component {
         userLoginVerification().then((res) => {
             if (res.state == 0) {
                 this.props.logout()
+            } else {
+                this.init()
             }
         })
-    };
+    }
+    init() {
+        let data = {
+            username: this.props.username,
+            page: 1,
+            volume: 10
+        }
+        messageSearch(JSON.stringify(data)).then((res)=>{
+
+        })
+    }
     render() {    
         let { isLogin } = this.props
         let { data } = this.state
@@ -46,8 +58,9 @@ class Message extends React.Component {
 }
 const mapStateToProps = (state) => {
     return {
-      isLogin: state.userState.isLogin
+      isLogin: state.userState.isLogin,
+      username: state.userState.username,
     };
 };
 
-export default connect(mapStateToProps, {logout})(Message);
+export default connect(mapStateToProps, { logout })(Message);

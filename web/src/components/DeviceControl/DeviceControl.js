@@ -16,7 +16,9 @@ class DeviceControl extends React.Component {
             building: '',
             floor: '',
             cascaderChosen: [],
-            roomList: []
+            roomList: [],
+            deviceId: -1,
+            deviceState: 1
         }
         this.cascaderLoadData = this.cascaderLoadData.bind(this)
         this.cascaderOnChange = this.cascaderOnChange.bind(this)
@@ -28,7 +30,12 @@ class DeviceControl extends React.Component {
             }
         })
         this.initExec()
-    };
+    }
+    componentDidUpdate (prevProps) {
+        if( prevProps.deviceId !==  this.props.deviceId || prevProps.deviceState !==  this.props.deviceState ) {
+            this.buildFloorSubmit()    
+        }
+    }
     initExec() {
         let cascaderChosen = []
         roomBuildingSearch().then((res)=>{
@@ -112,10 +119,10 @@ class DeviceControl extends React.Component {
             })
         })
     }
-    stateControl(e,deviceId,roomName,state) {
-        let data = {deviceId,roomName,state}        
+    stateControl(e,device_id,room_id,state) {
+        let data = {device_id,room_id,state}        
         deviceStateChange(JSON.stringify(data)).then((res)=>{
-            message.success(res.message)
+            
         })
     }
     render() {    
@@ -153,9 +160,9 @@ class DeviceControl extends React.Component {
                                         <div style={{ display: 'flex',flexDirection: 'row',flexWrap: 'wrap'}}>
                                             {room.devices && room.devices.map((device)=>{
                                                 let actions = []
-                                                if (device.state == 0) { actions.push(<div onClick={(e)=> this.stateControl(e,device.deviceId,room.roomName,'on')}><Icon type="check" />打开</div>)} 
-                                                if (device.state == 1 || device.state == 2) {actions.push(<div onClick={(e)=> this.stateControl(e,device.deviceId,room.roomName,'off')}><Icon type="close" />关闭</div>)}
-                                                if (device.deviceType == 'TV') {actions.push(<div onClick={(e)=> this.stateControl(e,device.deviceId,room.roomName,'tv_notify')}><Icon type="message"/>发送提醒</div>)}
+                                                if (device.state == 0) { actions.push(<div onClick={(e)=> this.stateControl(e,device.deviceId,room.roomId,'on')}><Icon type="check" />打开</div>)} 
+                                                if (device.state == 1 || device.state == 2) {actions.push(<div onClick={(e)=> this.stateControl(e,device.deviceId,room.roomId,'off')}><Icon type="close" />关闭</div>)}
+                                                if (device.deviceType == 'TV') {actions.push(<div onClick={(e)=> this.stateControl(e,device.deviceId,room.roomId,'tv_notify')}><Icon type="message"/>发送提醒</div>)}
                                                 return(
                                                         <Card
                                                         hoverable
@@ -173,7 +180,7 @@ class DeviceControl extends React.Component {
                                                                     break
                                                                     case 1:
                                                                     txt = '已开启'
-                                                                    color = '#ffa39e'
+                                                                    color = '#bae637'
                                                                     break
                                                                     case 2:
                                                                     txt = '提醒状态'
@@ -204,7 +211,9 @@ class DeviceControl extends React.Component {
 }
 const mapStateToProps = (state) => {
     return {
-      isLogin: state.userState.isLogin
+      isLogin: state.userState.isLogin,
+      deviceId: state.deviceControl.deviceId,
+      deviceState: state.deviceControl.deviceState,
     };
 };
 
