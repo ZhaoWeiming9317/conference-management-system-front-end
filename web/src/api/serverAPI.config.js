@@ -34,6 +34,7 @@ const URL ={
     deviceSearchPage: HISTORY + '/device/device_search_page',
     deviceDetail: HISTORY + '/device/device_detail',
     deviceFloorSearch: HISTORY + '/device/device_floor_search',
+    deviceStateChange: HISTORY + '/device/device_state_change',
 
     formAdd: HISTORY + '/form/form_add',
     formDelete: HISTORY + '/form/form_delete',
@@ -61,5 +62,6 @@ const URL ={
     publish: HISTORY + '/publish',
     informAll: HISTORY + '/inform/inform_all',
     informFirst: HISTORY + '/inform/inform_first',
+    messageSearch: HISTORY + '/message/message_search',
 }
 export default URL

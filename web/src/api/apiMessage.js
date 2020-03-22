@@ -34,3 +34,13 @@ export function informFirst (data){
         dataType: "json"
     })
 }
+
+export function messageSearch (data){
+    return server({
+        url: `${url.messageSearch}`,
+        method: 'post',
+        dataType: "json"
+    })
+}
+
+

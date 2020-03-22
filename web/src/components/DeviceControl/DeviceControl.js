@@ -5,7 +5,7 @@ import { logout } from '../../actions/index'
 import { Row, Col, Typography, Cascader, Button, message, Modal, Dropdown, Menu, Popconfirm, Card, Icon} from 'antd';
 import moment from 'moment'
 import { roomBuildingSearch, roomFloorSearch } from '../../api/apiRoom'
-import { deviceFloorSearch } from '../../api/apiDevice'
+import { deviceFloorSearch, deviceStateChange } from '../../api/apiDevice'
 
 
 const { Title } = Typography;
@@ -112,7 +112,12 @@ class DeviceControl extends React.Component {
             })
         })
     }
-
+    stateControl(e,deviceId,roomName,state) {
+        let data = {deviceId,roomName,state}        
+        deviceStateChange(JSON.stringify(data)).then((res)=>{
+            message.success(res.message)
+        })
+    }
     render() {    
         let { isLogin } = this.props
         let { cascaderChosen , dayList, roomList} = this.state
@@ -147,15 +152,15 @@ class DeviceControl extends React.Component {
                                         </Row>
                                         <div style={{ display: 'flex',flexDirection: 'row',flexWrap: 'wrap'}}>
                                             {room.devices && room.devices.map((device)=>{
+                                                let actions = []
+                                                if (device.state == 0) { actions.push(<div onClick={(e)=> this.stateControl(e,device.deviceId,room.roomName,'on')}><Icon type="check" />打开</div>)} 
+                                                if (device.state == 1 || device.state == 2) {actions.push(<div onClick={(e)=> this.stateControl(e,device.deviceId,room.roomName,'off')}><Icon type="close" />关闭</div>)}
+                                                if (device.deviceType == 'TV') {actions.push(<div onClick={(e)=> this.stateControl(e,device.deviceId,room.roomName,'tv_notify')}><Icon type="message"/>发送提醒</div>)}
                                                 return(
                                                         <Card
                                                         hoverable
                                                         style={{ width: 240 }}
-                                                        actions={[
-                                                            <div><Icon type="check" />打开</div>,
-                                                            <div><Icon type="close" />关闭</div>,
-                                                            <div><Icon type="ellipsis"/></div>,
-                                                          ]}                                                      
+                                                        actions={actions}                                                      
                                                         >
                                                             <Card.Meta title={device.deviceName} description={device.deviceType} />
                                                             {(()=>{
@@ -185,9 +190,7 @@ class DeviceControl extends React.Component {
                                                 )
                                                 })
                                             }
-                                            {room.devices.length == 0 && <div style={{ padding: 20 }}>暂时没有设备</div>
-
-                                            }
+                                            {room.devices.length == 0 && <div style={{ padding: 20 }}>暂时没有设备</div>}
                                         </div>
                                     </div>
                                 </Col>

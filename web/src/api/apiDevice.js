@@ -63,3 +63,12 @@ export function deviceDetail(data){
         data: data || {}
     })
 }
+
+export function deviceStateChange(data){
+    return server({
+        url: url.deviceStateChange,
+        method: 'post',
+        dataType: "json",
+        data: data || {}
+    })
+}
