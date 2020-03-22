@@ -17,7 +17,7 @@ import Form from '../Form/Form'
 import SelfInfo from '../SelfInfo/SelfInfo'
 import DeviceControl from '../DeviceControl/DeviceControl'
 import { logout } from '../../actions/index'
-import { Avatar, Badge, Layout, Menu, Icon, Typography, Row, Col, Popover, message, List} from 'antd'
+import { Button, Badge, Layout, Menu, Icon, Typography, Row, Col, Popover, message, List, notification } from 'antd'
 import { navList } from '../../constants/navListConstants' 
 const { Header, Sider, Content, } = Layout;
 const { Title } = Typography;
@@ -81,8 +81,20 @@ class Home extends React.Component {
         }
         //接收到消息的回调方法
         global.socket.websocket.onmessage = function(event) {
-            let res = JSON.parse(event.data)
-            message.success(event.data);
+            const key = `open${Date.now()}`
+            const btn = (
+              <Button type="primary" size="small" onClick={() => notification.close(key)}>
+                确认
+              </Button>
+            )
+            notification.open({
+              message: '邮件通知',
+              description:event.data,
+              btn,
+              key,
+              onClose: close,
+              duration: null
+            })
         }
         //连接关闭的回调方法
         global.socket.websocket.onclose = function() {
@@ -138,7 +150,7 @@ class Home extends React.Component {
             <p>Content</p>
             <div><a onClick={this.sendMessage}>发送消息</a><a onClick={this.sendMessage2}>发送消息2</a></div>
         </div>
-        );
+        )
         return (
             <BrowserRouter>
                 <Layout>
