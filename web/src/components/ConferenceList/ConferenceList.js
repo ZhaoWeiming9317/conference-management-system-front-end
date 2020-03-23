@@ -298,13 +298,13 @@ class ConferenceList extends React.Component {
                                                                 已拒绝
                                                             </Button>}
                                                             {meeting.userState == 2 && <Button style={{ marginLeft: 30 }} onClick={(e)=>this.accept(meeting.meetingId, e)} type="primary" ghost>
-                                                                接受
+                                                                接&nbsp;受
                                                             </Button>}
                                                             {meeting.userState == 2 && <Button style={{ marginLeft: 30 }} onClick={(e)=>this.reject(meeting.meetingId, e)} type="primary" ghost>
-                                                                拒绝
+                                                                拒&nbsp;绝
                                                             </Button>}
                                                             {meeting.userState == 0 && <Button style={{ marginLeft: 30 }} onClick={(e)=>this.signIn(meeting.meetingId, e)} type="primary" ghost>
-                                                                签到
+                                                                签&nbsp;到
                                                             </Button>}
                                                             {meeting.userState == 1 && <Button style={{ marginLeft: 30 }} type="primary" ghost disabled>
                                                                 已签到
