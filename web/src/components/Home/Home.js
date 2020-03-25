@@ -198,7 +198,7 @@ class Home extends React.Component {
                     <Menu onClick={this.handleNav} theme="dark" mode="inline" style={{ lineHeight: '40px' }} defaultSelectedKeys={[mynav+'']}>
                         {navList.map((res) => 
                             {
-                            let role = this.props.role || 2
+                            let role = this.props.role
                             if (res.role >= role) {
                                 return(
                                     <Menu.Item key={res.key}>
