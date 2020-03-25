@@ -368,6 +368,13 @@ class ConferenceList extends React.Component {
                     })
                     return nowMembers || '暂无'
                 })()}</Descriptions.Item>
+                <Descriptions.Item span={3} label="参会人员">{(()=>{ 
+                    let nowMembers = ``
+                    nowRowData.reject && nowRowData.reject.map((item)=>{
+                        nowMembers = `${nowMembers} ${item.name}`
+                    })
+                    return nowMembers || '暂无'
+                })()}</Descriptions.Item>
                 <Descriptions.Item span={3} label="签到人员">{(()=>{ 
                     let nowMembers = ``
                     nowRowData.attendance && nowRowData.attendance.map((item)=>{
@@ -378,7 +385,7 @@ class ConferenceList extends React.Component {
                 </Descriptions.Item>
                 <Descriptions.Item span={3} label="未签到人员">{(()=>{ 
                     let nowMembers = ``
-                    nowRowData.absent && nowRowData.absent.map((item)=>{
+                    nowRowData.unSign && nowRowData.unSign.map((item)=>{
                         nowMembers = `${nowMembers} ${item.name}`
                     })
                     return nowMembers || '暂无'
