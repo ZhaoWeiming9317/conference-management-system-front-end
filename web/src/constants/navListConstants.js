@@ -7,7 +7,7 @@ export const navList = [
     {'label': '会议室管理', 'key': 5, 'linkTo': '/room', 'type': "home"   ,'role':1},
     {'label': '设备管理', 'key': 6, 'linkTo': '/device', 'type': "desktop"   ,'role':1},
     // {'label': '表单管理', 'key': 6, 'linkTo': '/form', 'type': "form"  ,'role':1 },
-    {'label': '个人中心', 'key': 7},
+    {'label': '个人中心', 'key': 7, 'linkTo': '/selfinfo', 'type': "user"   ,'role':2},
     {'label': '退出', 'key': 8},
     {'label': '设备控制', 'key': 9, 'linkTo': '/devicecontrol', 'type': "control"  ,'role':1 },
 ]

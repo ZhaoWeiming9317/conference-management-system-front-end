@@ -227,7 +227,7 @@ class Home extends React.Component {
                             style={{width: 30, fontSize: 22}}
                             />
                         </Col>
-                        <Col span={6}>
+                        <Col span={4}>
                             <div style={{
                                 display: 'inline-block',
                                 paddingLeft: 10
@@ -235,7 +235,10 @@ class Home extends React.Component {
                                 <Title level={3}>{this.state.title}</Title>
                             </div>
                         </Col> 
-                        <Col span={10}>
+                        <Col span={7}>
+                            欢迎您 {this.props.username}
+                        </Col>
+                        <Col span={5}>
                         </Col>
                         <Col span={1}>
                             {/* <Popover placement="bottom" title={<span>消息</span>} content={content} >
@@ -247,9 +250,9 @@ class Home extends React.Component {
                         <Col span={1}>
                         </Col>
                         <Col span={1}>
-                            <div >
+                            {/* <div >
                                 <Link to={'/selfinfo'}><Icon onClick={()=>{this.setState({title: '个人资料'})}} type="smile" style={{width: 50, fontSize: 22, cursor: 'pointer'}} /></Link>
-                            </div>
+                            </div> */}
                         </Col>
                         <Col span={1}>
                         </Col>

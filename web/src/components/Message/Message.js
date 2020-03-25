@@ -4,7 +4,7 @@ import { userLoginVerification } from '../../api/apiUser'
 import { messageSearch, messageHaveRead, messageAllHaveRead, messageDetail } from '../../api/apiMessage'
 import { connect } from 'react-redux';
 import { logout } from '../../actions/index'
-import { Row, Col, List, Typography, Button, Radio, Spin, Modal, Popconfirm,} from 'antd';
+import { Row, Col, List, Typography, Button, Radio, Spin, Modal, Popconfirm, message} from 'antd';
 import InfiniteScroll from 'react-infinite-scroller';
 const { Title, Paragraph, Text } = Typography;
 

@@ -499,9 +499,7 @@ class Order extends React.Component {
                         }
                     )
                 })
-            } else {
-    
-            }
+            } 
         },0)
     }
     isInteger = (obj) => {
@@ -521,12 +519,11 @@ class Order extends React.Component {
         let { day, building, floor } = this.state
         let { execArr, cascaderChosen, dayList, modalAddVisible, modalModifyVisible, modalDeleteVisible,userMeetingData } = this.state
         let menu =(
-            <Menu onClick={(e)=>this.onClickMenu(e)} style={{width: 80}}>
+            <Menu onClick={(e)=>this.onClickMenu(e)} style={{width: 88}}>
                 <Menu.Item key="modify">修改</Menu.Item>
                 <Menu.Item key="delete">
                   删除
                 </Menu.Item>
-                <Menu.Item key="detail">详细</Menu.Item>
             </Menu>
           )    
         return (
