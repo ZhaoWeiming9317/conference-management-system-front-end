@@ -58,10 +58,13 @@ const URL ={
     meetingAccept: HISTORY + '/meeting/accept',
     meetingReject: HISTORY + '/meeting/reject ',
 
+
     watch: HISTORY + '/watch',
     publish: HISTORY + '/publish',
     informAll: HISTORY + '/inform/inform_all',
     informFirst: HISTORY + '/inform/inform_first',
     messageSearch: HISTORY + '/message/message_search',
+    messageHaveRead : HISTORY + '/message/message_have_read',
+    messageAllHaveRead: HISTORY + '/message/message_all_have_read',
 }
 export default URL

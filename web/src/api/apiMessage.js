@@ -45,3 +45,21 @@ export function messageSearch (data){
 }
 
 
+export function messageHaveRead (data){
+    return server({
+        url: `${url.messageHaveRead}`,
+        method: 'post',
+        dataType: "json",
+        data: data || {}
+    })
+}
+
+export function messageAllHaveRead (data){
+    return server({
+        url: `${url.messageAllHaveRead}`,
+        method: 'post',
+        dataType: "json",
+        data: data || {}
+    })
+}
+
