@@ -62,7 +62,7 @@ class Home extends React.Component {
     }
     openWebSocket = () => {
         let url = "ws://39.99.172.71:8080/" + this.props.user_id +  "/" + this.props.token +  "/" + this.props.username;
-        console.log(url);
+        console.log(url)
         //判断当前浏览器是否支持WebSocket
         if ('WebSocket' in window) {
             global.socket.websocket = new WebSocket(url);
@@ -73,51 +73,56 @@ class Home extends React.Component {
         }
         //连接发生错误的回调方法
         global.socket.websocket.onerror = () => {
-            message.error("WebSocket连接发生错误");
+            message.error("WebSocket连接发生错误")
         }
         //连接成功建立的回调方法
         global.socket.websocket.onopen = () => {
-            message.success("WebSocket连接成功");
+            message.success("WebSocket连接成功")
         }
         //接收到消息的回调方法
         global.socket.websocket.onmessage = (event) => {
-            let messageBody = JSON.parse(JSON.parse(event.data).messageBody)
+            let eData = JSON.parse(event.data)
+            let messageBody = JSON.parse(event.data).messageBody
+            let ii = 3
+
             if (messageBody && messageBody.deviceId) {
-                this.props.deviceControl({
-                    deviceId : messageBody.deviceId,
-                    deviceState: messageBody.state
-                })
-                const key = `open${Date.now()}`
-                const btn = (
-                <Button type="primary" size="small" onClick={() => notification.close(key)}>
-                    确认
-                </Button>
-                )
-                notification.open({
-                message: '设备现状',
-                description: (()=>{
-                    let txt = '已关闭'
-                    switch(messageBody.state) {
-                        case 0:
-                          txt = '已关闭'
-                          break
-                        case 1:
-                          txt = '已开启'
-                          break
-                        case 2:
-                          txt = '提醒状态'
-                          break
-                        case 3:
-                          txt = '维修中'
-                          break
-                      }          
-                    return `设备Id ${messageBody.deviceId} 现状态为${txt}`
-                })(),
-                btn,
-                key,
-                onClose: close,
-                duration: 5
-                })    
+                if ( this.props.role != 2) {
+                    this.props.deviceControl({
+                        deviceId : messageBody.deviceId,
+                        deviceState: messageBody.state
+                    })
+                    const key = `open${Date.now()}`
+                    const btn = (
+                    <Button type="primary" size="small" onClick={() => notification.close(key)}>
+                        确认
+                    </Button>
+                    )
+                    notification.open({
+                    message: '设备现状',
+                    description: (()=>{
+                        let txt = '已关闭'
+                        switch(messageBody.state) {
+                            case 0:
+                              txt = '已关闭'
+                              break
+                            case 1:
+                              txt = '已开启'
+                              break
+                            case 2:
+                              txt = '提醒状态'
+                              break
+                            case 3:
+                              txt = '维修中'
+                              break
+                          }          
+                        return `设备Id ${messageBody.deviceId} 现状态为${txt}`
+                    })(),
+                    btn,
+                    key,
+                    onClose: close,
+                    duration: 5
+                    })        
+                }
             } else {
                 const key = `open${Date.now()}`
                 const btn = (
@@ -131,7 +136,7 @@ class Home extends React.Component {
                   btn,
                   key,
                   onClose: close,
-                  duration: null
+                  duration: 5
                 })    
             }
         }
@@ -233,11 +238,11 @@ class Home extends React.Component {
                         <Col span={10}>
                         </Col>
                         <Col span={1}>
-                            <Popover placement="bottom" title={<span>消息</span>} content={content} >
+                            {/* <Popover placement="bottom" title={<span>消息</span>} content={content} >
                                 <Badge count={1}>
                                     <Icon style={{width: 50, fontSize: 22, cursor: 'pointer'}} type="mail" />
                                 </Badge>
-                            </Popover>
+                            </Popover> */}
                         </Col>
                         <Col span={1}>
                         </Col>

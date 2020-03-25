@@ -63,3 +63,11 @@ export function messageAllHaveRead (data){
     })
 }
 
+export function messageDetail (data){
+    return server({
+        url: `${url.messageDetail}`,
+        method: 'post',
+        dataType: "json",
+        data: data || {}
+    })
+}

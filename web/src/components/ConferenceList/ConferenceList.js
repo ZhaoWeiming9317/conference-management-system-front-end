@@ -368,7 +368,7 @@ class ConferenceList extends React.Component {
                     })
                     return nowMembers || '暂无'
                 })()}</Descriptions.Item>
-                <Descriptions.Item span={3} label="参会人员">{(()=>{ 
+                <Descriptions.Item span={3} label="拒绝人员">{(()=>{ 
                     let nowMembers = ``
                     nowRowData.reject && nowRowData.reject.map((item)=>{
                         nowMembers = `${nowMembers} ${item.name}`
