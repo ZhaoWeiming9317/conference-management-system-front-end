@@ -398,8 +398,10 @@ class Order extends React.Component {
                             baseList[j]['chosen'] = 'false'    
                             baseList[j]['meetingId'] = ''
                         } else if (baseList[j]['chosen'] == 'myself' || baseList[j]['chosen'] == 'true'){
-                            message.error('选过了哦,更多操作点击右键')
-                        } else {
+                            message.error('选过了哦,如需修改或删除点击右键')
+                        } else if (baseList[j]['chosen'] == 'true'){
+                            message.error('别人选过了哦')
+                        }else{
                             // 首次选择
                             baseList[j]['hostName'] = this.state.hostName
                             baseList[j]['chosen'] = 'myselfTemp'    
