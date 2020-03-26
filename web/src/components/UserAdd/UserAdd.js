@@ -150,14 +150,12 @@ class UserApp extends React.Component {
           </Form.Item>}
           {currentStep === 0 && <Form.Item label="密码">
             {getFieldDecorator('password', {
-              initialValue: this.state.password, 
               rules: [{ required: true, message: '请输入密码' }],
               preserve: true,
             })(<Input.Password autoComplete="new-password"/>)}
           </Form.Item>}
           {currentStep === 0 && <Form.Item label="再次密码">
             {getFieldDecorator('passwordAgain', {
-              initialValue: this.state.passwordAgain,
               rules: [
                 { 
                 required: true, message: '请再次输入密码' 

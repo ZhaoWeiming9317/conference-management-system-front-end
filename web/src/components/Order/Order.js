@@ -621,7 +621,8 @@ class Order extends React.Component {
                     footer={null}
                     destroyOnClose
                 >
-                <MeetingAdd type="userAdd" userMeetingData={userMeetingData}></MeetingAdd>
+                {/* userModify指的是用户添加会议 */}
+                <MeetingAdd type="userAdd" userMeetingData={userMeetingData} closeModal={this.handleCancel}></MeetingAdd>
                 </Modal>
                 <Modal
                     visible={modalModifyVisible}
@@ -630,7 +631,8 @@ class Order extends React.Component {
                     footer={null}
                     destroyOnClose
                 >
-                <MeetingAdd type="userModify" userMeetingData={userMeetingData}></MeetingAdd>
+                {/* userModify指的是用户修改会议 */}
+                <MeetingAdd type="userModify" userMeetingData={userMeetingData} closeModal={this.handleCancel}></MeetingAdd>
                 </Modal>
                 <Modal
                     visible={modalDeleteVisible}

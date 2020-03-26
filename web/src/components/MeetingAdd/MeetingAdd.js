@@ -87,12 +87,13 @@ class MeetingApp extends React.Component {
               this.setState({modalLoading:false})
               if (res.state == 3) {
                 message.success("添加成功")
+                this.closeThisModal()
               } else if (res.state == 1){
                 message.error("成员中存在姓名不合法的情况")
               } else if (res.state == 0) {
                 message.error("记录者不存在")
               } else {
-                message.error("未知错误")
+                message.error(res.message)
               }
             }).catch((error)=>{
               message.error("系统错误")
@@ -175,11 +176,13 @@ class MeetingApp extends React.Component {
               if (deleteData['members'].length == 0) {
                 message.success("会议修改成功") 
                 this.setState({modalLoading:false})
+                this.closeThisModal()
               } else {
                 meetingMembersDelete(JSON.stringify({...deleteData})).then((res)=>{
                     this.setState({modalLoading:false})
                     if(res.state == 1){
                       message.success("会议修改成功") 
+                      this.closeThisModal()
                     } else {
                       message.error("会议修改失败")
                     }
@@ -249,8 +252,12 @@ class MeetingApp extends React.Component {
     // important! notify form to detect changes
     form.setFieldsValue({
       keys: nextKeys,
-    });
-  };
+    })
+  }
+
+  closeThisModal = () => {
+    this.props.closeModal()
+  }
 
   searchName = (page,e) => {
     let { tempValue,searchDown } = this.state

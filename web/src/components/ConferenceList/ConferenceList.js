@@ -329,69 +329,60 @@ class ConferenceList extends React.Component {
                 footer={null}
                 destroyOnClose
                 >
-                <MeetingAdd type="modify" userMeetingData={nowRowData}></MeetingAdd>
+                <MeetingAdd type="modify" userMeetingData={nowRowData} closeModal={this.handleCancelModify}></MeetingAdd>
                 </Modal>
                 <Modal
-                visible={modalModifyVisible}
-                title="修改会议室"
-                onCancel={this.handleCancelModify}
-                footer={null}
-                destroyOnClose
+                    visible={modalDetailVisible}
+                    title="详细信息"
+                    onCancel={this.handleCancelDetail}
+                    footer={null}
+                    width={850}
+                    destroyOnClose
                 >
-                <MeetingAdd type="modify" userMeetingData={nowRowData}></MeetingAdd>
+                <Descriptions title="会议信息" bordered >
+                    <Descriptions.Item label="会议名称">{nowRowData.meetingName}</Descriptions.Item>
+                    <Descriptions.Item label="会议ID">{nowRowData.meetingId}</Descriptions.Item>
+                    <Descriptions.Item label="会议室名称">{nowRowData.room && nowRowData.room.roomName}</Descriptions.Item>
+                    <Descriptions.Item label="会议室ID" >{nowRowData.room &&  nowRowData.room.roomId}</Descriptions.Item>
+                    <Descriptions.Item label="开始时间"> {nowRowData.startTime}</Descriptions.Item>
+                    <Descriptions.Item label="结束时间"> {nowRowData.endTime}</Descriptions.Item>
+                    <Descriptions.Item label="发起人名称">{nowRowData.host && nowRowData.host.name}</Descriptions.Item>
+                    <Descriptions.Item label="发起人用户名">{nowRowData.host && nowRowData.host.username}</Descriptions.Item>
+                    <Descriptions.Item label="发起人ID">{nowRowData.host && nowRowData.host.userId}</Descriptions.Item>
+                    <Descriptions.Item label="记录人名称">{nowRowData.recorder && nowRowData.recorder.name}</Descriptions.Item>
+                    <Descriptions.Item label="记录人用户名">{nowRowData.recorder && nowRowData.recorder.username}</Descriptions.Item>
+                    <Descriptions.Item label="记录人ID">{nowRowData.recorder && nowRowData.recorder.userId}</Descriptions.Item>
+                    <Descriptions.Item span={3} label="参会人员">{(()=>{ 
+                        let nowMembers = ``
+                        nowRowData.members && nowRowData.members.map((item)=>{
+                            nowMembers = `${nowMembers} ${item.name}`
+                        })
+                        return nowMembers || '暂无'
+                    })()}</Descriptions.Item>
+                    <Descriptions.Item span={3} label="拒绝人员">{(()=>{ 
+                        let nowMembers = ``
+                        nowRowData.reject && nowRowData.reject.map((item)=>{
+                            nowMembers = `${nowMembers} ${item.name}`
+                        })
+                        return nowMembers || '暂无'
+                    })()}</Descriptions.Item>
+                    <Descriptions.Item span={3} label="签到人员">{(()=>{ 
+                        let nowMembers = ``
+                        nowRowData.attendance && nowRowData.attendance.map((item)=>{
+                            nowMembers = `${nowMembers} ${item.name}`
+                        })
+                        return nowMembers || '暂无'
+                    })()}
+                    </Descriptions.Item>
+                    <Descriptions.Item span={3} label="未签到人员">{(()=>{ 
+                        let nowMembers = ``
+                        nowRowData.unSign && nowRowData.unSign.map((item)=>{
+                            nowMembers = `${nowMembers} ${item.name}`
+                        })
+                        return nowMembers || '暂无'
+                    })()}</Descriptions.Item>
+                </Descriptions>
                 </Modal>
-                <Modal
-              visible={modalDetailVisible}
-              title="详细信息"
-              onCancel={this.handleCancelDetail}
-              footer={null}
-              width={850}
-              destroyOnClose
-            >
-              <Descriptions title="会议信息" bordered >
-                <Descriptions.Item label="会议名称">{nowRowData.meetingName}</Descriptions.Item>
-                <Descriptions.Item label="会议ID">{nowRowData.meetingId}</Descriptions.Item>
-                <Descriptions.Item label="会议室名称">{nowRowData.room && nowRowData.room.roomName}</Descriptions.Item>
-                <Descriptions.Item label="会议室ID" >{nowRowData.room &&  nowRowData.room.roomId}</Descriptions.Item>
-                <Descriptions.Item label="开始时间"> {nowRowData.startTime}</Descriptions.Item>
-                <Descriptions.Item label="结束时间"> {nowRowData.endTime}</Descriptions.Item>
-                <Descriptions.Item label="发起人名称">{nowRowData.host && nowRowData.host.name}</Descriptions.Item>
-                <Descriptions.Item label="发起人用户名">{nowRowData.host && nowRowData.host.username}</Descriptions.Item>
-                <Descriptions.Item label="发起人ID">{nowRowData.host && nowRowData.host.userId}</Descriptions.Item>
-                <Descriptions.Item label="记录人名称">{nowRowData.recorder && nowRowData.recorder.name}</Descriptions.Item>
-                <Descriptions.Item label="记录人用户名">{nowRowData.recorder && nowRowData.recorder.username}</Descriptions.Item>
-                <Descriptions.Item label="记录人ID">{nowRowData.recorder && nowRowData.recorder.userId}</Descriptions.Item>
-                <Descriptions.Item span={3} label="参会人员">{(()=>{ 
-                    let nowMembers = ``
-                    nowRowData.members && nowRowData.members.map((item)=>{
-                        nowMembers = `${nowMembers} ${item.name}`
-                    })
-                    return nowMembers || '暂无'
-                })()}</Descriptions.Item>
-                <Descriptions.Item span={3} label="拒绝人员">{(()=>{ 
-                    let nowMembers = ``
-                    nowRowData.reject && nowRowData.reject.map((item)=>{
-                        nowMembers = `${nowMembers} ${item.name}`
-                    })
-                    return nowMembers || '暂无'
-                })()}</Descriptions.Item>
-                <Descriptions.Item span={3} label="签到人员">{(()=>{ 
-                    let nowMembers = ``
-                    nowRowData.attendance && nowRowData.attendance.map((item)=>{
-                        nowMembers = `${nowMembers} ${item.name}`
-                    })
-                    return nowMembers || '暂无'
-                })()}
-                </Descriptions.Item>
-                <Descriptions.Item span={3} label="未签到人员">{(()=>{ 
-                    let nowMembers = ``
-                    nowRowData.unSign && nowRowData.unSign.map((item)=>{
-                        nowMembers = `${nowMembers} ${item.name}`
-                    })
-                    return nowMembers || '暂无'
-                })()}</Descriptions.Item>
-              </Descriptions>
-            </Modal>
             </div>
         );
     }

@@ -331,7 +331,7 @@ class MeetingTable extends React.Component {
               footer={null}
               destroyOnClose
             >
-              <MeetingAdd type="add" userMeetingData={this.meetingDataInit}></MeetingAdd>
+              <MeetingAdd type="add" userMeetingData={this.meetingDataInit} closeModal={this.handleCancelAdd}></MeetingAdd>
             </Modal>
             <Modal
               visible={modalModifyVisible}
@@ -340,7 +340,7 @@ class MeetingTable extends React.Component {
               footer={null}
               destroyOnClose
             >
-              <MeetingAdd type="modify" userMeetingData={nowRowData}></MeetingAdd>
+              <MeetingAdd type="modify" userMeetingData={nowRowData} closeModal={this.handleCancelModify}></MeetingAdd>
             </Modal>
             <Modal
               visible={modalDetailVisible}

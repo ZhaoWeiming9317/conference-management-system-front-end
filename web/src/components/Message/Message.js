@@ -59,16 +59,14 @@ class Message extends React.Component {
         })
     }
 
-    read(e,messageId, have_read) {
-        messageDetail(JSON.stringify({message_id: messageId})).then((res)=>{
-            this.setState({nowRowData: res},()=>{this.setState({modalVisible: true})})
+    read(e,messageId, have_read, item) {
+            this.setState({nowRowData: item},()=>{this.setState({modalVisible: true})})
             if ( have_read == 0) {
                 let data = {message_id: [messageId]}
                 messageHaveRead(JSON.stringify(data)).then((res)=>{
                     this.init()
                 })    
             } 
-        })
     }
     signForReadAll(e,user_id) {
         let data = {user_id: user_id}
@@ -81,7 +79,7 @@ class Message extends React.Component {
         this.setState({
             loading: true,
         })
-        if (listData.length > total) {
+        if (listData.length >= total || listData.length > 100) {
           message.warning('到底了');
           this.setState({
             hasMore: false,
@@ -128,7 +126,7 @@ class Message extends React.Component {
                             dataSource={listData}
                             renderItem={item => (
                                 <List.Item className="message_list"> 
-                                    <Row onClick={(e)=>{this.read(e,item.messageId, item.haveRead)}} style={{ fontWeight: item.haveRead == 0 ? 600: 300, padding: 10 , width: 1000, height: 55, cursor: item.haveRead == 0 ? 'pointer':'default'}}>
+                                    <Row onClick={(e)=>{this.read(e,item.messageId, item.haveRead ,item)}} style={{ fontWeight: item.haveRead == 0 ? 600: 300, padding: 10 , width: 1000, height: 55, cursor: 'pointer'}}>
                                         <Col span={2}>
                                             <div style={{ marginLeft: 8, height: 35,lineHeight: '35px',verticalAlign: 'middle'}}>{`${item.senderName}`}</div>
                                         </Col>
@@ -139,10 +137,10 @@ class Message extends React.Component {
                                             <div style={{ marginLeft: 16, height: 35,lineHeight: '35px',verticalAlign: 'middle'}}>{`${item.sendTime}`}</div>
                                         </Col>
                                         <Col span={3}>
-                                            {item.haveRead == 0 &&<Button style={{ marginLeft: 30, width: 88 }} onClick={(e)=>this.signForRead(e,item.messageId)} type="primary" ghost>
+                                            {item.haveRead == 0 &&<Button style={{ marginLeft: 30, width: 88 }} onClick={(e)=>this.read(e,item.messageId, item.haveRead, item)} type="primary" ghost>
                                                 标记已读
                                             </Button>}
-                                            {item.haveRead == 1 &&<Button style={{ marginLeft: 30, width: 88 }} onClick={(e)=>this.signForRead(e,item.messageId)} type="primary" ghost disabled>
+                                            {item.haveRead == 1 &&<Button style={{ marginLeft: 30, width: 88 }} onClick={(e)=>this.read(e,item.messageId, item.haveRead, item)} type="primary" ghost disabled>
                                                 已&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;读
                                             </Button>}
                                         </Col>
