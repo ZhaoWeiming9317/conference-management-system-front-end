@@ -12,6 +12,12 @@ const navReducer = handleActions({
             ...state,
             loginView : true,
         }
+    },
+    [`${actions.gotoRegist}`](state, action){
+        return {
+            ...state,
+            loginView : false,
+        }
     }
 },
 initialState);

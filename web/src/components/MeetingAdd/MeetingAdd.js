@@ -222,11 +222,11 @@ class MeetingApp extends React.Component {
   disabledDateTime = () => {
     return {
       disabledHours: () => this.range(0, 9).concat(this.range(19, 24)),
-      disabledMinutes: () => this.range(1, 30).concat(this.range(31, 60)),
       disabledSeconds: () => this.range(1, 30).concat(this.range(31, 60)),
     };
   }
-  
+        // disabledMinutes: () => this.range(1, 30).concat(this.range(31, 60)),
+
   
   remove = k => {
     const { form } = this.props;
