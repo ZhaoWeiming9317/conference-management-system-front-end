@@ -43,7 +43,7 @@ class DeviceControl extends React.Component {
                 cascaderChosen.push(
                     {
                         value: item,
-                        label: `${item}楼`,
+                        label: `${item}`,
                         isLeaf: false
                     }
                 )

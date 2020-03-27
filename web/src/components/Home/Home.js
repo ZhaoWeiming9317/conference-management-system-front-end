@@ -82,10 +82,11 @@ class Home extends React.Component {
         //接收到消息的回调方法
         global.socket.websocket.onmessage = (event) => {
             let eData = JSON.parse(event.data)
-            let messageBody = JSON.parse(event.data).messageBody
+            let messageBody = eData.messageBody
             let ii = 3
 
-            if (messageBody && messageBody.deviceId) {
+            if (eData.messageTopic == 'device state change') {
+                messageBody = JSON.parse(messageBody)
                 if ( this.props.role != 2) {
                     this.props.deviceControl({
                         deviceId : messageBody.deviceId,
