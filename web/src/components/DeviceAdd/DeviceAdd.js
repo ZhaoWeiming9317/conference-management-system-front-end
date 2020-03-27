@@ -35,7 +35,7 @@ class DeviceApp extends React.Component {
       if (!err) {
         console.log(deviceInfo)
         if(this.props.type === 'add') {
-          deviceAdd(JSON.stringify(deviceInfo)).then((res)=>{
+          deviceAdd(JSON.stringify({...deviceInfo,device_type: deviceInfo.type})).then((res)=>{
             if (res.state == 1) {
               message.success("添加成功")
             } else {
@@ -45,7 +45,7 @@ class DeviceApp extends React.Component {
             message.error("系统错误")
           })
         } else {
-          deviceModify(JSON.stringify(deviceInfo)).then((res)=>{
+          deviceModify(JSON.stringify({...deviceInfo,device_type: deviceInfo.type})).then((res)=>{
             if (res.state == 1) {
               message.success("修改成功")
             } else {
