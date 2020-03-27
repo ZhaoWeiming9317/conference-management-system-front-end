@@ -13,7 +13,8 @@ class DeviceApp extends React.Component {
       mttr:'',
       mtbf:'',
       room_id:'',
-      repair_time:''
+      repair_time:'',
+      device_id: ''
     }
   }
   componentWillMount() {
@@ -22,7 +23,8 @@ class DeviceApp extends React.Component {
         console.log(data)
         this.setState({...data,
         device_name: data.deviceName,
-        room_id: data.room.roomId,
+        device_id: data.deviceId,
+        room_id: data.roomId,
         type:data.deviceType})
     }
   }
@@ -58,9 +60,16 @@ class DeviceApp extends React.Component {
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator} = this.props.form;
     return (
       <Form labelCol={{ span: 8 , offset: 2}} wrapperCol={{ span: 12 }} labelAlign='left' onSubmit={this.handleSubmit}>
+        {this.props.type == 'modify'&& <Form.Item label="设备Id">
+          {getFieldDecorator('device_id', {
+            initialValue: this.state.device_id, 
+            rules: [{ required: true, message: '请输入设备Id' }],
+          })(<Input disabled autoComplete="new-password"/>)}
+        </Form.Item>
+        }
         <Form.Item label="设备名称">
           {getFieldDecorator('device_name', {
             initialValue: this.state.device_name, 

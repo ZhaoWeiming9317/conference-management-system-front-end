@@ -50,8 +50,8 @@ class RoomTable extends React.Component {
         //     ellipsis: true
         // },
         {
-            title: '设备所在会议室名称',
-            dataIndex: 'roomName',
+            title: '设备所在会议室Id',
+            dataIndex: 'roomId',
             width: '120px',
             ellipsis: true
         },
@@ -205,34 +205,29 @@ class RoomTable extends React.Component {
 
     handleModify = key => {
       const dataSource = [...this.state.dataSource];
-      const deviceId = dataSource.find(item => item.key === key).deviceId
-      deviceDetail({device_id : deviceId}).then((res)=>{ 
+      const nowRowData = dataSource.find(item => item.key === key)
+      this.setState({
+        nowRowData:nowRowData
+      },()=>{
+        console.log(this.state.nowRowData)
         this.setState({
-          nowRowData:res
-        },()=>{
-          this.setState({
-            modalModifyVisible: true,
-          })
+          modalModifyVisible: true,
         })
-      })  
-    };
+      })
+    }
+
 
     handleDetail = key => {
       const dataSource = [...this.state.dataSource];
-      const deviceId = dataSource.find(item => item.key === key).deviceId
-      deviceDetail({device_id : deviceId}).then((res)=>{ 
-        res = {...res,
-        roomName: res.room.roomName,
-        roomId: res.room.roomId}
+      const nowRowData = dataSource.find(item => item.key === key)
+      this.setState({
+        nowRowData:nowRowData
+      },()=>{
+        console.log(this.state.nowRowData)
         this.setState({
-          nowRowData:res
-        },()=>{
-          console.log(this.state.nowRowData)
-          this.setState({
-            modalDetailVisible: true,
-          })
+          modalDetailVisible: true,
         })
-      }) 
+      })
     }
 
     handleCancelAdd = () => {
