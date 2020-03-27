@@ -139,7 +139,7 @@ class DeviceControl extends React.Component {
                             loadData={this.cascaderLoadData}
                             value={[this.state.building, this.state.floor]}
                             changeOnSelect
-                            placeholder="选择大楼/楼层" />,
+                            placeholder="选择大楼/楼层" />
                         </Col>
                         <Col span={1}>
                         </Col>

@@ -79,12 +79,12 @@ class DeviceApp extends React.Component {
             rules: [{ required: true, message: '请输入设备型号' }],
           })(<Input autoComplete="new-password"/>)}
         </Form.Item>
-        <Form.Item label="维修次数">
+        {/* <Form.Item label="维修次数">
           {getFieldDecorator('repair_time', {
             initialValue: this.state.repair_time,
             rules: [{ required: true, message: '请输入维修次数' }],
           })(<Input autoComplete="new-password"/>)}
-        </Form.Item>
+        </Form.Item> */}
         {/* <Form.Item label="设备平均维修时间">
           {getFieldDecorator('mttr', {
             initialValue: this.state.mttr,
