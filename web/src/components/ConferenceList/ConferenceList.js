@@ -381,6 +381,9 @@ class ConferenceList extends React.Component {
                         })
                         return nowMembers || '暂无'
                     })()}</Descriptions.Item>
+                    <Descriptions.Item label="会议类型" span={3}> {nowRowData.topic}</Descriptions.Item>
+                    <Descriptions.Item label="会议摘要" span={3}>{nowRowData.meetingAbstract}</Descriptions.Item>
+                    <Descriptions.Item label="备注" span={3}>{nowRowData.remark}</Descriptions.Item>
                 </Descriptions>
                 </Modal>
             </div>

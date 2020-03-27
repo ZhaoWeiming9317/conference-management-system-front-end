@@ -263,44 +263,49 @@ class MeetingApp extends React.Component {
     let { tempValue,searchDown } = this.state
     let scrollPage = page
     this.setState({tempValue, scrollPage})
-    setTimeout(() => {
-      const { getFieldsValue } = this.props.form;
-      let meetingInfo = getFieldsValue()
-      let data = {
-        name: tempValue || '',
-        start_time:this.state.start_time,
-        end_time:this.state.end_times,
-        page: page,
-        volume: 10
-      }
-      userNameSearch(JSON.stringify(data)).then((res)=>{
-        if (page == 1) {searchDown = []}
-        res.list.map(r => {
-          searchDown.push({
-            value: r['userId'],
-            text: r['name'],
-            username: r['username']
-          });
+    const { getFieldsValue } = this.props.form;
+    let data = {
+      name: tempValue || '',
+      start_time:this.state.start_time,
+      end_time:this.state.end_times,
+      page: page,
+      volume: 10
+    }
+    userNameSearch(JSON.stringify(data)).then((res)=>{
+      if (page == 1) {searchDown = []}
+      res.list.map(r => {
+        searchDown.push({
+          value: r['userId'],
+          text: r['name'],
+          username: r['username']
         });
-        this.setState({
-          searchDown
-        })
-      })  
-    }, 0);
+      });
+      this.setState({
+        searchDown
+      })
+    })  
   }
-
+  searchChange = e => {
+    let { searchDown } = this.state
+    this.setState({
+      searchDown
+    })
+  }
   searchScroll = e => {
       e.persist();
       const { target } = e;
       if (target.scrollTop + target.offsetHeight >= target.scrollHeight - 1) {
-        const { scrollPage } = this.state;
-        const nextScrollPage = scrollPage + 1;
-        this.setState({ scrollPage: nextScrollPage });
-        this.searchName(nextScrollPage); // 调用api方法
+        const { scrollPage } = this.state
+        const nextScrollPage = scrollPage + 1
+        this.setState({ scrollPage: nextScrollPage })
+        this.searchName(nextScrollPage) 
      }
  }
  searchWhenSelectChange = (e)=>{
     console.log(e)
+    this.setState({tempValue:e},()=>{
+      this.searchName(1)
+    })
  }
 
  onChangeStep = (next) => {
@@ -347,17 +352,17 @@ prev() {
   })
 }
   render() {
-    const { getFieldDecorator, getFieldValue } = this.props.form;
-    const { type , userMeetingData } = this.props;
-    const { currentStep , stepStatus} = this.state;
-    getFieldDecorator('keys', { initialValue: [] });
-    const keys = getFieldValue('keys');
+    const { getFieldDecorator, getFieldValue } = this.props.form
+    const { type , userMeetingData } = this.props
+    const { currentStep , stepStatus, searchDown } = this.state
+    getFieldDecorator('keys', { initialValue: [] })
+    const keys = getFieldValue('keys')
     const formItemLayout = {
         labelCol: { span: 8 , offset: 2},
         wrapperCol: { span: 14 },
         labelAlign: 'left'
-      };
-    const options = this.state.searchDown.map(d => <Option value={d.value}><span>{d.text}</span><span style={{color: '#d9d9d9'}}>&nbsp;{d.username}</span></Option>);
+      }
+    const options = searchDown.map(d => <Option value={d.value}><span>{d.text}</span><span style={{color: '#d9d9d9'}}>&nbsp;{d.username}</span></Option>)
     const formItems = keys.map((k, index) => (
       <Form.Item
         {...formItemLayout}
@@ -385,6 +390,8 @@ prev() {
         onFocus={(e)=>this.searchName(1,e)}
         notFoundContent={null}
         onPopupScroll={this.searchScroll}
+        defaultActiveFirstOption={false}
+        filterOption={false}  
         showSearch
         allowClear>
           {options}
@@ -509,15 +516,18 @@ prev() {
             initialValue: { key: userMeetingData.recorder ? userMeetingData.recorder.userId : '', label:  userMeetingData.recorder ? userMeetingData.recorder.name : ''},
             rules: [{ required: true, message: '请选择记录人员名称'  }],
             preserve: true,
-          })(<Select placeholder="记录人员名字" 
+          })(
+          <Select placeholder="记录人员名字" 
           labelInValue
-          style={{ width: '80%', marginRight: 8 }} 
+          style={{ width: '80%', marginRight: 8 }}
           onSearch={this.searchWhenSelectChange}
           onFocus={(e)=>this.searchName(1,e)}
           onPopupScroll={this.searchScroll}
           notFoundContent={null}
+          defaultActiveFirstOption={false}
+          filterOption={false}  
           showSearch
-          allowClear>
+          >
             {options}
           </Select>)}
         </Form.Item>}

@@ -326,7 +326,7 @@ class RoomTable extends React.Component {
               footer={null}
               destroyOnClose
             >
-              <DeviceAdd type="add" data={this.state.nowRowData}></DeviceAdd>
+              <DeviceAdd type="add" data={this.state.nowRowData} closeModal={this.handleCancelAdd}></DeviceAdd>
             </Modal>
             <Modal
               visible={modalModifyVisible}
@@ -336,7 +336,7 @@ class RoomTable extends React.Component {
               footer={null}
               destroyOnClose
             >
-              <DeviceAdd type="modify" data={this.state.nowRowData}></DeviceAdd>
+              <DeviceAdd type="modify" data={this.state.nowRowData} closeModal={this.handleCancelModify}></DeviceAdd>
             </Modal>
             <Modal
               visible={modalDetailVisible}

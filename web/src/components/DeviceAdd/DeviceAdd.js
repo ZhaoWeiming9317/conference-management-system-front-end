@@ -38,6 +38,7 @@ class DeviceApp extends React.Component {
           deviceAdd(JSON.stringify({...deviceInfo,device_type: deviceInfo.type})).then((res)=>{
             if (res.state == 1) {
               message.success("添加成功")
+              this.props.closeModal()
             } else {
               message.error("添加失败")
             }
@@ -48,6 +49,7 @@ class DeviceApp extends React.Component {
           deviceModify(JSON.stringify({...deviceInfo,device_type: deviceInfo.type})).then((res)=>{
             if (res.state == 1) {
               message.success("修改成功")
+              this.props.closeModal()
             } else {
               message.error("修改失败")
             }

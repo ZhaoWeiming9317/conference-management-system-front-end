@@ -1,7 +1,7 @@
 import React from 'react'
 import './UserTable.sass'
 import { connect } from 'react-redux';
-import { Table, Popconfirm, Modal, Divider, Row, Col, Descriptions, Input,Button, Card } from 'antd';
+import { Table, Popconfirm, Modal, Divider, Row, Col, Descriptions, Input,Button, Card ,message} from 'antd';
 import { userAdminSearchCertain, userAdminSearch, userAdminDelete } from '../../api/apiUser'
 import InputUI from '../../UI/InputUI/InputUI'
 import ButtonUI from '../../UI/ButtonUI/ButtonUI'
@@ -63,7 +63,7 @@ class UserTable extends React.Component {
           dataIndex: 'operation',
           ellipsis: true,
           render: (text, record) => 
-          this.state.dataSource.length >= 1 ? (
+          (this.state.dataSource.length >= 1) ? (
             <span>
               <a onClick={() => this.handleModify(record.key)}>修改</a>
               <Divider type="vertical" />
@@ -150,13 +150,17 @@ class UserTable extends React.Component {
     handleDelete = key => {
       const dataSource = [...this.state.dataSource];
       const username = dataSource.find(item => item.key === key).username
-      userAdminDelete({username}).then((res)=>{
-        console.log(res)
-        if(res.state == 1){
-          this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
-          this.tableFind({page: this.state.page})
-        }
-      })
+      if (dataSource.find(item => item.key === key).username != 'System') {
+        userAdminDelete({username}).then((res)=>{
+          console.log(res)
+          if(res.state == 1){
+            this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
+            this.tableFind({page: this.state.page})
+          }
+        })  
+      } else {
+        message.error('不能删除System')
+      }
     };
   
     handleAdd = () => {
@@ -166,17 +170,21 @@ class UserTable extends React.Component {
     };
 
     handleModify = key => {
-      const dataSource = [...this.state.dataSource];
+      const dataSource = [...this.state.dataSource]
       const userId = dataSource.find(item => item.key === key).userId
-      userAdminSearchCertain({user_id:userId}).then((res)=>{ 
-        this.setState({
-          nowRowData:res
-        },()=>{
+      if (dataSource.find(item => item.key === key).username != 'System') {
+        userAdminSearchCertain({user_id:userId}).then((res)=>{ 
           this.setState({
-            modalModifyVisible: true,
+            nowRowData:res
+          },()=>{
+            this.setState({
+              modalModifyVisible: true,
+            })
           })
-        })
-      })
+        })  
+      } else {
+        message.error('不能修改System')
+      }
     };
 
     handleDetail = key => {

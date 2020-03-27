@@ -273,7 +273,7 @@ class RoomTable extends React.Component {
               footer={null}
               destroyOnClose
             >
-              <RoomAdd type="add"></RoomAdd>
+              <RoomAdd type="add" closeModal={this.handleCancelAdd}></RoomAdd>
             </Modal>
             <Modal
               visible={modalModifyVisible}
@@ -283,7 +283,7 @@ class RoomTable extends React.Component {
               footer={null}
               destroyOnClose
             >
-              <RoomAdd type="modify" data={nowRowData}></RoomAdd>
+              <RoomAdd type="modify" data={nowRowData} closeModal={this.handleCancelModify}></RoomAdd>
             </Modal>
             <Modal
               visible={modalDetailVisible}

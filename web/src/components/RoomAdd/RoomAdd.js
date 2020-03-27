@@ -39,6 +39,7 @@ class DeviceApp extends React.Component {
           if(this.props.type === 'add') {
             roomAdd(JSON.stringify(deviceInfo)).then((res)=>{
               if (res.state == 1) {
+                this.props.closeModal()
                 message.success("添加成功")
               } else {
                 message.error("添加失败")
@@ -50,6 +51,7 @@ class DeviceApp extends React.Component {
             roomModify(JSON.stringify({...deviceInfo,
             roomId: this.props.data.roomId})).then((res)=>{
               if (res.state == 1) {
+                this.props.closeModal()
                 message.success("修改成功")
               } else {
                 message.error("修改失败")

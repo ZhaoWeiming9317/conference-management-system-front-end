@@ -124,7 +124,9 @@ class Home extends React.Component {
                     duration: 5
                     })        
                 }
-            } else {
+            } else if (eData.messageTopic == 'System Message') {
+            
+            } else{
                 const key = `open${Date.now()}`
                 const btn = (
                   <Button type="primary" size="small" onClick={() => notification.close(key)}>

@@ -167,7 +167,38 @@ class DeviceControl extends React.Component {
                                                         <Card
                                                         hoverable
                                                         style={{ width: 240 }}
-                                                        actions={actions}                                                      
+                                                        actions={actions}   
+                                                        cover={
+                                                            <img
+                                                              alt="example"
+                                                              src={(()=>{
+                                                                    let pic = 'light_off'
+                                                                    switch(device.deviceType) {
+                                                                        case 'Light':
+                                                                            if(device.state == 1) {
+                                                                                pic = 'light_on'
+                                                                            } else {
+                                                                                pic = 'light_off'
+                                                                            }
+                                                                            break
+                                                                        case 'AirCon':
+                                                                            if(device.state == 1) {
+                                                                                pic = 'aircon_on'
+                                                                            } else {
+                                                                                pic = 'aircon_off'
+                                                                            }
+                                                                            break
+                                                                        default:
+                                                                            if(device.state == 1) {
+                                                                                pic = 'touchpad'
+                                                                            } else {
+                                                                                pic = 'touchpad'
+                                                                            }
+                                                                    }
+                                                                    return require(`../../asset/device_pic/${pic}.png`)
+                                                                })()}
+                                                            />
+                                                          }                                                   
                                                         >
                                                             <Card.Meta title={device.deviceName} description={device.deviceType} />
                                                             {(()=>{
