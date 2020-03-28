@@ -69,7 +69,7 @@ class DeviceApp extends React.Component {
           {getFieldDecorator('device_id', {
             initialValue: this.state.device_id, 
             rules: [{ required: true, message: '请输入设备Id' }],
-          })(<Input disabled autoComplete="new-password"/>)}
+          })(<Input autoComplete="new-password"/>)}
         </Form.Item>
         }
         <Form.Item label="设备名称">
