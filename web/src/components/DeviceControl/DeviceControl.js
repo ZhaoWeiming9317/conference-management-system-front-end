@@ -188,6 +188,20 @@ class DeviceControl extends React.Component {
                                                                                 pic = 'aircon_off'
                                                                             }
                                                                             break
+                                                                        case 'SoundBox':
+                                                                            if(device.state == 1) {
+                                                                                pic = 'sound_box_on'
+                                                                            } else {
+                                                                                pic = 'sound_box_off'
+                                                                            }
+                                                                            break
+                                                                        case 'TV':
+                                                                            if(device.state == 1) {
+                                                                                pic = 'tv'
+                                                                            } else {
+                                                                                pic = 'tv'
+                                                                            }
+                                                                            break
                                                                         default:
                                                                             if(device.state == 1) {
                                                                                 pic = 'touchpad'
