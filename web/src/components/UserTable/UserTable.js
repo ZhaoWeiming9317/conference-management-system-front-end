@@ -104,21 +104,22 @@ class UserTable extends React.Component {
       this.tableFind({page: 1})
     }
     // 刷新table
-    tableFind(params = {}) {
+    tableFind(params = {}, del = false) {
+      let nowPage = (del == true && this.state.dataSource.length <= 1 && params.page >= 2) ? params.page - 1 : params.page
       this.setState({
         tableLoading: true,
-        page: params.page
+        page: nowPage
       });
       let data = {
         volume: this.volume,
         username: this.input,
-        ...params
+        page: nowPage
       }
       userAdminSearch(data).then((res)=>{
         const pagination = { ...this.state.pagination };
         let list = res.list
         pagination.total = res.total;
-        pagination.current = params.page
+        pagination.current = nowPage
         let covertListWithRole = list.map((item)=>{
           if (item.role === 0) {
             item.role = '部门经理'
@@ -155,7 +156,7 @@ class UserTable extends React.Component {
           console.log(res)
           if(res.state == 1){
             this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
-            this.tableFind({page: this.state.page})
+            this.tableFind({page: this.state.page}, true)
           }
         })  
       } else {

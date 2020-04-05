@@ -10,11 +10,7 @@ class SelfInfo extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data : [
-                '快来参加会议',
-                '快来参加会议2',
-                '快来参加会议3'
-              ],
+            data : [],
             modalModifyVisible: false,
             info: {}
         }
@@ -23,9 +19,12 @@ class SelfInfo extends React.Component {
         userLoginVerification().then((res) => {
             if (res.state == 0) {
                 this.props.logout()
+            } else {
+                userShowInfo(JSON.stringify({username: res.username})).then((res)=>{
+                    this.setState({info:res})
+                })        
             }
         })
-        this.setState({info: this.props.info})
     };
     handleModify = () => {
         this.setState({ modalModifyVisible: true })

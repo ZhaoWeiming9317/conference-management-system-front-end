@@ -73,7 +73,7 @@ export function roomDetail(data){
 }
 /**
  * 
- * @param {    room_name: xxxx;page: xxx(页数);volume：XXX} data 
+ * @param {  room_name: xxxx;page: xxx(页数);volume：XXX} data 
  */
 
 export function roomSearch(data){

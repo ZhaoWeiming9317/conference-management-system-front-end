@@ -49,8 +49,7 @@ class Home extends React.Component {
                 this.props.logout()
             })
         })
-        let username = this.props.username
-        userShowInfo(JSON.stringify({username: username})).then((res)=>{
+        userShowInfo(JSON.stringify({username: this.props.username})).then((res)=>{
             this.setState({selfInfo:res})
         })
         //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。

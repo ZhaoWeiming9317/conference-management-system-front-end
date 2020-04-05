@@ -134,21 +134,22 @@ class RoomTable extends React.Component {
       this.tableFind({page: 1})
     }
     // 刷新table
-    tableFind(params = {}) {
+    tableFind(params = {}, del = false) {
+      let nowPage = (del == true && this.state.dataSource.length <= 1 && params.page >= 2) ? params.page - 1 : params.page
       this.setState({
         tableLoading: true,
-        page: params.page
-      });
+        page: nowPage
+      })
       let data = {
         volume: this.volume,
         device_name: this.input,
-        ...params
+        page: nowPage
       }
       deviceSearch(data).then((res)=>{
         const pagination = { ...this.state.pagination };
         let list = res.list
         pagination.total = res.total;
-        pagination.current = params.page
+        pagination.current = nowPage
         this.setState({
           dataSource : [...execListWithKey(execListWithNull(this.execListWithRoom(list),'-'),'deviceId')],
           tableLoading: false,
@@ -189,12 +190,12 @@ class RoomTable extends React.Component {
     handleDelete = key => {
       const dataSource = [...this.state.dataSource];
       const deviceId = dataSource.find(item => item.key === key).deviceId
-      deviceDelete({ device_id : deviceId}).then((res)=>{
+      deviceDelete({ device_id : deviceId }).then((res)=>{
         if(res.state === 1){
           this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
         }
       })
-      this.tableFind({page: this.state.page})
+      this.tableFind({page: this.state.page}, true)
     };
   
     handleAdd = () => {
@@ -204,7 +205,7 @@ class RoomTable extends React.Component {
     };
 
     handleModify = key => {
-      const dataSource = [...this.state.dataSource];
+      const dataSource = [...this.state.dataSource]
       const nowRowData = dataSource.find(item => item.key === key)
       this.setState({
         nowRowData:nowRowData
@@ -233,21 +234,21 @@ class RoomTable extends React.Component {
     handleCancelAdd = () => {
       this.setState({ modalAddVisible: false, modalModifyVisible: false,modalDetailVisible: false });
       this.tableFind({page: 1})  
-    };
+    }
 
     handleCancelModify = () => {
       this.setState({ modalAddVisible: false, modalModifyVisible: false,modalDetailVisible: false });
       this.tableFind({page: this.state.page})  
-    };
+    }
 
     handleCancelDetail = () => {
       this.setState({ modalAddVisible: false, modalModifyVisible: false,modalDetailVisible: false });
-    };
+    }
 
     onSelectChange = selectedRowKeys => {
       console.log('selectedRowKeys changed: ', selectedRowKeys);
       this.setState({ selectedRowKeys });
-    };
+    }
     //-----------------------------------------
 
     handleTableChange = (pagination, filters, sorter) => {
@@ -278,12 +279,12 @@ class RoomTable extends React.Component {
             title: col.title,
             handleSave: this.handleSave,
           }),
-        };
-      });
+        }
+      })
       const rowSelection = {
         selectedRowKeys,
         onChange: this.onSelectChange,
-      };  
+      }
 
       return (
         <div>

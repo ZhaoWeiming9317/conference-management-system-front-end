@@ -1,7 +1,9 @@
 import React from 'react'
-import { connect } from 'react-redux';
-import { Form, Input, Button, message } from 'antd';
-import {deviceAdd, deviceModify} from '../../api/apiDevice';
+import { connect } from 'react-redux'
+import { Form, Input, Button, Select, message, Divider } from 'antd'
+import { deviceAdd, deviceModify } from '../../api/apiDevice'
+import { roomSearchPage } from '../../api/apiRoom'
+const { Option } = Select;
 
 class DeviceApp extends React.Component {
   constructor(props) {
@@ -14,8 +16,15 @@ class DeviceApp extends React.Component {
       mtbf:'',
       room_id:'',
       repair_time:'',
-      device_id: ''
+      device_id: '',
+      searchDown: [],
+      tempValue: '',
+      scrollPage: 1,
+      typeList: ['AirCon','TV', 'Light','TouchPad', 'SoundBox'],
+      selfTypeValue: ''
     }
+    this.index = 0
+    this.searchScroll = this.searchScroll.bind(this)
   }
   componentWillMount() {
     let data = this.props.data
@@ -25,9 +34,11 @@ class DeviceApp extends React.Component {
         device_name: data.deviceName,
         device_id: data.deviceId,
         room_id: data.roomId,
+        room_name: data.roomName,
         type:data.deviceType})
     }
   }
+
   handleSubmit = e => {
     e.preventDefault();
     let deviceInfo = this.props.form.getFieldsValue();
@@ -35,12 +46,12 @@ class DeviceApp extends React.Component {
       if (!err) {
         console.log(deviceInfo)
         if(this.props.type === 'add') {
-          deviceAdd(JSON.stringify({...deviceInfo,device_type: deviceInfo.type})).then((res)=>{
+          deviceAdd(JSON.stringify({...deviceInfo,device_type: deviceInfo.type,room: [], room_id: (deviceInfo.room && deviceInfo.room.key)})).then((res)=>{
             if (res.state == 1) {
               message.success("添加成功")
               this.props.closeModal()
             } else {
-              message.error("添加失败")
+              message.error(res.message)
             }
           }).catch((error)=>{
             message.error("系统错误")
@@ -51,18 +62,68 @@ class DeviceApp extends React.Component {
               message.success("修改成功")
               this.props.closeModal()
             } else {
-              message.error("修改失败")
+              message.error(res.message)
             }
           }).catch((error)=>{
             message.error("系统错误")
           })
         }
       }
-    });
-  };
+    })
+  }
+
+  searchName = (page,e) => {
+    let { tempValue,searchDown } = this.state
+    let scrollPage = page
+    this.setState({tempValue, scrollPage})
+    const { getFieldsValue } = this.props.form;
+    let data = {
+      page: page,
+      volume: 10
+    }
+    roomSearchPage(JSON.stringify(data)).then((res)=>{
+      if (page == 1) {searchDown = []}
+      res.list.map(r => {
+        searchDown.push({
+          name: r['roomName'],
+          id: r['roomId']
+        })
+      })
+      this.setState({
+        searchDown
+      })
+    })  
+  }
+
+  searchScroll = e => {
+    e.persist();
+    const { target } = e;
+    if (target.scrollTop + target.offsetHeight >= target.scrollHeight - 1) {
+      const { scrollPage } = this.state
+      const nextScrollPage = scrollPage + 1
+      this.setState({ scrollPage: nextScrollPage })
+      this.searchName(nextScrollPage) 
+   }
+  }
+  onSelfType = e => {
+    this.setState({
+      selfTypeValue: event.target.value,
+    })
+  }
+  addItem = () => {
+    console.log('addItem');
+    const { typeList, selfTypeValue } = this.state;
+    this.setState({
+      typeList: [...typeList, selfTypeValue || `default ${this.index++}`],
+      selfTypeValue: '',
+    })
+  }
 
   render() {
-    const { getFieldDecorator} = this.props.form;
+    const { getFieldDecorator} = this.props.form
+    const { searchDown , typeList } = this.state
+    const options = searchDown.map(d => <Option value={d.id}><span>{d.name}</span><span style={{color: '#d9d9d9'}}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{d.id}</span></Option>)
+
     return (
       <Form labelCol={{ span: 8 , offset: 2}} wrapperCol={{ span: 12 }} labelAlign='left' onSubmit={this.handleSubmit}>
         {this.props.type == 'modify'&& <Form.Item label="设备Id">
@@ -88,31 +149,31 @@ class DeviceApp extends React.Component {
           {getFieldDecorator('type', {
             initialValue: this.state.type,
             rules: [{ required: true, message: '请输入设备型号' }],
-          })(<Input autoComplete="new-password"/>)}
+          })
+          (<Select>
+            {typeList.map(item => (
+              <Option key={item}>{item}</Option>
+            ))}
+          </Select>)}
         </Form.Item>
-        {/* <Form.Item label="维修次数">
-          {getFieldDecorator('repair_time', {
-            initialValue: this.state.repair_time,
-            rules: [{ required: true, message: '请输入维修次数' }],
-          })(<Input autoComplete="new-password"/>)}
-        </Form.Item> */}
-        {/* <Form.Item label="设备平均维修时间">
-          {getFieldDecorator('mttr', {
-            initialValue: this.state.mttr,
-            rules: [{ required: true, message: '请输入平均维修时间' }],
-          })(<Input autoComplete="new-password"/>)}
-        </Form.Item>
-        <Form.Item label="设备平均故障间隔时间">
-          {getFieldDecorator('mtbf', {
-            initialValue: this.state.mtbf,
-            rules: [{ required: true, message: '请输入设备平均故障间隔时间' }],
-          })(<Input autoComplete="new-password"/>)}
-        </Form.Item> */}
-        <Form.Item label="设备所在会议室ID">
-          {getFieldDecorator('room_id', {
-            initialValue: this.state.room_id,
-            rules: [{ required: true, message: '请输入设备所在会议室ID' }],
-          })(<Input autoComplete="new-password"/>)}
+        <Form.Item label="设备所在会议室">
+          {getFieldDecorator('room', {
+            initialValue: { key: this.state.room_id , label:  this.state.room_name},
+            rules: [{ required: true, message: '请选择设备所在会议室'  }],
+            preserve: true,
+          })(
+          <Select placeholder="设备所在会议室" 
+          labelInValue
+          onSearch={this.searchWhenSelectChange}
+          onFocus={(e)=>this.searchName(1,e)}
+          onPopupScroll={this.searchScroll}
+          notFoundContent={null}
+          defaultActiveFirstOption={false}
+          filterOption={false}  
+          showSearch
+          >
+            {options}
+          </Select>)}
         </Form.Item>
         <Form.Item wrapperCol={{ span: 12, offset: 10 }}>
           <Button type="primary" htmlType="submit" onClick={this.handleSubmit}>

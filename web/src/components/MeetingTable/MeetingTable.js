@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux';
-import { Table, Popconfirm, Modal, Divider, Row, Col, Descriptions, Input,Button, Card } from 'antd';
-import { meetingSearch, meetingSearchCertain,meetingSearchAll} from '../../api/apiMeeting'
+import { Table, Popconfirm, Modal, Divider, Row, Col, Descriptions, Input,Button, Card, message } from 'antd';
+import { meetingSearch, meetingSearchCertain, meetingSearchAll, meetingDelete} from '../../api/apiMeeting'
 import MeetingAdd from '../../components/MeetingAdd/MeetingAdd'
 import {execListWithNull, execListWithKey} from '../../util/util'
 class MeetingTable extends React.Component {
@@ -154,21 +154,22 @@ class MeetingTable extends React.Component {
       this.tableFind({page: 1})
     }
     // 刷新table
-    tableFind(params = {}) {
+    tableFind(params = {}, del = false) {
+      let nowPage = (del == true && this.state.dataSource.length <= 1 && params.page >= 2) ? params.page - 1 : params.page
       this.setState({
         tableLoading: true,
-        page: params.page
+        page: nowPage
       });
       let data = {
         volume: this.volume,
         meeting_name: this.input,
-        ...params
+        page: nowPage
       }
       meetingSearch(data).then((res)=>{
         const pagination = { ...this.state.pagination };
         let list = res.list
         pagination.total = res.total;
-        pagination.current = params.page
+        pagination.current = nowPage
         this.setState({
           dataSource : execListWithKey(execListWithNull(list,'-'),'meetingId'),
           tableLoading: false,
@@ -192,9 +193,11 @@ class MeetingTable extends React.Component {
         console.log(res)
         if(res.state === 1){
           this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
+        } else {
+          message.error(res.message)
         }
       })
-      this.tableFind({page: this.state.page})
+      this.tableFind({page: this.state.page},true)
     };
   
     handleAdd = () => {

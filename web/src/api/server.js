@@ -30,7 +30,7 @@ axios.interceptors.response.use(
             if (error.response) {
                 switch (error.response.status) {
                     case 407:
-                        message.error('token鉴权错误，请重新登录')
+                        message.warning('登录鉴权过期，请登录')
                         break
                     case 500:
                         message.error('系统错误')

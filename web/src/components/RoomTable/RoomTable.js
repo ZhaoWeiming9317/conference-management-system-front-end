@@ -101,21 +101,22 @@ class RoomTable extends React.Component {
       this.tableFind({page: 1})
     }
     // 刷新table
-    tableFind(params = {}) {
+    tableFind(params = {}, del = false) {
+      let nowPage = (del == true && this.state.dataSource.length <= 1 && params.page >= 2) ? params.page - 1 : params.page
       this.setState({
         tableLoading: true,
-        page: params.page
-      });
+        page: nowPage
+      })
       let data = {
         volume: this.volume,
         room_name: this.input,
-        ...params
+        page: nowPage
       }
       roomSearch(data).then((res)=>{
-        const pagination = { ...this.state.pagination };
+        const pagination = { ...this.state.pagination }
         let list = res.list
-        pagination.total = res.total;
-        pagination.current = params.page
+        pagination.total = res.total
+        pagination.current = nowPage
         this.setState({
           dataSource : execListWithKey(execListWithNull(list,'-'),'roomId'),
           tableLoading: false,
@@ -141,7 +142,7 @@ class RoomTable extends React.Component {
           this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
         }
       })
-      this.tableFind({page: this.state.page})
+      this.tableFind({page: this.state.page},true)
     };
   
     handleAdd = () => {
