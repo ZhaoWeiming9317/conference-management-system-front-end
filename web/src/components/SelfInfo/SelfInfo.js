@@ -12,7 +12,8 @@ class SelfInfo extends React.Component {
         this.state = {
             data : [],
             modalModifyVisible: false,
-            info: {}
+            info: {},
+            username:''
         }
     }  
     componentDidMount() {
@@ -20,6 +21,7 @@ class SelfInfo extends React.Component {
             if (res.state == 0) {
                 this.props.logout()
             } else {
+                this.setState({username: res.username})
                 userShowInfo(JSON.stringify({username: res.username})).then((res)=>{
                     this.setState({info:res})
                 })        
@@ -31,7 +33,7 @@ class SelfInfo extends React.Component {
     }
     handleCancelModify = () => {
         this.setState({ modalModifyVisible: false })
-        const data = { user_id: this.props.info.userId}
+        const data = { user_id: this.state.username}
         userShowInfo(JSON.stringify(data)).then((res)=>{
             this.setState({
                 info: res
