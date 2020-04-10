@@ -474,6 +474,7 @@ class Order extends React.Component {
             this.setState({ modalLoading : false, modalDeleteVisible : false})
             if (res.state == 1) {
                 message.success('删除成功')
+                this.buildFloorDaySubmit()
             } else {
                 message.error(res.message)
             }
