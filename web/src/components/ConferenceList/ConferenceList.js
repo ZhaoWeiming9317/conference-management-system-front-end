@@ -261,19 +261,19 @@ class ConferenceList extends React.Component {
                                                     </Col>
                                                 </Row>}
                                                 <Row style={{position:'relative', border: '1px solid #d9d9d9', paddingTop: 10 ,paddingBottom: 10, paddingLeft: 10, marginTop: index !== 0 ? 20 : 0 , marginBottom: 20}}>   
-                                                        <Col span={2} style={{height: 50, lineHeight: '50px'}}>
+                                                        <Col span={2} style={{height: 50, lineHeight: '50px',whiteSpace: 'nowrap',overflow: 'hidden', textOverflow: 'ellipsis'}}>
                                                         {meeting.show_time}&nbsp;
                                                         </Col>
-                                                        <Col span={3} style={{height: 50, lineHeight: '50px'}}>
+                                                        <Col span={3} style={{height: 50, lineHeight: '50px',whiteSpace: 'nowrap',overflow: 'hidden', textOverflow: 'ellipsis'}}>
                                                          {meeting.roomName}&nbsp;
                                                         </Col>
-                                                        <Col span={3} style={{height: 50, lineHeight: '50px'}}>
+                                                        <Col span={3} style={{height: 50, lineHeight: '50px',whiteSpace: 'nowrap',overflow: 'hidden', textOverflow: 'ellipsis'}}>
                                                          {meeting.meetingName}
                                                         </Col>
-                                                        <Col span={3} style={{height: 50, lineHeight: '50px'}}>
+                                                        <Col span={3} style={{height: 50, lineHeight: '50px',whiteSpace: 'nowrap',overflow: 'hidden', textOverflow: 'ellipsis'}}>
                                                          {meeting.hostName}
                                                         </Col>
-                                                        <Col span={3} style={{height: 50, lineHeight: '50px'}}>
+                                                        <Col span={3} style={{height: 50, lineHeight: '50px',whiteSpace: 'nowrap',overflow: 'hidden', textOverflow: 'ellipsis'}}>
                                                          {meeting.topic}
                                                         </Col>
                                                         <Col span={1} style={{height: 50, lineHeight: '50px'}}>
