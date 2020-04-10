@@ -471,7 +471,7 @@ class Order extends React.Component {
         this.setState({ modalLoading : true})
         setTimeout(()=> {
         meetingDelete(JSON.stringify({meeting_id: nowContextMenuMeetingId})).then((res)=>{
-            this.setState({ modalLoading : false})
+            this.setState({ modalLoading : false, modalDeleteVisible : false})
             if (res.state == 1) {
                 message.success('删除成功')
             } else {
