@@ -70,7 +70,7 @@ class ConferenceList extends React.Component {
     }
     findList(){
         let data = { 
-            user_id: parseInt(this.props.user_id),
+            user_id: parseInt(this.props.user_id || localStorage.getItem('user_id') || sessionStorage.getItem('user_id')),
         }  
         meeting7Search(JSON.stringify(data)).then((res)=>{
             this.setState({ myConferenceList : res.list, user_id: parseInt(this.props.user_id) },()=>{
