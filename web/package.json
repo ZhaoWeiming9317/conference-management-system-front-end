@@ -92,7 +92,6 @@
     "dev": "react-app-rewired start",
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
     "bundle-report": "webpack-bundle-analyzer --port 8123 dist/stats.json"
   },
   "eslintConfig": {

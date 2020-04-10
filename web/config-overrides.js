@@ -49,5 +49,9 @@ const {
         skipWaiting: true,
         exclude: (wb.exclude || []).concat("index.html")
       })
-    )
+    ),
+
+    // 添加 webpack-bundle-analyzer
+    addBundleVisualizer(),
+
   );

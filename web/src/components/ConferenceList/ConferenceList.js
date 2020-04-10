@@ -176,6 +176,11 @@ class ConferenceList extends React.Component {
     }
     handleDelete = meetingId => {
         meetingDelete({ meeting_id : meetingId}).then((res)=>{
+            if (res.state == 1) {
+                message.success(res.message)
+            } else {
+                message.error(res.message)
+            }
             this.findList()
         })
     }

@@ -475,7 +475,7 @@ class Order extends React.Component {
             if (res.state == 1) {
                 message.success('删除成功')
             } else {
-                message.error('删除失败')
+                message.error(res.message)
             }
         }).catch((error)=>{
             message.error('系统错误')
