@@ -218,7 +218,7 @@ class Home extends React.Component {
                         )}
                     </Menu>
                 </Sider>
-                <Layout style={{ minHeight: '100vh', minWidth: 1109}}>
+                <Layout style={{ minHeight: '100vh', minWidth: 1106}}>
                     <Header style={{ background: '#fff', padding: 5}}>            
                     <Row>
                         <Col span={2}>
